@@ -25,7 +25,8 @@ func main() {
 	app.Get("/foo", func(c *fiber.Ctx) error {
 		return c.JSON(map[string]string{"go": "mod"})
 	})
-	apiv1.Get("/user", api.HandleGetUser)
+	apiv1.Get("/user", api.HandleGetUsers)
+	apiv1.Get("/user/:id", api.HandleGetUser)
 
 	err := app.Listen(":" + port)
 
