@@ -1,54 +1,25 @@
 version: '3.9'
 services:
-  app:
-    container_name: golang_container
+  db:
+    image: postgres:16.3-alpine3.20
+    restart: always
     environment:
-      - POSTGRES_USER=${DB_USER}
       - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_USER=${DB_USER}
       - POSTGRES_DB=${DB_NAME}
-      - DATABASE_HOST=${DB_HOST}
-      - DATABASE_PORT=${DB_PORT}
-      - TEST_POSTGRES_USER=${TEST_DB_USER}
-      - TEST_POSTGRES_PASSWORD=${TEST_DB_PASSWORD}
-      - TEST_POSTGRES_DB=${TEST_DB_NAME}
-      - TEST_DATABASE_HOST=${TEST_DB_HOST}
-      - TEST_DATABASE_PORT=${TEST_DB_PORT}
-    tty: true
-    build: .
     ports:
-      - "${PORT}:${CONTAINER_PORT}"
-    restart: on-failure
+      - "${DB_PORT}:${DB_PORT}"
+
     volumes:
-      - .:/app
-    depends_on:
-      - postgresdb
-    networks:
-      - wfapp
-
-  postgresdb:
-    image: postgres:latest
-    container_name: postgres_container
+      - db-data:/var/lib/postgresql/data
+  adminer:
+    image: adminer:4.8.1
+    restart: always
     environment:
-      - POSTGRES_USER=${DB_USER}
-      - POSTGRES_PASSWORD=${DB_PASSWORD}
-      - POSTGRES_DB=${DB_NAME}
-      - DATABASE_HOST=${DB_HOST}
+       ADMINER_DESIGN: dracula
     ports:
-      - '4568:5432'
-    networks:
-      - wfapp
+      - "3333:8080"
 
-  postgresdb_test:
-    image: postgres:latest
-    container_name: postgres_test_container
-    environment:
-      - POSTGRES_USER=${TEST_DB_USER}
-      - POSTGRES_PASSWORD=${TEST_DB_PASSWORD}
-      - POSTGRES_DB=${TEST_DB_NAME}
-      - DATABASE_HOST=${TEST_DB_HOST}
-    ports:
-      - '4568:5432'
 
-networks:
-  wfapp:
-    driver: bridge
+volumes:
+  db-data:
