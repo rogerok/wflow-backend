@@ -9,7 +9,7 @@ func HandleGetUsers(c *fiber.Ctx) error {
 	user := types.User{
 		FirstName: "John",
 		Id:        "123",
-		LastName:  "123",
+		LastName:  "1234",
 	}
 
 	return c.JSON(user)
