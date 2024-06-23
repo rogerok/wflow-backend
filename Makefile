@@ -6,3 +6,7 @@ run: build
 
 test:
 	@go test -v ./...
+
+dev: build
+	@./bin/api &
+	docker compose up
