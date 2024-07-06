@@ -16,7 +16,7 @@ type PostgresConfig struct {
 	SslMode  string
 }
 
-func getDbConfig() PostgresConfig {
+func GetDbConfig() PostgresConfig {
 	return PostgresConfig{
 		Host:     os.Getenv("HOST"),
 		User:     os.Getenv("POSTGRES_USER"),
@@ -31,8 +31,8 @@ func (cfg PostgresConfig) String() string {
 	return fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=%s", cfg.Host, cfg.Port, cfg.User, cfg.Password, cfg.DbName, cfg.SslMode)
 }
 
-func connectToDb(config PostgresConfig) (db *pgx.Conn, err error) {
-	confString := config.String()
+func ConnectToDb() (db *pgx.Conn, err error) {
+	confString := GetDbConfig().String()
 	db, err = pgx.Connect(context.Background(), confString)
 
 	if err != nil {
