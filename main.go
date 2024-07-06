@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/gofiber/fiber/v2"
 	"github.com/joho/godotenv"
-	"github.com/rogerok/wflow-backend/api"
+	"github.com/rogerok/wflow-backend/configs"
 	"os"
 )
 
@@ -17,18 +17,11 @@ func main() {
 		fmt.Printf("Could not load environment")
 	}
 
-	db, err := connectToDb(dbConfig())
-
-	db.Ping(context.Background())
+	db, err := configs.ConnectToDb()
 
 	defer db.Close(context.Background())
 
 	app := fiber.New()
-
-	apiv1 := app.Group("/api")
-
-	apiv1.Get("/user", api.HandleGetUsers)
-	apiv1.Get("/user/:id", api.HandleGetUser)
 
 	err = app.Listen(":" + os.Getenv("PORT"))
 
