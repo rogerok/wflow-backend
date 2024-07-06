@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"github.com/gofiber/fiber/v2"
 	"github.com/joho/godotenv"
@@ -16,22 +17,23 @@ func main() {
 		fmt.Printf("Could not load environment")
 	}
 
-	port := os.Getenv("PORT")
+	db, err := connectToDb(dbConfig())
+
+	db.Ping(context.Background())
+
+	defer db.Close(context.Background())
 
 	app := fiber.New()
 
 	apiv1 := app.Group("/api")
 
-	app.Get("/foo", func(c *fiber.Ctx) error {
-		return c.JSON(map[string]string{"go": "mod"})
-	})
 	apiv1.Get("/user", api.HandleGetUsers)
 	apiv1.Get("/user/:id", api.HandleGetUser)
 
-	err := app.Listen(":" + port)
+	err = app.Listen(":" + os.Getenv("PORT"))
 
 	if err != nil {
-		fmt.Printf(err.Error())
+		panic(err.Error())
 	}
 
 }

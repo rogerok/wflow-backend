@@ -10,3 +10,4 @@ test:
 dev: build
 	@./bin/api &
 	docker compose up
+

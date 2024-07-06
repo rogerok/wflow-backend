@@ -2,13 +2,13 @@ package api
 
 import (
 	"github.com/gofiber/fiber/v2"
-	"github.com/rogerok/wflow-backend/types"
+	"github.com/rogerok/wflow-backend/models"
 )
 
 func HandleGetUsers(c *fiber.Ctx) error {
-	user := types.User{
+	user := models.User{
 		FirstName: "John",
-		Id:        "123",
+		Id:        "12sss3",
 		LastName:  "123",
 	}
 
