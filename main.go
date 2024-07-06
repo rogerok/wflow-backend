@@ -14,17 +14,18 @@ func main() {
 
 	err := godotenv.Load()
 	if err != nil {
-		fmt.Printf("Could not load environment")
+		fmt.Printf("Could not load environment %s", err.Error())
+		return
 	}
 
-	db, err := configs.ConnectToDb()
+	db, dbError := configs.ConnectToDb()
 
-	if err != nil {
-		fmt.Printf("Could connect to database")
-
-	} else {
-		defer configs.CloseConnectionToDb(db, context.Background())
+	if dbError != nil {
+		fmt.Printf("Could connect to database %s=", dbError.Error())
+		return
 	}
+
+	defer configs.CloseConnectionToDb(db, context.Background())
 
 	app := fiber.New()
 	router.SetupRouter(app)
