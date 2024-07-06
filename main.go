@@ -6,23 +6,28 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/joho/godotenv"
 	"github.com/rogerok/wflow-backend/configs"
+	"github.com/rogerok/wflow-backend/router"
 	"os"
 )
 
 func main() {
 
-	envErr := godotenv.Load()
-
-	if envErr != nil {
+	err := godotenv.Load()
+	if err != nil {
 		fmt.Printf("Could not load environment")
 	}
 
 	db, err := configs.ConnectToDb()
 
-	defer db.Close(context.Background())
+	if err != nil {
+		fmt.Printf("Could connect to database")
+
+	} else {
+		defer configs.CloseConnectionToDb(db, context.Background())
+	}
 
 	app := fiber.New()
-
+	router.SetupRouter(app)
 	err = app.Listen(":" + os.Getenv("PORT"))
 
 	if err != nil {

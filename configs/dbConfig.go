@@ -36,8 +36,21 @@ func ConnectToDb() (db *pgx.Conn, err error) {
 	db, err = pgx.Connect(context.Background(), confString)
 
 	if err != nil {
-		panic(fmt.Sprintf("%s. Failed conntect to DB", err.Error()))
+		return nil, fmt.Errorf(fmt.Sprintf("%s. Failed conntect to DB", err.Error()))
 	}
 
 	return db, nil
+}
+
+func CloseConnectionToDb(db *pgx.Conn, ctx context.Context) {
+	if db == nil {
+		fmt.Println("Database connection is nil, nothing to close")
+		return
+	}
+
+	err := db.Close(ctx)
+	if err != nil {
+		fmt.Printf("%s. Failed to close", err.Error())
+	}
+
 }
