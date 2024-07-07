@@ -1,10 +1,9 @@
+vendor/
+tmp/
+.env
+
 *.exe
 *.exe~
 *.dll
 *.so
 *.dylib
-
-bin
-vendor
-tmp
-.env
