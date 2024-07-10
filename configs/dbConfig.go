@@ -1,13 +1,13 @@
 package configs
 
 import (
-	"context"
 	"fmt"
-	"github.com/jackc/pgx/v5"
+	"github.com/jmoiron/sqlx"
 	"os"
 )
 
 type PostgresConfig struct {
+	Driver   string
 	Host     string
 	User     string
 	Password string
@@ -18,6 +18,7 @@ type PostgresConfig struct {
 
 func GetDbConfig() PostgresConfig {
 	return PostgresConfig{
+		Driver:   "postgres",
 		Host:     os.Getenv("HOST"),
 		User:     os.Getenv("POSTGRES_USER"),
 		Password: os.Getenv("POSTGRES_PASSWORD"),
@@ -31,9 +32,9 @@ func (cfg PostgresConfig) String() string {
 	return fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=%s", cfg.Host, cfg.Port, cfg.User, cfg.Password, cfg.DbName, cfg.SslMode)
 }
 
-func ConnectToDb() (db *pgx.Conn, err error) {
-	confString := GetDbConfig().String()
-	db, err = pgx.Connect(context.Background(), confString)
+func ConnectToDb() (db *sqlx.DB, err error) {
+	config := GetDbConfig()
+	db, err = sqlx.Connect(config.Driver, config.String())
 
 	if err != nil {
 		return nil, fmt.Errorf(fmt.Sprintf("%s. Failed conntect to DB", err.Error()))
@@ -42,13 +43,13 @@ func ConnectToDb() (db *pgx.Conn, err error) {
 	return db, nil
 }
 
-func CloseConnectionToDb(db *pgx.Conn, ctx context.Context) {
+func CloseConnectionToDb(db *sqlx.DB) {
 	if db == nil {
 		fmt.Println("Database connection is nil, nothing to close")
 		return
 	}
 
-	err := db.Close(ctx)
+	err := db.Close()
 	if err != nil {
 		fmt.Printf("%s. Failed to close", err.Error())
 	}
