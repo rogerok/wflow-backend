@@ -1,10 +1,10 @@
 package main
 
 import (
-	"context"
 	"fmt"
 	"github.com/gofiber/fiber/v2"
 	"github.com/joho/godotenv"
+	_ "github.com/lib/pq"
 	"github.com/rogerok/wflow-backend/configs"
 	"github.com/rogerok/wflow-backend/router"
 	"os"
@@ -25,7 +25,7 @@ func main() {
 		return
 	}
 
-	defer configs.CloseConnectionToDb(db, context.Background())
+	defer configs.CloseConnectionToDb(db)
 
 	app := fiber.New()
 	router.SetupRouter(app)
