@@ -1,5 +1,8 @@
 include .env
 
+air:
+	air
+
 build:
 	@go build -o bin/api
 
