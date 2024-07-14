@@ -5,6 +5,9 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/rogerok/wflow-backend/configs"
+	"github.com/rogerok/wflow-backend/handlers"
+	"github.com/rogerok/wflow-backend/repositories"
+	"github.com/rogerok/wflow-backend/services"
 )
 
 func SetupRouter(app *fiber.App) {
@@ -19,7 +22,12 @@ func SetupRouter(app *fiber.App) {
 
 	app.Use(logger.New())
 
-	//apiv1 := app.Group("/api")
-	//apiv1.Get("/user", handlers.HandleGetUsers)
-	//apiv1.Get("/user/:id", handlers.HandleGetUser)
+	api := app.Group("/api")
+
+	user := api.Group("/user")
+	userRepo := repositories.NewUserRepository(db)
+	userService := services.NewUserService(userRepo)
+	user.Get("/user", handlers.UsersList(userService))
+
+	//api.Get("/user/:id", handlers.UserHandler.)
 }
