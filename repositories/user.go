@@ -7,6 +7,7 @@ import (
 
 type UserRepository interface {
 	UsersList(page int, perPage int) ([]models.User, error)
+	UserById(id string) (user models.User, err error)
 }
 
 type userRepository struct {
@@ -25,4 +26,17 @@ func (r *userRepository) UsersList(page int, perPage int) (users []models.User, 
 	// err := r.db.Get(&user, query, userID)
 	// return &user, err
 	return nil, nil
+}
+
+func (r *userRepository) UserById(id string) (user models.User, err error) {
+	return models.User{
+		Age:          0,
+		CreatedAt:    "123",
+		Email:        "123",
+		FirstName:    "123",
+		LastName:     "123",
+		MiddleName:   "123",
+		TelegramName: "123",
+		UpdatedAt:    "123",
+	}, nil
 }

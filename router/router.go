@@ -27,7 +27,7 @@ func SetupRouter(app *fiber.App) {
 	user := api.Group("/user")
 	userRepo := repositories.NewUserRepository(db)
 	userService := services.NewUserService(userRepo)
-	user.Get("/user", handlers.UsersList(userService))
+	user.Get("/", handlers.UsersList(userService))
+	user.Get("/:id", handlers.UserById(userService))
 
-	//api.Get("/user/:id", handlers.UserHandler.)
 }
