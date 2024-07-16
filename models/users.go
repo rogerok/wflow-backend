@@ -8,6 +8,6 @@ type User struct {
 	Id           string `json:"id"`
 	LastName     string `json:"last_name"`
 	MiddleName   string `json:"middle_name"`
-	TelegramName string `json:"telegram)Name"`
+	TelegramName string `json:"telegram_Name"`
 	UpdatedAt    string `json:"updated_at"`
 }
