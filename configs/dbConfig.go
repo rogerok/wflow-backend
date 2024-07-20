@@ -16,8 +16,8 @@ type PostgresConfig struct {
 	SslMode  string
 }
 
-func GetDbConfig() PostgresConfig {
-	return PostgresConfig{
+func GetDbConfig() *PostgresConfig {
+	return &PostgresConfig{
 		Driver:   "postgres",
 		Host:     os.Getenv("HOST"),
 		User:     os.Getenv("POSTGRES_USER"),

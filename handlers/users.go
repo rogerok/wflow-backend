@@ -14,3 +14,13 @@ func UsersList(s services.UserService) fiber.Handler {
 		return ctx.Status(fiber.StatusOK).JSON(users)
 	}
 }
+
+func UserById(s services.UserService) fiber.Handler {
+	return func(ctx *fiber.Ctx) error {
+		user, err := s.UserById(ctx.Params("id"))
+		if err != nil {
+			return err
+		}
+		return ctx.Status(fiber.StatusOK).JSON(user)
+	}
+}
