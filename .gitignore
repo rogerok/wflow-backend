@@ -1,6 +1,7 @@
 vendor/
 tmp/
 .env
+bin
 
 *.exe
 *.exe~
