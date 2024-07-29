@@ -1,0 +1,9 @@
+basePath: /api
+host: 127.0.0.1:5000
+info:
+  contact: {}
+  description: Word-Flow API docs
+  title: Word-Flow app API
+  version: "1.0"
+paths: {}
+swagger: "2.0"

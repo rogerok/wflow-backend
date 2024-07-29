@@ -4,21 +4,22 @@ import (
 	"fmt"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/logger"
+	"github.com/jmoiron/sqlx"
 	"github.com/rogerok/wflow-backend/configs"
 	"github.com/rogerok/wflow-backend/handlers"
 	"github.com/rogerok/wflow-backend/repositories"
 	"github.com/rogerok/wflow-backend/services"
 )
 
-func SetupRouter(app *fiber.App) {
+func SetupRouter(app *fiber.App) (*sqlx.DB, error) {
 	db, dbError := configs.ConnectToDb()
 
 	if dbError != nil {
 		fmt.Printf("Could connect to database %s=", dbError.Error())
-		return
+		return nil, dbError
 	}
 
-	defer configs.CloseConnectionToDb(db)
+	//defer configs.CloseConnectionToDb(db)
 
 	app.Use(logger.New())
 
@@ -29,5 +30,7 @@ func SetupRouter(app *fiber.App) {
 	userService := services.NewUserService(userRepo)
 	user.Get("/", handlers.UsersList(userService))
 	user.Get("/:id", handlers.UserById(userService))
+
+	return db, nil
 
 }

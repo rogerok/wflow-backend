@@ -7,7 +7,7 @@ import (
 
 type UserService interface {
 	UsersList(page int, perPage int) (users []models.User, err error)
-	UserById(id string) (user models.User, err error)
+	UserById(id string) (user *models.User, err error)
 }
 
 type userService struct {
@@ -28,7 +28,7 @@ func (s *userService) UsersList(page int, perPage int) (users []models.User, err
 
 }
 
-func (s *userService) UserById(id string) (user models.User, err error) {
+func (s *userService) UserById(id string) (user *models.User, err error) {
 	user, err = s.r.UserById(id)
 	return user, err
 }
