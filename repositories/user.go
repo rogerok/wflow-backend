@@ -30,9 +30,21 @@ func (r *userRepository) UsersList(page int, perPage int) (users []models.User, 
 
 func (r *userRepository) UserById(id string) (user *models.User, err error) {
 
+	//user = &models.User{}
+	//
+	//err = r.db.Get(user, "SELECT * FROM users WHERE id = $1", id)
+	//
+	//
+	//
+	//if err != nil {
+	//	return nil, err
+	//}
+	//
+	//return user, nil
+
 	user = &models.User{}
 
-	err = r.db.Get(user, "SELECT * FROM users WHERE id=$1", id)
+	err = r.db.Get(user, "SELECT * FROM users WHERE id = $1", id)
 
 	if err != nil {
 		return nil, err

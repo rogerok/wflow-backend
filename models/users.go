@@ -1,19 +1,18 @@
 package models
 
 import (
-	"database/sql"
 	"github.com/google/uuid"
 	"time"
 )
 
 type User struct {
-	Age          int            `json:"age"`
-	CreatedAt    time.Time      `json:"created_at"`
-	Email        string         `json:"email"`
-	FirstName    string         `json:"first_name"`
-	Id           uuid.UUID      `json:"id"`
-	LastName     sql.NullString `json:"last_name"`
-	MiddleName   sql.NullString `json:"middle_name"`
-	TelegramName sql.NullString `json:"telegram_name"`
-	UpdatedAt    time.Time      `json:"updated_at"`
+	ID           uuid.UUID `json:"id" db:"id"`
+	Email        string    `json:"email" db:"email"`
+	CreatedAt    time.Time `json:"created_at" db:"created_at"`
+	UpdatedAt    time.Time `json:"updated_at" db:"updated_at"`
+	TelegramName *string   `json:"telegramName" db:"telegram_name"`
+	FirstName    string    `json:"firstName" db:"first_name"`
+	LastName     *string   `json:"lastName" db:"last_name"`
+	MiddleName   *string   `json:"middleName" db:"middle_name"`
+	Age          *int      `json:"age" db:"age"`
 }

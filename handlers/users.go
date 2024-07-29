@@ -1,8 +1,10 @@
 package handlers
 
 import (
+	"errors"
 	"github.com/gofiber/fiber/v2"
 	"github.com/rogerok/wflow-backend/services"
+	"github.com/rogerok/wflow-backend/utils"
 )
 
 // UsersList godoc
@@ -33,10 +35,16 @@ func UsersList(s services.UserService) fiber.Handler {
 // @Router /user/{id} [get]
 func UserById(s services.UserService) fiber.Handler {
 	return func(ctx *fiber.Ctx) error {
+		id := ctx.Params("id")
 
-		user, err := s.UserById(ctx.Params("id"))
+		if id == "" {
+			return utils.GetResponseError(ctx, fiber.StatusBadRequest, errors.New("invalid id"))
+		}
+
+		user, err := s.UserById(id)
 
 		if err != nil {
+
 			return err
 		}
 
