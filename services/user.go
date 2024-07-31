@@ -6,7 +6,7 @@ import (
 )
 
 type UserService interface {
-	UsersList(page int, perPage int) (users []models.User, err error)
+	UsersList(page int, perPage int) (users *[]models.User, err error)
 	UserById(id string) (user *models.User, err error)
 }
 
@@ -20,7 +20,7 @@ func NewUserService(repository repositories.UserRepository) UserService {
 	}
 }
 
-func (s *userService) UsersList(page int, perPage int) (users []models.User, err error) {
+func (s *userService) UsersList(page int, perPage int) (users *[]models.User, err error) {
 
 	users, err = s.r.UsersList(page, perPage)
 
