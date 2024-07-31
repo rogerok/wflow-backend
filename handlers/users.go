@@ -14,7 +14,6 @@ import (
 // @Produce json
 // @Success 200 {object} []models.User
 // @Router /user [get]
-
 func UsersList(s services.UserService) fiber.Handler {
 	return func(ctx *fiber.Ctx) error {
 		users, err := s.UsersList(1, 10)
