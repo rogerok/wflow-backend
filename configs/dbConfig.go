@@ -49,9 +49,4 @@ func CloseConnectionToDb(db *sqlx.DB) {
 		return
 	}
 
-	err := db.Close()
-	if err != nil {
-		fmt.Printf("%s. Failed to close", err.Error())
-	}
-
 }

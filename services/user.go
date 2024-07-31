@@ -6,8 +6,8 @@ import (
 )
 
 type UserService interface {
-	UsersList(page int, perPage int) (users []models.User, err error)
-	UserById(id string) (user models.User, err error)
+	UsersList(page int, perPage int) (users *[]models.User, err error)
+	UserById(id string) (user *models.User, err error)
 }
 
 type userService struct {
@@ -20,7 +20,7 @@ func NewUserService(repository repositories.UserRepository) UserService {
 	}
 }
 
-func (s *userService) UsersList(page int, perPage int) (users []models.User, err error) {
+func (s *userService) UsersList(page int, perPage int) (users *[]models.User, err error) {
 
 	users, err = s.r.UsersList(page, perPage)
 
@@ -28,7 +28,7 @@ func (s *userService) UsersList(page int, perPage int) (users []models.User, err
 
 }
 
-func (s *userService) UserById(id string) (user models.User, err error) {
+func (s *userService) UserById(id string) (user *models.User, err error) {
 	user, err = s.r.UserById(id)
 	return user, err
 }
