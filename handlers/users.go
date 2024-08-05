@@ -50,3 +50,24 @@ func UserById(s services.UserService) fiber.Handler {
 		return ctx.Status(fiber.StatusOK).JSON(user)
 	}
 }
+
+// CreateUser godoc
+// @Summary Create User
+// @Description Create User
+// @Tags User
+// @Param request body models.User true "body"
+// @Produce json
+// @Success 200 {object} responses.CreateResponse
+// @Router /user [post]
+func CreateUser(s services.UserService) fiber.Handler {
+
+	resp := struct {
+		ID string `json:"id"`
+	}{
+		ID: " ",
+	}
+
+	return func(ctx *fiber.Ctx) error {
+		return ctx.Status(fiber.StatusOK).JSON(resp)
+	}
+}

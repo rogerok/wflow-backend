@@ -21,6 +21,11 @@ definitions:
       updated_at:
         type: string
     type: object
+  responses.CreateResponse:
+    properties:
+      id:
+        type: string
+    type: object
 host: 127.0.0.1:5000
 info:
   contact: {}
@@ -41,6 +46,25 @@ paths:
               $ref: '#/definitions/models.User'
             type: array
       summary: Get users list
+      tags:
+      - User
+    post:
+      description: Create User
+      parameters:
+      - description: body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.User'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/responses.CreateResponse'
+      summary: Create User
       tags:
       - User
   /user/{id}:

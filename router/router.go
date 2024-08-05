@@ -30,6 +30,7 @@ func SetupRouter(app *fiber.App) (*sqlx.DB, error) {
 	userService := services.NewUserService(userRepo)
 	user.Get("/", handlers.UsersList(userService))
 	user.Get("/:id", handlers.UserById(userService))
+	user.Post("/", handlers.CreateUser(userService))
 
 	return db, nil
 
