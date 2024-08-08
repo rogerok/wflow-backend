@@ -20,5 +20,7 @@ dbseq:
 	migrate create -ext sql -dir database/migrations -seq $(name)
 
 
-migrate:
+migrate-up:
 	migrate -path database/migrations/ -database "postgresql://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@localhost:5432/$(POSTGRES_DB_NAME)?sslmode=disable" -verbose up
+migrate-down:
+	migrate -path database/migrations/ -database "postgresql://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@localhost:5432/$(POSTGRES_DB_NAME)?sslmode=disable" -verbose down

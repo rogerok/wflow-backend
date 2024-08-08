@@ -8,7 +8,7 @@ import (
 type UserService interface {
 	UsersList(page int, perPage int) (users *[]models.User, err error)
 	UserById(id string) (user *models.User, err error)
-	CreateUser(user models.User) (id string, err error)
+	CreateUser(user *models.User) (id string, err error)
 }
 
 type userService struct {
@@ -34,7 +34,7 @@ func (s *userService) UserById(id string) (user *models.User, err error) {
 	return user, err
 }
 
-func (s *userService) CreateUser(user models.User) (id string, err error) {
+func (s *userService) CreateUser(user *models.User) (id string, err error) {
 
 	return "", nil
 }

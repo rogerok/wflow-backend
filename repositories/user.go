@@ -11,7 +11,7 @@ import (
 type UserRepository interface {
 	UsersList(page int, perPage int) (user *[]models.User, err error)
 	UserById(id string) (user *models.User, err error)
-	CreateUser(user models.User) (id string, err error)
+	CreateUser(user *models.User) (id string, err error)
 }
 
 type userRepository struct {
@@ -52,6 +52,6 @@ func (r *userRepository) UserById(id string) (user *models.User, err error) {
 	return user, nil
 }
 
-func (r *userRepository) CreateUser(user models.User) (id string, err error) {
+func (r *userRepository) CreateUser(user *models.User) (id string, err error) {
 	return "", nil
 }
