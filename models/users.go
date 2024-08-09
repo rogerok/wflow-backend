@@ -1,6 +1,8 @@
 package models
 
 import (
+	"database/sql/driver"
+	"encoding/json"
 	"github.com/google/uuid"
 	"time"
 )
@@ -18,13 +20,30 @@ type Social struct {
 }
 
 type User struct {
-	CreatedAt   time.Time `json:"-" db:"created_at"`
-	Email       string    `json:"email" db:"email"`
-	FirstName   string    `json:"firstName" db:"first_name"`
-	ID          uuid.UUID `json:"id" db:"id"`
-	LastName    *string   `json:"lastName" db:"last_name"`
-	MiddleName  *string   `json:"middleName" db:"middle_name"`
-	Pseudonym   Pseudonym `json:"pseudonym" db:"-"`
-	SocialLinks Social    `json:"socialLinks" db:"-"`
-	UpdatedAt   time.Time `json:"-" db:"updated_at"`
+	CreatedAt   time.Time  `json:"-" db:"created_at"`
+	Email       string     `json:"email" db:"email"`
+	FirstName   string     `json:"firstName" db:"first_name"`
+	ID          uuid.UUID  `json:"id" db:"id"`
+	LastName    *string    `json:"lastName" db:"last_name"`
+	MiddleName  *string    `json:"middleName" db:"middle_name"`
+	Pseudonym   Pseudonym  `json:"pseudonym" db:"pseudonym"`
+	SocialLinks Social     `json:"socialLinks" db:"socialLinks"`
+	UpdatedAt   time.Time  `json:"-" db:"updated_at"`
+	BornDate    *time.Time `json:"bornDate" db:"born_date"`
+}
+
+func (s *Social) Scan(value interface{}) error {
+	return json.Unmarshal(value.([]byte), &s)
+}
+
+func (p *Pseudonym) Scan(value interface{}) error {
+	return json.Unmarshal(value.([]byte), &p)
+}
+
+func (p *Pseudonym) Value() (driver.Value, error) {
+	return json.Marshal(p)
+}
+
+func (s *Social) Value() (driver.Value, error) {
+	return json.Marshal(s)
 }

@@ -26,7 +26,21 @@ func (r *userRepository) UsersList(page int, perPage int) (users *[]models.User,
 
 	users = &[]models.User{}
 
-	err = r.db.Select(users, "SELECT * FROM USERS")
+	query := `
+			SELECT id, email, created_at, updated_at, first_name, last_name, middle_name, born_date, 
+				json_build_object(
+					'firstName', pseudonym_first_name,
+					'lastName', pseudonym_last_name
+				) AS pseudonym,
+				json_build_object(
+					'instagram', social_instagram,
+					'telegram', social_telegram,
+					'tiktok', social_tiktok,
+					'vk', social_vk
+				) AS "socialLinks"
+			FROM users`
+
+	err = r.db.Select(users, query)
 
 	if err != nil {
 		return nil, fmt.Errorf(err.Error())
