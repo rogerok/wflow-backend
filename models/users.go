@@ -26,6 +26,7 @@ type User struct {
 	ID          uuid.UUID  `json:"id" db:"id"`
 	LastName    *string    `json:"lastName" db:"last_name"`
 	MiddleName  *string    `json:"middleName" db:"middle_name"`
+	Password    string     `json:"-" db:"password"`
 	Pseudonym   Pseudonym  `json:"pseudonym" db:"pseudonym"`
 	SocialLinks Social     `json:"socialLinks" db:"socialLinks"`
 	UpdatedAt   time.Time  `json:"-" db:"updated_at"`
