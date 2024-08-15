@@ -3,6 +3,7 @@ package forms
 import (
 	"fmt"
 	"github.com/go-playground/validator/v10"
+	"github.com/rogerok/wflow-backend/errors"
 	"regexp"
 	"strings"
 	"time"
@@ -20,18 +21,18 @@ type Social struct {
 	Vk        *string `json:"vk" validate:"omitempty,url"`
 }
 
-type User struct {
-	Email       string     `json:"email" validate:"required,email,max=255"`
-	FirstName   string     `json:"firstName" validate:"omitempty,min=2,max=50"`
-	LastName    *string    `json:"lastName" validate:"omitempty,min=2,max=50"`
-	MiddleName  *string    `json:"middleName" validate:"omitempty,min=2,max=50"`
-	Password    string     `json:"-" validate:"required,min=8,max=255"`
-	Pseudonym   Pseudonym  `json:"pseudonym" validate:"dive"`
-	SocialLinks Social     `json:"socialLinks" validate:"dive"`
-	BornDate    *time.Time `json:"bornDate" db:"omitempty,datetime=2006-01-02"`
+type UserCreateForm struct {
+	Email      string  `json:"email" validate:"required,email,max=255"`
+	FirstName  string  `json:"firstName" validate:"omitempty,min=2,max=50"`
+	LastName   *string `json:"lastName" validate:"omitempty,min=2,max=50"`
+	MiddleName *string `json:"middleName" validate:"omitempty,min=2,max=50"`
+	Password   string  `json:"-" validate:"required,min=8,max=255,passwordValidator"`
+	//Pseudonym   Pseudonym  `json:"pseudonym" validate:"dive"`
+	//SocialLinks Social     `json:"socialLinks" validate:"dive"`
+	BornDate *time.Time `json:"bornDate" db:"omitempty,datetime=2006-01-02"`
 }
 
-func PasswordValidator(fl validator.FieldLevel) (check bool) {
+func passwordValidator(fl validator.FieldLevel) (check bool) {
 	checks := []string{
 		"[0-9]", // Checks for at least one digit
 		"[a-z]", // Checks for at least one lowercase letter
@@ -39,14 +40,38 @@ func PasswordValidator(fl validator.FieldLevel) (check bool) {
 		"[!@#$%^&*()\\-\\+}{'\";:.,></\\?\\|_=`~]", // Checks for at least one special character
 	}
 
-	checks = append(checks, fmt.Sprintf(`^(%s)+$`), strings.Join(checks, "|"))
+	pattern := fmt.Sprintf(`^(%s)+$`, strings.Join(checks, "|"))
+
+	checks = append(checks, pattern)
 
 	for _, c := range checks {
 		if check = regexp.MustCompile(c).MatchString(fl.Field().String()); !check {
-			return
+			return false
 		}
 	}
 
 	return true
 
+}
+
+func passwordErrorFunc(err validator.FieldError) error {
+	return errors.PasswordValidationError(err.Namespace())
+}
+
+func registerValidator(v *validator.Validate) {
+	v.RegisterValidation("passwordValidator", passwordValidator)
+}
+
+func (uf *UserCreateForm) Validate() (err error) {
+	v := validator.New()
+
+	registerValidator(v)
+
+	errValidation := v.Struct(uf)
+
+	if errValidation != nil {
+		return errValidation
+	}
+
+	return nil
 }

@@ -1,6 +1,7 @@
 package services
 
 import (
+	"github.com/rogerok/wflow-backend/forms"
 	"github.com/rogerok/wflow-backend/models"
 	"github.com/rogerok/wflow-backend/repositories"
 )
@@ -8,7 +9,7 @@ import (
 type UserService interface {
 	UsersList(page int, perPage int) (users *[]models.User, err error)
 	UserById(id string) (user *models.User, err error)
-	CreateUser(user *models.User) (id string, err error)
+	CreateUser(user *forms.UserCreateForm) (id *string, err error)
 }
 
 type userService struct {
@@ -34,7 +35,11 @@ func (s *userService) UserById(id string) (user *models.User, err error) {
 	return user, err
 }
 
-func (s *userService) CreateUser(user *models.User) (id string, err error) {
+func (s *userService) CreateUser(user *forms.UserCreateForm) (id *string, err error) {
+	if err := user.Validate(); err != nil {
+		return nil, err
+	}
+	userId := "123"
 
-	return "", nil
+	return &userId, nil
 }

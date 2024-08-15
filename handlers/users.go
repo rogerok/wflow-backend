@@ -3,6 +3,7 @@ package handlers
 import (
 	"errors"
 	"github.com/gofiber/fiber/v2"
+	"github.com/rogerok/wflow-backend/forms"
 	"github.com/rogerok/wflow-backend/services"
 	"github.com/rogerok/wflow-backend/utils"
 )
@@ -61,13 +62,19 @@ func UserById(s services.UserService) fiber.Handler {
 // @Router /user [post]
 func CreateUser(s services.UserService) fiber.Handler {
 
-	resp := struct {
-		ID string `json:"id"`
-	}{
-		ID: " ",
-	}
-
 	return func(ctx *fiber.Ctx) error {
-		return ctx.Status(fiber.StatusOK).JSON(resp)
+		formData := new(forms.UserCreateForm)
+
+		if err := ctx.BodyParser(formData); err != nil {
+			return utils.GetResponseError(ctx, fiber.StatusBadRequest, err)
+		}
+
+		id, err := s.CreateUser(formData)
+
+		if err != nil {
+			return err
+		}
+
+		return utils.GetResponseCreate(ctx, id)
 	}
 }
