@@ -39,6 +39,7 @@ func (s *userService) CreateUser(user *forms.UserCreateForm) (id *string, err er
 	if err := user.Validate(); err != nil {
 		return nil, err
 	}
+
 	userId := "123"
 
 	return &userId, nil

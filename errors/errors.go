@@ -1,21 +1,40 @@
 package errors
 
-import "fmt"
+import (
+	"fmt"
+	"github.com/go-playground/validator/v10"
+)
+
+type ErrorMap map[string]string
 
 type CustomError struct {
-	Code    string
-	Message string
-	Field   string
+	StatusCode int
+	Message    string
 }
 
 func (e *CustomError) Error() string {
-	return fmt.Sprintf("%s: %s: %s", e.Code, e.Message, e.Field)
+	return fmt.Sprintf("%s: %s", e.StatusCode, e.Message)
 }
 
-func New(code, message, field string) *CustomError {
+func New(code int, message string) *CustomError {
 	return &CustomError{
-		Code:    code,
-		Message: message,
-		Field:   field,
+		StatusCode: code,
+		Message:    message,
 	}
+}
+
+//func (e *CustomError) Error() ErrorMap {
+//	errMsg := make(ErrorMap)
+//	errMsg[e.Field] = e.Message
+//	return errMsg
+//}
+
+func (v ErrorMap) AddError(field, message string) {
+	v[field] = message
+}
+
+func GetErrorsMap(v *validator.ValidationErrors) ErrorMap {
+	var validationErrors ErrorMap
+
+	return validationErrors
 }

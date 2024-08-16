@@ -3,7 +3,6 @@ package forms
 import (
 	"fmt"
 	"github.com/go-playground/validator/v10"
-	"github.com/rogerok/wflow-backend/errors"
 	"regexp"
 	"strings"
 	"time"
@@ -22,14 +21,14 @@ type Social struct {
 }
 
 type UserCreateForm struct {
-	Email      string  `json:"email" validate:"required,email,max=255"`
-	FirstName  string  `json:"firstName" validate:"omitempty,min=2,max=50"`
-	LastName   *string `json:"lastName" validate:"omitempty,min=2,max=50"`
-	MiddleName *string `json:"middleName" validate:"omitempty,min=2,max=50"`
-	Password   string  `json:"-" validate:"required,min=8,max=255,passwordValidator"`
-	//Pseudonym   Pseudonym  `json:"pseudonym" validate:"dive"`
-	//SocialLinks Social     `json:"socialLinks" validate:"dive"`
-	BornDate *time.Time `json:"bornDate" db:"omitempty,datetime=2006-01-02"`
+	Email       string     `json:"email" validate:"required,email,max=255"`
+	FirstName   string     `json:"firstName" validate:"required,min=2,max=50"`
+	LastName    *string    `json:"lastName" validate:"omitempty,min=2,max=50"`
+	MiddleName  *string    `json:"middleName" validate:"omitempty,min=2,max=50"`
+	Password    string     `json:"-" validate:"required,min=8,max=255,passwordValidator"`
+	Pseudonym   Pseudonym  `json:"pseudonym" validate:"required"`
+	SocialLinks Social     `json:"socialLinks" validate:"required"`
+	BornDate    *time.Time `json:"bornDate" db:"omitempty,datetime=2006-01-02"`
 }
 
 func passwordValidator(fl validator.FieldLevel) (check bool) {
@@ -54,9 +53,9 @@ func passwordValidator(fl validator.FieldLevel) (check bool) {
 
 }
 
-func passwordErrorFunc(err validator.FieldError) error {
-	return errors.PasswordValidationError(err.Namespace())
-}
+//func passwordErrorFunc(err validator.FieldError) error {
+//	return errors.PasswordValidationError(err.Namespace())
+//}
 
 func registerValidator(v *validator.Validate) {
 	v.RegisterValidation("passwordValidator", passwordValidator)
@@ -65,13 +64,22 @@ func registerValidator(v *validator.Validate) {
 func (uf *UserCreateForm) Validate() (err error) {
 	v := validator.New()
 
+	//errMap := errors.ErrorMap{}
+
 	registerValidator(v)
 
-	errValidation := v.Struct(uf)
+	//errValidation := v.Struct(uf)
 
-	if errValidation != nil {
-		return errValidation
-	}
+	//if errValidation != nil {
+	//	var validationErrs validator.ValidationErrors
+	//	if errors.Error().As(err, &validationErrs) {
+	//		// Iterate over each field error
+	//		for _, fieldErr := range validationErrs {
+	//			fmt.Printf("Field: %s, Error: %s\n", fieldErr.Field(), fieldErr.Error())
+	//		}
+	//	}
+	//
+	//	return nil
 
-	return nil
+	return err
 }

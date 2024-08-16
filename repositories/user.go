@@ -1,10 +1,9 @@
 package repositories
 
 import (
-	"database/sql"
-	"errors"
 	"fmt"
 	"github.com/jmoiron/sqlx"
+	"github.com/rogerok/wflow-backend/errors"
 	"github.com/rogerok/wflow-backend/models"
 )
 
@@ -53,11 +52,25 @@ func (r *userRepository) UserById(id string) (user *models.User, err error) {
 
 	user = &models.User{}
 
-	err = r.db.Get(user, "SELECT * FROM users WHERE id = $1", id)
+	query := `
+			SELECT id, email, created_at, updated_at, first_name, last_name, middle_name, born_date, password,
+				json_build_object(
+					'firstName', pseudonym_first_name,
+					'lastName', pseudonym_last_name
+				) AS pseudonym,
+				json_build_object(
+					'instagram', social_instagram,
+					'telegram', social_telegram,
+					'tiktok', social_tiktok,
+					'vk', social_vk
+				) AS "socialLinks"
+			FROM users WHERE id=$1`
+
+	err = r.db.Get(user, query, id)
 
 	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return nil, fmt.Errorf("user %s not found %w", id, err)
+		if notFoundError := errors.CheckNotFoundError(err, "User"); notFoundError != nil {
+			return nil, notFoundError
 		} else {
 			return nil, fmt.Errorf(err.Error())
 		}
