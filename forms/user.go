@@ -1,10 +1,8 @@
 package forms
 
 import (
-	"fmt"
 	"github.com/go-playground/validator/v10"
 	"regexp"
-	"strings"
 	"time"
 )
 
@@ -25,26 +23,26 @@ type UserCreateForm struct {
 	FirstName   string     `json:"firstName" validate:"required,min=2,max=50"`
 	LastName    *string    `json:"lastName" validate:"omitempty,min=2,max=50"`
 	MiddleName  *string    `json:"middleName" validate:"omitempty,min=2,max=50"`
-	Password    string     `json:"-" validate:"required,min=8,max=255,passwordValidator"`
+	Password    string     `json:"password" validate:"required,min=8,max=255,passwordValidator"`
 	Pseudonym   Pseudonym  `json:"pseudonym" validate:"required"`
 	SocialLinks Social     `json:"socialLinks" validate:"required"`
 	BornDate    *time.Time `json:"bornDate" db:"omitempty,datetime=2006-01-02"`
 }
 
 func passwordValidator(fl validator.FieldLevel) (check bool) {
-	checks := []string{
-		"[0-9]", // Checks for at least one digit
-		"[a-z]", // Checks for at least one lowercase letter
-		"[A-Z]", // Checks for at least one uppercase letter
-		"[!@#$%^&*()\\-\\+}{'\";:.,></\\?\\|_=`~]", // Checks for at least one special character
+
+	patterns := []string{
+		`[0-9]`,                          // At least one digit
+		`[a-z]`,                          // At least one lowercase letter
+		`[A-Z]`,                          // At least one uppercase letter
+		`[!@#$%^&*()\-+}{'"[:;>.?/_~\|]`, // At least one special character
 	}
 
-	pattern := fmt.Sprintf(`^(%s)+$`, strings.Join(checks, "|"))
+	password := fl.Field().String()
 
-	checks = append(checks, pattern)
-
-	for _, c := range checks {
-		if check = regexp.MustCompile(c).MatchString(fl.Field().String()); !check {
+	for _, pattern := range patterns {
+		match, _ := regexp.MatchString(pattern, password)
+		if !match {
 			return false
 		}
 	}
@@ -53,33 +51,14 @@ func passwordValidator(fl validator.FieldLevel) (check bool) {
 
 }
 
-//func passwordErrorFunc(err validator.FieldError) error {
-//	return errors.PasswordValidationError(err.Namespace())
-//}
+func (uf *UserCreateForm) Validate() error {
+	v := GetValidator()
 
-func registerValidator(v *validator.Validate) {
 	v.RegisterValidation("passwordValidator", passwordValidator)
-}
 
-func (uf *UserCreateForm) Validate() (err error) {
-	v := validator.New()
+	if err := v.Struct(uf); err != nil {
+		return FormatValidationError(err)
+	}
 
-	//errMap := errors.ErrorMap{}
-
-	registerValidator(v)
-
-	//errValidation := v.Struct(uf)
-
-	//if errValidation != nil {
-	//	var validationErrs validator.ValidationErrors
-	//	if errors.Error().As(err, &validationErrs) {
-	//		// Iterate over each field error
-	//		for _, fieldErr := range validationErrs {
-	//			fmt.Printf("Field: %s, Error: %s\n", fieldErr.Field(), fieldErr.Error())
-	//		}
-	//	}
-	//
-	//	return nil
-
-	return err
+	return nil
 }

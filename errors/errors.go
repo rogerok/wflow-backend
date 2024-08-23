@@ -2,18 +2,21 @@ package errors
 
 import (
 	"fmt"
-	"github.com/go-playground/validator/v10"
 )
 
 type ErrorMap map[string]string
 
+//var ValidationErrorMessages = ErrorMap{
+//	"passwordValidator": "Пароль должен содержать только латинские буквы, цифры и спец символы. Должны быть минимум 1 строчная, 1 заглавная, 1 цифра и 1 один спецсимвол",
+//}
+
 type CustomError struct {
-	StatusCode int
-	Message    string
+	StatusCode int    `json:"statusCode"`
+	Message    string `json:"message"`
 }
 
 func (e *CustomError) Error() string {
-	return fmt.Sprintf("%s: %s", e.StatusCode, e.Message)
+	return fmt.Sprintf("%d: %s", e.StatusCode, e.Message)
 }
 
 func New(code int, message string) *CustomError {
@@ -21,20 +24,4 @@ func New(code int, message string) *CustomError {
 		StatusCode: code,
 		Message:    message,
 	}
-}
-
-//func (e *CustomError) Error() ErrorMap {
-//	errMsg := make(ErrorMap)
-//	errMsg[e.Field] = e.Message
-//	return errMsg
-//}
-
-func (v ErrorMap) AddError(field, message string) {
-	v[field] = message
-}
-
-func GetErrorsMap(v *validator.ValidationErrors) ErrorMap {
-	var validationErrors ErrorMap
-
-	return validationErrors
 }

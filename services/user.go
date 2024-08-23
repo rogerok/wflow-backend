@@ -1,6 +1,7 @@
 package services
 
 import (
+	"fmt"
 	"github.com/rogerok/wflow-backend/forms"
 	"github.com/rogerok/wflow-backend/models"
 	"github.com/rogerok/wflow-backend/repositories"
@@ -35,12 +36,17 @@ func (s *userService) UserById(id string) (user *models.User, err error) {
 	return user, err
 }
 
-func (s *userService) CreateUser(user *forms.UserCreateForm) (id *string, err error) {
-	if err := user.Validate(); err != nil {
+func (s *userService) CreateUser(user *forms.UserCreateForm) (*string, error) {
+
+	err := user.Validate()
+	if err != nil {
 		return nil, err
 	}
 
-	userId := "123"
+	userId := "12asdasdasdasdasdad3"
+	userIdPtr := &userId
 
-	return &userId, nil
+	fmt.Println("Debug: Created userId:", *userIdPtr)
+
+	return userIdPtr, nil
 }

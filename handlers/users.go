@@ -39,11 +39,6 @@ func UserById(s services.UserService) fiber.Handler {
 	return func(ctx *fiber.Ctx) error {
 		id := ctx.Params("id")
 
-		// TODO: it's smell
-		if id == "" {
-			return utils.GetResponseError(ctx, errors.New(fiber.StatusBadRequest, "Неверный id пользователя"))
-		}
-
 		user, err := s.UserById(id)
 
 		if err != nil {
@@ -71,10 +66,14 @@ func CreateUser(s services.UserService) fiber.Handler {
 			return utils.GetResponseError(ctx, errors.New(fiber.StatusBadRequest, err.Error()))
 		}
 
+		//if err := formData.Validate(); err != nil {
+		//	return utils.GetResponseError(ctx, errors.New(fiber.StatusBadRequest, err.Error()))
+		//}
+
 		id, err := s.CreateUser(formData)
 
 		if err != nil {
-			return err
+			return utils.GetResponseError(ctx, errors.New(fiber.StatusBadRequest, err.Error()))
 		}
 
 		return utils.GetResponseCreate(ctx, id)

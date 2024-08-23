@@ -8,6 +8,7 @@ import (
 	_ "github.com/lib/pq"
 	"github.com/rogerok/wflow-backend/configs"
 	_ "github.com/rogerok/wflow-backend/docs"
+	"github.com/rogerok/wflow-backend/forms"
 	"github.com/rogerok/wflow-backend/router"
 	"os"
 )
@@ -24,6 +25,8 @@ func main() {
 		fmt.Printf("Could not load environment %s", err.Error())
 		return
 	}
+
+	forms.InitTranslation()
 
 	app := fiber.New()
 
