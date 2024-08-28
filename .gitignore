@@ -2,6 +2,7 @@ vendor/
 tmp
 .env
 bin/
+wflow-backend
 
 *.exe
 *.exe~
