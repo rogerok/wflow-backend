@@ -53,7 +53,7 @@ func UserById(s services.UserService) fiber.Handler {
 // @Summary Create User
 // @Description Create User
 // @Tags User
-// @Param request body models.User true "body"
+// @Param request body forms.UserCreateForm true "body"
 // @Produce json
 // @Success 200 {object} responses.CreateResponse
 // @Router /user [post]
@@ -66,9 +66,9 @@ func CreateUser(s services.UserService) fiber.Handler {
 			return utils.GetResponseError(ctx, errors.New(fiber.StatusBadRequest, err.Error()))
 		}
 
-		//if err := formData.Validate(); err != nil {
-		//	return utils.GetResponseError(ctx, errors.New(fiber.StatusBadRequest, err.Error()))
-		//}
+		if err := formData.Validate(); err != nil {
+			return utils.GetResponseError(ctx, errors.New(fiber.StatusBadRequest, err.Error()))
+		}
 
 		id, err := s.CreateUser(formData)
 

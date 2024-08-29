@@ -1,7 +1,9 @@
 package forms
 
 import (
+	"fmt"
 	"github.com/go-playground/validator/v10"
+	"github.com/rogerok/wflow-backend/errors"
 	"regexp"
 	"time"
 )
@@ -54,7 +56,13 @@ func passwordValidator(fl validator.FieldLevel) (check bool) {
 func (uf *UserCreateForm) Validate() error {
 	v := GetValidator()
 
-	v.RegisterValidation("passwordValidator", passwordValidator)
+	err := v.RegisterValidation("passwordValidator", passwordValidator)
+
+	if err != nil {
+		return fmt.Errorf(err.Error())
+	}
+
+	RegisterTranslator("passwordValidator", errors.ErrInvalidPassword)
 
 	if err := v.Struct(uf); err != nil {
 		return FormatValidationError(err)

@@ -9,6 +9,8 @@ import (
 	"log"
 )
 
+type ErrorMap map[string]string
+
 var validate *validator.Validate = nil
 var trans ut.Translator
 
@@ -34,15 +36,36 @@ func GetValidator() *validator.Validate {
 func FormatValidationError(err error) error {
 	var errMsg string
 	for _, err := range err.(validator.ValidationErrors) {
-		//if customMsg, found := ValidationErrorMessages[err.Tag()]; found {
-		//	errMsg += fmt.Sprintf("%s;", customMsg)
-		//} else {
-		//	errMsg += fmt.Sprintf("%s %s;", err.Field(), err.Tag())
-		//}
 
 		errMsg += fmt.Sprintf("%s;", err.Translate(trans))
 
 	}
 
 	return fmt.Errorf(errMsg)
+}
+
+func registerTranslator(tag string, msg string) validator.RegisterTranslationsFunc {
+	return func(ut ut.Translator) error {
+		if err := trans.Add(tag, msg, false); err != nil {
+			return err
+		}
+		return nil
+	}
+}
+
+func translate(ut ut.Translator, fe validator.FieldError) string {
+	msg, err := ut.T(fe.Tag(), fe.Field(), fe.Param())
+
+	if err != nil {
+		return fe.Error()
+	}
+	return msg
+}
+
+func RegisterTranslator(tag string, msg string) {
+	err := validate.RegisterTranslation(tag, trans, registerTranslator(tag, msg), translate)
+
+	if err != nil {
+		return
+	}
 }

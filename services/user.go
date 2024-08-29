@@ -38,11 +38,6 @@ func (s *userService) UserById(id string) (user *models.User, err error) {
 
 func (s *userService) CreateUser(user *forms.UserCreateForm) (*string, error) {
 
-	err := user.Validate()
-	if err != nil {
-		return nil, err
-	}
-
 	userId := "12asdasdasdasdasdad3"
 	userIdPtr := &userId
 
