@@ -2,7 +2,7 @@ package handlers
 
 import (
 	"github.com/gofiber/fiber/v2"
-	"github.com/rogerok/wflow-backend/errors"
+	"github.com/rogerok/wflow-backend/errors_utils"
 	"github.com/rogerok/wflow-backend/forms"
 	"github.com/rogerok/wflow-backend/services"
 	"github.com/rogerok/wflow-backend/utils"
@@ -20,7 +20,7 @@ func UsersList(s services.UserService) fiber.Handler {
 		users, err := s.UsersList(1, 10)
 
 		if err != nil {
-			return utils.GetResponseError(ctx, errors.New(fiber.StatusBadRequest, err.Error()))
+			return utils.GetResponseError(ctx, errors_utils.New(fiber.StatusBadRequest, err.Error()))
 		}
 
 		return ctx.Status(fiber.StatusOK).JSON(users)
@@ -42,7 +42,7 @@ func UserById(s services.UserService) fiber.Handler {
 		user, err := s.UserById(id)
 
 		if err != nil {
-			return utils.GetResponseError(ctx, errors.New(fiber.StatusBadRequest, err.Error()))
+			return utils.GetResponseError(ctx, errors_utils.New(fiber.StatusBadRequest, err.Error()))
 		}
 
 		return ctx.Status(fiber.StatusOK).JSON(user)
@@ -63,17 +63,17 @@ func CreateUser(s services.UserService) fiber.Handler {
 		formData := new(forms.UserCreateForm)
 
 		if err := ctx.BodyParser(formData); err != nil {
-			return utils.GetResponseError(ctx, errors.New(fiber.StatusBadRequest, err.Error()))
+			return utils.GetResponseError(ctx, errors_utils.New(fiber.StatusBadRequest, err.Error()))
 		}
 
 		if err := formData.Validate(); err != nil {
-			return utils.GetResponseError(ctx, errors.New(fiber.StatusBadRequest, err.Error()))
+			return utils.GetResponseError(ctx, errors_utils.New(fiber.StatusBadRequest, err.Error()))
 		}
 
 		id, err := s.CreateUser(formData)
 
 		if err != nil {
-			return utils.GetResponseError(ctx, errors.New(fiber.StatusBadRequest, err.Error()))
+			return utils.GetResponseError(ctx, errors_utils.New(fiber.StatusBadRequest, err.Error()))
 		}
 
 		return utils.GetResponseCreate(ctx, id)

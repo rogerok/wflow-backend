@@ -3,7 +3,7 @@ package forms
 import (
 	"fmt"
 	"github.com/go-playground/validator/v10"
-	"github.com/rogerok/wflow-backend/errors"
+	"github.com/rogerok/wflow-backend/errors_utils"
 	"regexp"
 	"time"
 )
@@ -62,7 +62,7 @@ func (uf *UserCreateForm) Validate() error {
 		return fmt.Errorf(err.Error())
 	}
 
-	RegisterTranslator("passwordValidator", errors.ErrInvalidPassword)
+	RegisterTranslator("passwordValidator", errors_utils.ErrInvalidPassword)
 
 	if err := v.Struct(uf); err != nil {
 		return FormatValidationError(err)

@@ -3,7 +3,7 @@ package repositories
 import (
 	"fmt"
 	"github.com/jmoiron/sqlx"
-	"github.com/rogerok/wflow-backend/errors"
+	"github.com/rogerok/wflow-backend/errors_utils"
 	"github.com/rogerok/wflow-backend/models"
 )
 
@@ -11,6 +11,7 @@ type UserRepository interface {
 	UsersList(page int, perPage int) (user *[]models.User, err error)
 	UserById(id string) (user *models.User, err error)
 	//CreateUser(user *models.User) (id string, err error)
+	//CheckEmailExists(email string) (exists bool, err error)
 }
 
 type userRepository struct {
@@ -69,7 +70,7 @@ func (r *userRepository) UserById(id string) (user *models.User, err error) {
 	err = r.db.Get(user, query, id)
 
 	if err != nil {
-		if notFoundError := errors.CheckNotFoundError(err, "User"); notFoundError != nil {
+		if notFoundError := errors_utils.CheckNotFoundError(err, "User"); notFoundError != nil {
 			return nil, notFoundError
 		} else {
 			return nil, fmt.Errorf(err.Error())
@@ -83,3 +84,10 @@ func (r *userRepository) CreateUser(user *models.User) (id string, err error) {
 
 	return "232323", nil
 }
+
+//func (r *userRepository) CheckEmailExists(email string) (bool, error) {
+//	var email string;
+//
+//	err := r.db.Get(&email,
+//		"SELECT FROM USERS WHERE ")
+//}
