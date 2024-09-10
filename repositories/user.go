@@ -69,11 +69,7 @@ func (r *userRepository) UserById(id string) (user *models.User, err error) {
 	err = r.db.Get(user, query, id)
 
 	if err != nil {
-		if notFoundError := errors_utils.CheckNotFoundError(err, "User"); notFoundError != nil {
-			return nil, notFoundError
-		} else {
-			return nil, err
-		}
+		return nil, errors_utils.GetDBNotFoundError(err, "User")
 	}
 
 	return user, nil

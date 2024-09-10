@@ -61,19 +61,18 @@ func CreateUser(s services.UserService) fiber.Handler {
 
 	return func(ctx *fiber.Ctx) error {
 		formData := new(forms.UserCreateForm)
-
 		if err := ctx.BodyParser(formData); err != nil {
-			return utils.GetResponseError(ctx, errors_utils.New(fiber.StatusBadRequest, err.Error()))
+			return utils.GetBadRequestError(ctx, err)
 		}
 
 		if err := formData.Validate(); err != nil {
-			return utils.GetResponseError(ctx, errors_utils.New(fiber.StatusBadRequest, err.Error()))
+			return utils.GetBadRequestError(ctx, err)
 		}
 
 		id, err := s.CreateUser(formData)
 
 		if err != nil {
-			return utils.GetResponseError(ctx, errors_utils.New(fiber.StatusBadRequest, err.Error()))
+			return utils.GetBadRequestError(ctx, err)
 		}
 
 		return utils.GetResponseCreate(ctx, id)

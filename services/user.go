@@ -6,7 +6,7 @@ import (
 	"github.com/rogerok/wflow-backend/forms"
 	"github.com/rogerok/wflow-backend/models"
 	"github.com/rogerok/wflow-backend/repositories"
-	"golang.org/x/crypto/bcrypt"
+	"github.com/rogerok/wflow-backend/utils"
 )
 
 type UserService interface {
@@ -42,17 +42,17 @@ func (s *userService) CreateUser(user *forms.UserCreateForm) (*string, error) {
 	exists, err := s.r.CheckEmailExists(user.Email)
 
 	if err != nil {
-		return nil, err
+		return nil, errors_utils.CreateErrorMsg(err, errors_utils.ErrCheckingUnique, "email")
 	}
 
 	if exists {
 		return nil, fmt.Errorf("%s", errors_utils.ErrEmailAlreadyExists)
 	}
 
-	encryptedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+	encryptedPassword, err := utils.HashPassword(user.Password)
 
 	if err != nil {
-		return nil, err
+		return nil, errors_utils.CreateErrorMsg(err, errors_utils.ErrHashing)
 	}
 
 	userData := models.User{
