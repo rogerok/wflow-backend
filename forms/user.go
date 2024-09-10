@@ -1,7 +1,6 @@
 package forms
 
 import (
-	"fmt"
 	"github.com/go-playground/validator/v10"
 	"github.com/rogerok/wflow-backend/errors_utils"
 	"regexp"
@@ -59,7 +58,7 @@ func (uf *UserCreateForm) Validate() error {
 	err := v.RegisterValidation("passwordValidator", passwordValidator)
 
 	if err != nil {
-		return fmt.Errorf(err.Error())
+		return err
 	}
 
 	RegisterTranslator("passwordValidator", errors_utils.ErrInvalidPassword)

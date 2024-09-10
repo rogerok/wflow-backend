@@ -37,14 +37,14 @@ func (s *Social) Scan(value interface{}) error {
 	return json.Unmarshal(value.([]byte), &s)
 }
 
+func (s *Social) Value() (driver.Value, error) {
+	return json.Marshal(s)
+}
+
 func (p *Pseudonym) Scan(value interface{}) error {
 	return json.Unmarshal(value.([]byte), &p)
 }
 
 func (p *Pseudonym) Value() (driver.Value, error) {
 	return json.Marshal(p)
-}
-
-func (s *Social) Value() (driver.Value, error) {
-	return json.Marshal(s)
 }
