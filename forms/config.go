@@ -19,7 +19,7 @@ func InitTranslation() {
 	uni := ut.New(ruLocale, ruLocale)
 
 	trans, _ = uni.GetTranslator("ru")
-	validate = validator.New()
+	validate = validator.New(validator.WithRequiredStructEnabled())
 
 	err := rutranslations.RegisterDefaultTranslations(validate, trans)
 

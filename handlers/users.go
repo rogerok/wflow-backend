@@ -15,7 +15,7 @@ import (
 // @Produce json
 // @Success 200 {object} []models.User
 // @Router /user [get]
-func UsersList(s services.UserService) fiber.Handler {
+func UsersList(s services.UsersService) fiber.Handler {
 	return func(ctx *fiber.Ctx) error {
 		users, err := s.UsersList(1, 10)
 
@@ -35,7 +35,7 @@ func UsersList(s services.UserService) fiber.Handler {
 // @Param id path string true "User ID"
 // @Success 200 {object} models.User
 // @Router /user/{id} [get]
-func UserById(s services.UserService) fiber.Handler {
+func UserById(s services.UsersService) fiber.Handler {
 	return func(ctx *fiber.Ctx) error {
 		id := ctx.Params("id")
 
@@ -57,7 +57,7 @@ func UserById(s services.UserService) fiber.Handler {
 // @Produce json
 // @Success 200 {object} responses.CreateResponse
 // @Router /user [post]
-func CreateUser(s services.UserService) fiber.Handler {
+func CreateUser(s services.UsersService) fiber.Handler {
 
 	return func(ctx *fiber.Ctx) error {
 		formData := new(forms.UserCreateForm)

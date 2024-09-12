@@ -20,14 +20,15 @@ type Social struct {
 }
 
 type UserCreateForm struct {
-	Email       string     `json:"email" validate:"required,email,max=255"`
-	FirstName   string     `json:"firstName" validate:"required,min=2,max=50"`
-	LastName    *string    `json:"lastName" validate:"omitempty,min=2,max=50"`
-	MiddleName  *string    `json:"middleName" validate:"omitempty,min=2,max=50"`
-	Password    string     `json:"password" validate:"required,min=8,max=255,passwordValidator"`
-	Pseudonym   Pseudonym  `json:"pseudonym" validate:"required"`
-	SocialLinks Social     `json:"socialLinks" validate:"required"`
-	BornDate    *time.Time `json:"bornDate" db:"omitempty,datetime=2006-01-02"`
+	Email           string     `json:"email" validate:"required,email,max=255"`
+	FirstName       string     `json:"firstName" validate:"required,min=2,max=50"`
+	LastName        *string    `json:"lastName" validate:"omitempty,min=2,max=50"`
+	MiddleName      *string    `json:"middleName" validate:"omitempty,min=2,max=50"`
+	Password        string     `json:"password" validate:"required,min=8,max=255,passwordValidator"`
+	PasswordConfirm string     `json:"passwordConfirm" validate:"required,min=8,max=255,eqfield=Password"`
+	Pseudonym       Pseudonym  `json:"pseudonym" validate:"required"`
+	SocialLinks     Social     `json:"socialLinks" validate:"required"`
+	BornDate        *time.Time `json:"bornDate" db:"omitempty,datetime=2006-01-02"`
 }
 
 func passwordValidator(fl validator.FieldLevel) (check bool) {

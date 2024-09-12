@@ -9,23 +9,23 @@ import (
 	"github.com/rogerok/wflow-backend/utils"
 )
 
-type UserService interface {
+type UsersService interface {
 	UsersList(page int, perPage int) (users *[]models.User, err error)
 	UserById(id string) (user *models.User, err error)
 	CreateUser(user *forms.UserCreateForm) (id *string, err error)
 }
 
-type userService struct {
+type usersService struct {
 	r repositories.UserRepository
 }
 
-func NewUserService(repository repositories.UserRepository) UserService {
-	return &userService{
+func NewUsersService(repository repositories.UserRepository) UsersService {
+	return &usersService{
 		r: repository,
 	}
 }
 
-func (s *userService) UsersList(page int, perPage int) (users *[]models.User, err error) {
+func (s *usersService) UsersList(page int, perPage int) (users *[]models.User, err error) {
 
 	users, err = s.r.UsersList(page, perPage)
 
@@ -33,12 +33,12 @@ func (s *userService) UsersList(page int, perPage int) (users *[]models.User, er
 
 }
 
-func (s *userService) UserById(id string) (user *models.User, err error) {
+func (s *usersService) UserById(id string) (user *models.User, err error) {
 	user, err = s.r.UserById(id)
 	return user, err
 }
 
-func (s *userService) CreateUser(user *forms.UserCreateForm) (*string, error) {
+func (s *usersService) CreateUser(user *forms.UserCreateForm) (*string, error) {
 	exists, err := s.r.CheckEmailExists(user.Email)
 
 	if err != nil {
