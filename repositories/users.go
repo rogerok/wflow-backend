@@ -26,7 +26,7 @@ func (r *userRepository) UsersList(page int, perPage int) (users *[]models.User,
 	users = &[]models.User{}
 
 	query := `
-			SELECT id, email, created_at, updated_at, first_name, last_name, middle_name, born_date, password,
+			SELECT id, email, created_at, updated_at, first_name, last_name, middle_name, born_date,
 				json_build_object(
 					'firstName', pseudonym_first_name,
 					'lastName', pseudonym_last_name
@@ -53,7 +53,7 @@ func (r *userRepository) UserById(id string) (user *models.User, err error) {
 	user = &models.User{}
 
 	query := `
-			SELECT id, email, created_at, updated_at, first_name, last_name, middle_name, born_date, password,
+			SELECT id, email, created_at, updated_at, first_name, last_name, middle_name,
 				json_build_object(
 					'firstName', pseudonym_first_name,
 					'lastName', pseudonym_last_name

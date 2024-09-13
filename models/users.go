@@ -20,17 +20,17 @@ type Social struct {
 }
 
 type User struct {
-	CreatedAt   time.Time  `json:"-" db:"created_at"`
+	BornDate    *time.Time `json:"-" db:"born_date"`
+	CreatedAt   time.Time  `json:"createdAt" db:"created_at"`
 	Email       string     `json:"email" db:"email"`
 	FirstName   string     `json:"firstName" db:"first_name"`
-	ID          uuid.UUID  `json:"id" db:"id"`
+	Id          uuid.UUID  `json:"id" db:"id"`
 	LastName    *string    `json:"lastName" db:"last_name"`
 	MiddleName  *string    `json:"middleName" db:"middle_name"`
 	Password    string     `json:"-" db:"password"`
 	Pseudonym   Pseudonym  `json:"pseudonym" db:"pseudonym"`
 	SocialLinks Social     `json:"socialLinks" db:"socialLinks"`
-	UpdatedAt   time.Time  `json:"-" db:"updated_at"`
-	BornDate    *time.Time `json:"bornDate" db:"born_date"`
+	UpdatedAt   time.Time  `json:"updatedAt" db:"updated_at"`
 }
 
 func (s *Social) Scan(value interface{}) error {
