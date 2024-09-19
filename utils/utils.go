@@ -1,7 +1,19 @@
 package utils
 
-import "github.com/gofiber/fiber/v2"
+import (
+	"fmt"
+	"github.com/joho/godotenv"
+	"golang.org/x/crypto/bcrypt"
+)
 
-func GetResponseError(ctx *fiber.Ctx, status int, err error) error {
-	return ctx.Status(status).JSON(fiber.Map{"error": err.Error()})
+func HashPassword(password string) ([]byte, error) {
+	return bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+}
+
+func LoadEnv() {
+	err := godotenv.Load()
+	if err != nil {
+		fmt.Printf("Could not load environment %s", err.Error())
+		return
+	}
 }

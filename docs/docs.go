@@ -15,7 +15,7 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/user": {
+        "/users": {
             "get": {
                 "description": "Get users list",
                 "produces": [
@@ -36,9 +36,38 @@ const docTemplate = `{
                         }
                     }
                 }
+            },
+            "post": {
+                "description": "Create User",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Create User",
+                "parameters": [
+                    {
+                        "description": "body",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/forms.UserCreateForm"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/responses.CreateResponse"
+                        }
+                    }
+                }
             }
         },
-        "/user/{id}": {
+        "/users/{id}": {
             "get": {
                 "description": "Get user by ID",
                 "produces": [
@@ -69,13 +98,121 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "forms.Pseudonym": {
+            "type": "object",
+            "properties": {
+                "firstName": {
+                    "type": "string",
+                    "maxLength": 50,
+                    "minLength": 2
+                },
+                "lastName": {
+                    "type": "string",
+                    "maxLength": 50,
+                    "minLength": 2
+                }
+            }
+        },
+        "forms.Social": {
+            "type": "object",
+            "properties": {
+                "instagram": {
+                    "type": "string"
+                },
+                "telegram": {
+                    "type": "string"
+                },
+                "tiktok": {
+                    "type": "string"
+                },
+                "vk": {
+                    "type": "string"
+                }
+            }
+        },
+        "forms.UserCreateForm": {
+            "type": "object",
+            "required": [
+                "email",
+                "firstName",
+                "password",
+                "passwordConfirm",
+                "pseudonym",
+                "socialLinks"
+            ],
+            "properties": {
+                "bornDate": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string",
+                    "maxLength": 255
+                },
+                "firstName": {
+                    "type": "string",
+                    "maxLength": 50,
+                    "minLength": 2
+                },
+                "lastName": {
+                    "type": "string",
+                    "maxLength": 50,
+                    "minLength": 2
+                },
+                "middleName": {
+                    "type": "string",
+                    "maxLength": 50,
+                    "minLength": 2
+                },
+                "password": {
+                    "type": "string",
+                    "maxLength": 255,
+                    "minLength": 8
+                },
+                "passwordConfirm": {
+                    "type": "string",
+                    "maxLength": 255,
+                    "minLength": 8
+                },
+                "pseudonym": {
+                    "$ref": "#/definitions/forms.Pseudonym"
+                },
+                "socialLinks": {
+                    "$ref": "#/definitions/forms.Social"
+                }
+            }
+        },
+        "models.Pseudonym": {
+            "type": "object",
+            "properties": {
+                "firstName": {
+                    "type": "string"
+                },
+                "lastName": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.Social": {
+            "type": "object",
+            "properties": {
+                "instagram": {
+                    "type": "string"
+                },
+                "telegram": {
+                    "type": "string"
+                },
+                "tiktok": {
+                    "type": "string"
+                },
+                "vk": {
+                    "type": "string"
+                }
+            }
+        },
         "models.User": {
             "type": "object",
             "properties": {
-                "age": {
-                    "type": "integer"
-                },
-                "created_at": {
+                "createdAt": {
                     "type": "string"
                 },
                 "email": {
@@ -93,10 +230,21 @@ const docTemplate = `{
                 "middleName": {
                     "type": "string"
                 },
-                "telegramName": {
-                    "type": "string"
+                "pseudonym": {
+                    "$ref": "#/definitions/models.Pseudonym"
                 },
-                "updated_at": {
+                "socialLinks": {
+                    "$ref": "#/definitions/models.Social"
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "responses.CreateResponse": {
+            "type": "object",
+            "properties": {
+                "id": {
                     "type": "string"
                 }
             }

@@ -19,17 +19,17 @@ func SetupRouter(app *fiber.App) (*sqlx.DB, error) {
 		return nil, dbError
 	}
 
-	//defer configs.CloseConnectionToDb(db)
-
 	app.Use(logger.New())
 
 	api := app.Group("/api")
 
-	user := api.Group("/user")
-	userRepo := repositories.NewUserRepository(db)
-	userService := services.NewUserService(userRepo)
-	user.Get("/", handlers.UsersList(userService))
-	user.Get("/:id", handlers.UserById(userService))
+	users := api.Group("/users")
+	usersRepo := repositories.NewUserRepository(db)
+	userService := services.NewUsersService(usersRepo)
+
+	users.Get("/", handlers.UsersList(userService))
+	users.Get("/:id", handlers.UserById(userService))
+	users.Post("/", handlers.CreateUser(userService))
 
 	return db, nil
 
