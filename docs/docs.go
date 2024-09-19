@@ -15,7 +15,7 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/user": {
+        "/users": {
             "get": {
                 "description": "Get users list",
                 "produces": [
@@ -67,7 +67,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/user/{id}": {
+        "/users/{id}": {
             "get": {
                 "description": "Get user by ID",
                 "produces": [
@@ -136,6 +136,7 @@ const docTemplate = `{
                 "email",
                 "firstName",
                 "password",
+                "passwordConfirm",
                 "pseudonym",
                 "socialLinks"
             ],
@@ -163,6 +164,11 @@ const docTemplate = `{
                     "minLength": 2
                 },
                 "password": {
+                    "type": "string",
+                    "maxLength": 255,
+                    "minLength": 8
+                },
+                "passwordConfirm": {
                     "type": "string",
                     "maxLength": 255,
                     "minLength": 8
@@ -206,7 +212,7 @@ const docTemplate = `{
         "models.User": {
             "type": "object",
             "properties": {
-                "bornDate": {
+                "createdAt": {
                     "type": "string"
                 },
                 "email": {
@@ -229,6 +235,9 @@ const docTemplate = `{
                 },
                 "socialLinks": {
                     "$ref": "#/definitions/models.Social"
+                },
+                "updatedAt": {
+                    "type": "string"
                 }
             }
         },

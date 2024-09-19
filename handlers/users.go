@@ -14,7 +14,7 @@ import (
 // @Tags User
 // @Produce json
 // @Success 200 {object} []models.User
-// @Router /user [get]
+// @Router /users [get]
 func UsersList(s services.UsersService) fiber.Handler {
 	return func(ctx *fiber.Ctx) error {
 		users, err := s.UsersList(1, 10)
@@ -34,7 +34,7 @@ func UsersList(s services.UsersService) fiber.Handler {
 // @Produce json
 // @Param id path string true "User ID"
 // @Success 200 {object} models.User
-// @Router /user/{id} [get]
+// @Router /users/{id} [get]
 func UserById(s services.UsersService) fiber.Handler {
 	return func(ctx *fiber.Ctx) error {
 		id := ctx.Params("id")
@@ -56,7 +56,7 @@ func UserById(s services.UsersService) fiber.Handler {
 // @Param request body forms.UserCreateForm true "body"
 // @Produce json
 // @Success 200 {object} responses.CreateResponse
-// @Router /user [post]
+// @Router /users [post]
 func CreateUser(s services.UsersService) fiber.Handler {
 
 	return func(ctx *fiber.Ctx) error {
