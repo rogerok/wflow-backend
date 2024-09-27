@@ -25,6 +25,20 @@ const docTemplate = `{
                     "User"
                 ],
                 "summary": "Get users list",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "page",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "per page",
+                        "name": "perPage",
+                        "in": "query"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -33,6 +47,12 @@ const docTemplate = `{
                             "items": {
                                 "$ref": "#/definitions/models.User"
                             }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/errors_utils.CustomError"
                         }
                     }
                 }
@@ -98,6 +118,17 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "errors_utils.CustomError": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "statusCode": {
+                    "type": "integer"
+                }
+            }
+        },
         "forms.Pseudonym": {
             "type": "object",
             "properties": {

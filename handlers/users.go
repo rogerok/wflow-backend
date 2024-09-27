@@ -13,8 +13,12 @@ import (
 // @Summary Get users list
 // @Description Get users list
 // @Tags User
+// Accept json
 // @Produce json
+// @Param page query int false "page"
+// @Param perPage query int false "per page"
 // @Success 200 {object} []models.User
+// @Failure 400 {object} errors_utils.CustomError
 // @Router /users [get]
 func UsersList(s services.UsersService) fiber.Handler {
 	return func(ctx *fiber.Ctx) error {
