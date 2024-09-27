@@ -4,6 +4,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/rogerok/wflow-backend/errors_utils"
 	"github.com/rogerok/wflow-backend/forms"
+	"github.com/rogerok/wflow-backend/models"
 	"github.com/rogerok/wflow-backend/services"
 	"github.com/rogerok/wflow-backend/utils"
 )
@@ -17,10 +18,18 @@ import (
 // @Router /users [get]
 func UsersList(s services.UsersService) fiber.Handler {
 	return func(ctx *fiber.Ctx) error {
-		users, err := s.UsersList(1, 10)
+		params := new(models.UserQueryParams)
+
+		err := ctx.QueryParser(params)
 
 		if err != nil {
-			return utils.GetResponseError(ctx, errors_utils.New(fiber.StatusBadRequest, err.Error()))
+			return utils.GetParamsParsingError(ctx)
+		}
+
+		users, err := s.UsersList(params)
+
+		if err != nil {
+			return utils.GetBadRequestError(ctx, err)
 		}
 
 		return ctx.Status(fiber.StatusOK).JSON(users)

@@ -10,7 +10,7 @@ import (
 )
 
 type UsersService interface {
-	UsersList(page int, perPage int) (users *[]models.User, err error)
+	UsersList(params *models.UserQueryParams) (users *[]models.User, err error)
 	UserById(id string) (user *models.User, err error)
 	CreateUser(user *forms.UserCreateForm) (id *string, err error)
 }
@@ -25,9 +25,8 @@ func NewUsersService(repository repositories.UserRepository) UsersService {
 	}
 }
 
-func (s *usersService) UsersList(page int, perPage int) (users *[]models.User, err error) {
-
-	users, err = s.r.UsersList(page, perPage)
+func (s *usersService) UsersList(params *models.UserQueryParams) (users *[]models.User, err error) {
+	users, err = s.r.UsersList(params.Page, params.PerPage)
 
 	return users, err
 
@@ -35,6 +34,7 @@ func (s *usersService) UsersList(page int, perPage int) (users *[]models.User, e
 
 func (s *usersService) UserById(id string) (user *models.User, err error) {
 	user, err = s.r.UserById(id)
+
 	return user, err
 }
 

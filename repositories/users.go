@@ -4,6 +4,7 @@ import (
 	"github.com/jmoiron/sqlx"
 	"github.com/rogerok/wflow-backend/errors_utils"
 	"github.com/rogerok/wflow-backend/models"
+	"github.com/rogerok/wflow-backend/utils"
 )
 
 type UserRepository interface {
@@ -23,6 +24,8 @@ func NewUserRepository(db *sqlx.DB) UserRepository {
 
 func (r *userRepository) UsersList(page int, perPage int) (users *[]models.User, err error) {
 
+	offset, selectAll := utils.HandlePagination(page, perPage)
+
 	users = &[]models.User{}
 
 	query := `
@@ -39,7 +42,12 @@ func (r *userRepository) UsersList(page int, perPage int) (users *[]models.User,
 				) AS "socialLinks"
 			FROM users`
 
-	err = r.db.Select(users, query)
+	if selectAll {
+		err = r.db.Select(users, query)
+	} else {
+		query = query + ` ORDER BY created_At DESC LIMIT $1 OFFSET $2`
+		err = r.db.Select(users, query, perPage, offset)
+	}
 
 	if err != nil {
 		return nil, err
@@ -76,6 +84,7 @@ func (r *userRepository) UserById(id string) (user *models.User, err error) {
 }
 
 func (r *userRepository) CreateUser(user *models.User) (id *string, err error) {
+
 	query := `INSERT INTO users (
                   	email, password, first_name, last_name, middle_name, born_date, pseudonym_first_name, pseudonym_last_name,
                    social_instagram, social_telegram, social_tiktok, social_vk)
