@@ -5,4 +5,5 @@ const (
 	ErrEmailAlreadyExists = "Пользователь с таким email уже существует"
 	ErrCheckingUnique     = "Ошибка проверки уникальности"
 	ErrHashing            = "Ошибка хеширования"
+	ErrQueryParamsParsing = "Ошибка парсинга параметров запроса"
 )

@@ -48,3 +48,8 @@ func (p *Pseudonym) Scan(value interface{}) error {
 func (p *Pseudonym) Value() (driver.Value, error) {
 	return json.Marshal(p)
 }
+
+type UserQueryParams struct {
+	PaginationQuery `json:"-"`
+	OrderBy         string `json:"-" default:"createdAt desc"`
+}
