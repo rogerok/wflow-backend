@@ -14,16 +14,16 @@ func New(code int, message string) *CustomError {
 	}
 }
 
-func CreateErrorMsg(err error, msgs ...string) error {
+func CreateErrorMsg(msgs ...string) error {
 	combinedMsg := ""
 
 	for _, msg := range msgs {
 		combinedMsg += fmt.Sprintf("%s, ", msg)
 	}
 
-	return fmt.Errorf(combinedMsg, err)
+	return fmt.Errorf(combinedMsg)
 }
 
-func GetDBNotFoundError(err error, entity string) error {
-	return fmt.Errorf(fmt.Sprintf("Cущность %s не найдена", entity), err)
+func GetDBNotFoundError(entity string) error {
+	return CreateErrorMsg(fmt.Sprintf("Cущность %s не найдена", entity))
 }

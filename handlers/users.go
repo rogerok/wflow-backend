@@ -87,3 +87,23 @@ func CreateUser(s services.UsersService) fiber.Handler {
 		return utils.GetResponseCreate(ctx, id)
 	}
 }
+
+// LoginUser Login user godoc
+// @Summary Login User
+// @Description Login User
+// @Tags User
+// @Param request body forms.LoginUser true "body"
+// @Produce json
+// @Success 200 {object} responses.LoginSuccess
+// @Router /users/login [post]
+func LoginUser(s services.UsersService) fiber.Handler {
+	return func(ctx *fiber.Ctx) error {
+		formData := new(forms.UserLoginForm)
+
+		if err := ctx.BodyParser(formData); err != nil {
+			return utils.GetBadRequestError(ctx, err)
+		}
+
+		return nil
+	}
+}

@@ -3,6 +3,7 @@ package repositories
 import (
 	"github.com/jmoiron/sqlx"
 	"github.com/rogerok/wflow-backend/errors_utils"
+	"github.com/rogerok/wflow-backend/forms"
 	"github.com/rogerok/wflow-backend/models"
 	"github.com/rogerok/wflow-backend/utils"
 )
@@ -77,7 +78,7 @@ func (r *userRepository) UserById(id string) (user *models.User, err error) {
 	err = r.db.Get(user, query, id)
 
 	if err != nil {
-		return nil, errors_utils.GetDBNotFoundError(err, "User")
+		return nil, errors_utils.GetDBNotFoundError("User")
 	}
 
 	return user, nil
@@ -110,4 +111,21 @@ func (r *userRepository) CheckEmailExists(email string) (exists bool, err error)
 	}
 
 	return exists, nil
+}
+
+func (r *userRepository) LoginUser(user *forms.UserLoginForm) error {
+
+	var password string
+
+	err := r.db.Get(password, `SELECT password FROM users WHERE email=$1`, user.Email)
+
+	if err != nil {
+		return errors_utils.CreateErrorMsg(errors_utils.ErrEmailOrPasswordError)
+	}
+
+	if utils.ComparePassword(password, user.Password) {
+
+	}
+
+	return err
 }

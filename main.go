@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/swagger"
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
@@ -29,6 +30,15 @@ func main() {
 	forms.InitTranslation()
 
 	app := fiber.New()
+
+	// TODO: setup cors before release
+	app.Use(cors.New(cors.Config{
+		AllowMethods: "GET,POST,PUT,DELETE,PATCH,OPTIONS",
+		//AllowHeaders:     "Content-Type,Authorization,Accept,Origin,Access-Control-Request-Method,Access-Control-Request-Headers,Access-Control-Allow-Origin,Access-Control-Allow-Headers,Access-Control-Allow-Methods,Access-Control-Expose-Headers,Access-Control-Max-Age,Access-Control-Allow-Credentials",
+		AllowHeaders: "Content-Type,Authorization,Accept,Origin,Access-Control-Request-Method,Access-Control-Request-Headers,Access-Control-Allow-Headers,Access-Control-Allow-Methods,Access-Control-Expose-Headers,Access-Control-Max-Age,Access-Control-Allow-Credentials",
+		//AllowCredentials: true,
+		AllowOrigins: "*",
+	}))
 
 	db, err := router.SetupRouter(app)
 
