@@ -104,6 +104,8 @@ func LoginUser(s services.UsersService) fiber.Handler {
 			return utils.GetBadRequestError(ctx, err)
 		}
 
-		return nil
+		strf := "adasad"
+
+		return utils.GetResponseCreate(ctx, &strf)
 	}
 }

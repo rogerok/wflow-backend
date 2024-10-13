@@ -1,8 +1,8 @@
 package main
 
 import (
-	"fmt"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/log"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/swagger"
 	"github.com/joho/godotenv"
@@ -23,7 +23,7 @@ func main() {
 
 	err := godotenv.Load()
 	if err != nil {
-		fmt.Printf("Could not load environment %s", err.Error())
+		log.Fatalf("Could not load environment %s", err.Error())
 		return
 	}
 

@@ -2,7 +2,6 @@ package forms
 
 import (
 	"github.com/rogerok/wflow-backend/errors_utils"
-	"github.com/rogerok/wflow-backend/utils"
 	"time"
 )
 
@@ -31,18 +30,10 @@ type UserCreateForm struct {
 }
 
 func (uf *UserCreateForm) Validate() error {
-	v := GetValidator()
-
-	err := v.RegisterValidation("passwordValidator", utils.PasswordValidator)
-
-	if err != nil {
-		return err
-	}
-
 	RegisterTranslator("passwordValidator", errors_utils.ErrInvalidPassword)
 
-	if err := v.Struct(uf); err != nil {
-		return FormatValidationError(err)
+	if err := ValidateWithCustomValidator(uf, RegisterPasswordValidator); err != nil {
+		return err
 	}
 
 	return nil

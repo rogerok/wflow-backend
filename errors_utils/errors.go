@@ -1,6 +1,8 @@
 package errors_utils
 
-import "fmt"
+import (
+	"fmt"
+)
 
 type CustomError struct {
 	StatusCode int    `json:"statusCode"`

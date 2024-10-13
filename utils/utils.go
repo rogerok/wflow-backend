@@ -2,8 +2,11 @@ package utils
 
 import (
 	"github.com/go-playground/validator/v10"
+	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/crypto/bcrypt"
+	"os"
 	"regexp"
+	"time"
 )
 
 func HashPassword(password string) ([]byte, error) {
@@ -47,5 +50,14 @@ func PasswordValidator(fl validator.FieldLevel) (check bool) {
 	}
 
 	return true
+
+}
+
+func CreateToken(id *string) (string, error) {
+	claims := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{"sub": id, "iss": "wflow", "exp": time.Now().Add(time.Hour).Unix(), "iat": time.Now().Unix()})
+
+	token, err := claims.SignedString([]byte(os.Getenv("SECRET_KEY")))
+
+	return token, err
 
 }
