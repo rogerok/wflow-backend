@@ -3,7 +3,6 @@ package repositories
 import (
 	"github.com/jmoiron/sqlx"
 	"github.com/rogerok/wflow-backend/errors_utils"
-	"github.com/rogerok/wflow-backend/forms"
 	"github.com/rogerok/wflow-backend/models"
 	"github.com/rogerok/wflow-backend/utils"
 )
@@ -11,6 +10,7 @@ import (
 type UserRepository interface {
 	UsersList(page int, perPage int) (user *[]models.User, err error)
 	UserById(id string) (user *models.User, err error)
+	UserByEmail(email string) (user *models.User, err error)
 	CheckEmailExists(email string) (exists bool, err error)
 	CreateUser(user *models.User) (id *string, err error)
 }
@@ -84,6 +84,59 @@ func (r *userRepository) UserById(id string) (user *models.User, err error) {
 	return user, nil
 }
 
+func (r *userRepository) UserByEmail(email string) (user *models.User, err error) {
+
+	user = &models.User{}
+
+	query := `
+			SELECT id, email, created_at, updated_at, first_name, last_name, middle_name, password,
+				json_build_object(
+					'firstName', pseudonym_first_name,
+					'lastName', pseudonym_last_name
+				) AS pseudonym,
+				json_build_object(
+					'instagram', social_instagram,
+					'telegram', social_telegram,
+					'tiktok', social_tiktok,
+					'vk', social_vk
+				) AS "socialLinks"
+			FROM users WHERE email=$1`
+
+	err = r.db.Get(user, query, email)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return user, nil
+}
+
+//func (r *userRepository) UserByEmail(email string) (user *models.User, err error) {
+//	user := &models.User{}
+//
+//	query := `
+//			SELECT id, email, created_at, updated_at, first_name, last_name, middle_name,
+//				json_build_object(
+//					'firstName', pseudonym_first_name,
+//					'lastName', pseudonym_last_name
+//				) AS pseudonym,
+//				json_build_object(
+//					'instagram', social_instagram,
+//					'telegram', social_telegram,
+//					'tiktok', social_tiktok,
+//					'vk', social_vk
+//				) AS "socialLinks"
+//			FROM users WHERE email=$1`
+//
+//	err = r.db.Get(user, query, email)
+//
+//	if err != nil {
+//		return nil, err
+//	}
+//
+//	return user, nil
+//}
+
 func (r *userRepository) CreateUser(user *models.User) (id *string, err error) {
 
 	query := `INSERT INTO users (
@@ -111,21 +164,4 @@ func (r *userRepository) CheckEmailExists(email string) (exists bool, err error)
 	}
 
 	return exists, nil
-}
-
-func (r *userRepository) LoginUser(user *forms.UserLoginForm) error {
-
-	var password string
-
-	err := r.db.Get(password, `SELECT password FROM users WHERE email=$1`, user.Email)
-
-	if err != nil {
-		return errors_utils.CreateErrorMsg(errors_utils.ErrEmailOrPasswordError)
-	}
-
-	if utils.ComparePassword(password, user.Password) {
-
-	}
-
-	return err
 }

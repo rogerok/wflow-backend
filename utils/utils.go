@@ -3,6 +3,8 @@ package utils
 import (
 	"github.com/go-playground/validator/v10"
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/google/uuid"
+	"github.com/rogerok/wflow-backend/responses"
 	"golang.org/x/crypto/bcrypt"
 	"os"
 	"regexp"
@@ -14,6 +16,7 @@ func HashPassword(password string) ([]byte, error) {
 }
 
 func ComparePassword(hash, password string) bool {
+
 	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
 
 	return err == nil
@@ -53,11 +56,40 @@ func PasswordValidator(fl validator.FieldLevel) (check bool) {
 
 }
 
-func CreateToken(id *string) (string, error) {
+func CreateToken(id uuid.UUID) (string, error) {
 	claims := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{"sub": id, "iss": "wflow", "exp": time.Now().Add(time.Hour).Unix(), "iat": time.Now().Unix()})
 
 	token, err := claims.SignedString([]byte(os.Getenv("SECRET_KEY")))
 
 	return token, err
+
+}
+
+func CreateRefreshToken() (string, error) {
+	claims := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{"sub": 1, "exp": time.Now().Add(time.Hour * 24).Unix()})
+
+	rt, err := claims.SignedString([]byte(os.Getenv("SECRET_KEY")))
+
+	return rt, err
+}
+
+func CreateTokenPair(id uuid.UUID) (*responses.TokensModel, error) {
+
+	token, err := CreateToken(id)
+
+	if err != nil {
+		return nil, err
+	}
+
+	refreshToken, err := CreateRefreshToken()
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &responses.TokensModel{
+		Token:        token,
+		RefreshToken: refreshToken,
+	}, err
 
 }

@@ -1,5 +1,6 @@
 package responses
 
-type LoginSuccess struct {
-	Token string `json:"token"`
+type TokensModel struct {
+	Token        string `json:"token"`
+	RefreshToken string `json:"refreshToken"`
 }

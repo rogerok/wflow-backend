@@ -7,6 +7,7 @@ import (
 	"github.com/rogerok/wflow-backend/models"
 	"github.com/rogerok/wflow-backend/services"
 	"github.com/rogerok/wflow-backend/utils"
+	"net/http"
 )
 
 // UsersList godoc
@@ -104,8 +105,16 @@ func LoginUser(s services.UsersService) fiber.Handler {
 			return utils.GetBadRequestError(ctx, err)
 		}
 
-		strf := "adasad"
+		if err := formData.Validate(); err != nil {
+			return utils.GetBadRequestError(ctx, err)
+		}
 
-		return utils.GetResponseCreate(ctx, &strf)
+		tokens, err := s.LoginUser(formData)
+
+		if err != nil {
+			return utils.GetResponseError(ctx, errors_utils.New(fiber.StatusUnauthorized, err.Error()))
+		}
+
+		return ctx.Status(http.StatusOK).JSON(tokens)
 	}
 }
