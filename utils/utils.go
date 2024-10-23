@@ -4,6 +4,7 @@ import (
 	"github.com/go-playground/validator/v10"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
+	"github.com/rogerok/wflow-backend/errors_utils"
 	"github.com/rogerok/wflow-backend/responses"
 	"golang.org/x/crypto/bcrypt"
 	"os"
@@ -17,9 +18,7 @@ func HashPassword(password string) ([]byte, error) {
 
 func ComparePassword(hash, password string) bool {
 
-	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
-
-	return err == nil
+	return bcrypt.CompareHashAndPassword([]byte(hash), []byte(password)) == nil
 }
 
 func HandlePagination(page int, perPage int) (offset int, selectAll bool) {
@@ -65,8 +64,12 @@ func CreateToken(id uuid.UUID) (string, error) {
 
 }
 
+func GetRefreshTokenExpTime() time.Time {
+	return time.Now().Add(time.Hour * 24)
+}
+
 func CreateRefreshToken() (string, error) {
-	claims := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{"sub": 1, "exp": time.Now().Add(time.Hour * 24).Unix()})
+	claims := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{"sub": 1, "exp": GetRefreshTokenExpTime().Unix()})
 
 	rt, err := claims.SignedString([]byte(os.Getenv("SECRET_KEY")))
 
@@ -92,4 +95,23 @@ func CreateTokenPair(id uuid.UUID) (*responses.TokensModel, error) {
 		RefreshToken: refreshToken,
 	}, err
 
+}
+
+func ParseToken(tokenString string) error {
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, errors_utils.CreateErrorMsg()
+		}
+		return []byte(os.Getenv("SECRET_KEY")), nil
+
+	})
+
+	if err != nil {
+		return err
+	}
+
+	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+	}
+
+	return nil
 }

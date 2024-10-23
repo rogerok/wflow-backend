@@ -7,4 +7,5 @@ const (
 	ErrHashing              = "Ошибка хеширования"
 	ErrQueryParamsParsing   = "Ошибка обработки параметров запроса"
 	ErrEmailOrPasswordError = "Пользователя с таким email не существует, или введён неверный пароль"
+	ErrTokenParse           = "Некорректный метод авторизации"
 )

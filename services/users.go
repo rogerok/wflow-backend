@@ -15,7 +15,7 @@ type UsersService interface {
 	UsersList(params *models.UserQueryParams) (users *[]models.User, err error)
 	UserById(id string) (user *models.User, err error)
 	CreateUser(user *forms.UserCreateForm) (id *string, err error)
-	LoginUser(user *forms.UserLoginForm) (resp *responses.TokensModel, err error)
+	Auth(user *forms.AuthnForm) (resp *responses.TokensModel, err error)
 }
 
 type usersService struct {
@@ -86,7 +86,7 @@ func (s *usersService) CreateUser(user *forms.UserCreateForm) (*string, error) {
 	return id, nil
 }
 
-func (s *usersService) LoginUser(loginForm *forms.UserLoginForm) (resp *responses.TokensModel, err error) {
+func (s *usersService) Auth(loginForm *forms.AuthnForm) (resp *responses.TokensModel, err error) {
 
 	userData, err := s.r.UserByEmail(loginForm.Email)
 

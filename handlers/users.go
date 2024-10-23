@@ -89,17 +89,17 @@ func CreateUser(s services.UsersService) fiber.Handler {
 	}
 }
 
-// LoginUser Login user godoc
+// AuthUser Login user godoc
 // @Summary Login User
 // @Description Login User
 // @Tags User
-// @Param request body forms.LoginUser true "body"
+// @Param request body forms.AuthForm true "body"
 // @Produce json
 // @Success 200 {object} responses.LoginSuccess
-// @Router /users/login [post]
-func LoginUser(s services.UsersService) fiber.Handler {
+// @Router /users/auth [post]
+func AuthUser(s services.UsersService) fiber.Handler {
 	return func(ctx *fiber.Ctx) error {
-		formData := new(forms.UserLoginForm)
+		formData := new(forms.AuthnForm)
 
 		if err := ctx.BodyParser(formData); err != nil {
 			return utils.GetBadRequestError(ctx, err)
@@ -109,11 +109,21 @@ func LoginUser(s services.UsersService) fiber.Handler {
 			return utils.GetBadRequestError(ctx, err)
 		}
 
-		tokens, err := s.LoginUser(formData)
+		tokens, err := s.Auth(formData)
 
 		if err != nil {
 			return utils.GetResponseError(ctx, errors_utils.New(fiber.StatusUnauthorized, err.Error()))
 		}
+
+		cookies := fiber.Cookie{
+			Name:     "rt",
+			Value:    tokens.RefreshToken,
+			Expires:  utils.GetRefreshTokenExpTime(),
+			Secure:   true,
+			HTTPOnly: true,
+		}
+
+		ctx.Cookie(&cookies)
 
 		return ctx.Status(http.StatusOK).JSON(tokens)
 	}
