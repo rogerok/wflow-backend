@@ -89,17 +89,19 @@ func CreateUser(s services.UsersService) fiber.Handler {
 	}
 }
 
-// AuthUser Login user godoc
-// @Summary Login User
-// @Description Login User
+// AuthUser Auth user godoc
+// @Summary Auth User
+// @Description Auth User
 // @Tags User
 // @Param request body forms.AuthForm true "body"
 // @Produce json
 // @Success 200 {object} responses.LoginSuccess
-// @Router /users/auth [post]
+// @Router /pub/auth [post]
 func AuthUser(s services.UsersService) fiber.Handler {
+
 	return func(ctx *fiber.Ctx) error {
-		formData := new(forms.AuthnForm)
+
+		formData := new(forms.AuthForm)
 
 		if err := ctx.BodyParser(formData); err != nil {
 			return utils.GetBadRequestError(ctx, err)

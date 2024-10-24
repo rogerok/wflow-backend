@@ -97,7 +97,7 @@ func CreateTokenPair(id uuid.UUID) (*responses.TokensModel, error) {
 
 }
 
-func ParseToken(tokenString string) error {
+func ParseToken(tokenString string) (jwt.MapClaims, error) {
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, errors_utils.CreateErrorMsg()
@@ -107,11 +107,12 @@ func ParseToken(tokenString string) error {
 	})
 
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+		return claims, nil
 	}
 
-	return nil
+	return nil, err
 }

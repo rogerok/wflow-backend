@@ -24,8 +24,8 @@ type UserCreateForm struct {
 	MiddleName      *string    `json:"middleName" validate:"omitempty,min=2,max=50"`
 	Password        string     `json:"password" validate:"required,min=8,max=255,passwordValidator"`
 	PasswordConfirm string     `json:"passwordConfirm" validate:"required,min=8,max=255,eqfield=Password"`
-	Pseudonym       Pseudonym  `json:"pseudonym" validate:"required"`
-	SocialLinks     Social     `json:"socialLinks" validate:"required"`
+	Pseudonym       *Pseudonym `json:"pseudonym" validate:"required"`
+	SocialLinks     *Social    `json:"socialLinks" validate:"required"`
 	BornDate        *time.Time `json:"bornDate" db:"omitempty,datetime=2006-01-02"`
 }
 

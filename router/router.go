@@ -22,6 +22,7 @@ func SetupRouter(app *fiber.App) (*sqlx.DB, error) {
 	app.Use(logger.New())
 
 	api := app.Group("/api")
+	auth := app.Group("/pub/auth")
 
 	users := api.Group("/users")
 	usersRepo := repositories.NewUserRepository(db)
@@ -30,7 +31,7 @@ func SetupRouter(app *fiber.App) (*sqlx.DB, error) {
 	users.Get("/", handlers.UsersList(userService))
 	users.Get("/:id", handlers.UserById(userService))
 	users.Post("/", handlers.CreateUser(userService))
-	users.Post("/auth", handlers.AuthUser(userService))
+	auth.Post("/", handlers.AuthUser(userService))
 
 	return db, nil
 
