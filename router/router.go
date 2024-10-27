@@ -7,6 +7,7 @@ import (
 	"github.com/jmoiron/sqlx"
 	"github.com/rogerok/wflow-backend/configs"
 	"github.com/rogerok/wflow-backend/handlers"
+	"github.com/rogerok/wflow-backend/middleware"
 	"github.com/rogerok/wflow-backend/repositories"
 	"github.com/rogerok/wflow-backend/services"
 )
@@ -21,8 +22,7 @@ func SetupRouter(app *fiber.App) (*sqlx.DB, error) {
 
 	app.Use(logger.New())
 
-	api := app.Group("/api")
-	auth := app.Group("/pub/auth")
+	api := app.Group("/api", middleware.AuthMiddleware())
 
 	users := api.Group("/users")
 	usersRepo := repositories.NewUserRepository(db)
@@ -31,7 +31,12 @@ func SetupRouter(app *fiber.App) (*sqlx.DB, error) {
 	users.Get("/", handlers.UsersList(userService))
 	users.Get("/:id", handlers.UserById(userService))
 	users.Post("/", handlers.CreateUser(userService))
-	auth.Post("/", handlers.AuthUser(userService))
+
+	auth := app.Group("/pub/auth")
+	authRepo := repositories.NewAuthRepository(db)
+	authService := services.NewAuthService(usersRepo, authRepo)
+
+	auth.Post("/", handlers.AuthUser(authService))
 
 	return db, nil
 

@@ -8,4 +8,5 @@ const (
 	ErrQueryParamsParsing   = "Ошибка обработки параметров запроса"
 	ErrEmailOrPasswordError = "Пользователя с таким email не существует, или введён неверный пароль"
 	ErrTokenParse           = "Некорректный метод авторизации"
+	ErrUnauthorized         = "Требуется авторизация"
 )

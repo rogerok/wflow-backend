@@ -68,8 +68,8 @@ func GetRefreshTokenExpTime() time.Time {
 	return time.Now().Add(time.Hour * 24)
 }
 
-func CreateRefreshToken() (string, error) {
-	claims := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{"sub": 1, "exp": GetRefreshTokenExpTime().Unix()})
+func CreateRefreshToken(id uuid.UUID) (string, error) {
+	claims := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{"sub": id, "exp": GetRefreshTokenExpTime().Unix()})
 
 	rt, err := claims.SignedString([]byte(os.Getenv("SECRET_KEY")))
 
@@ -84,7 +84,7 @@ func CreateTokenPair(id uuid.UUID) (*responses.TokensModel, error) {
 		return nil, err
 	}
 
-	refreshToken, err := CreateRefreshToken()
+	refreshToken, err := CreateRefreshToken(id)
 
 	if err != nil {
 		return nil, err
@@ -98,9 +98,10 @@ func CreateTokenPair(id uuid.UUID) (*responses.TokensModel, error) {
 }
 
 func ParseToken(tokenString string) (jwt.MapClaims, error) {
+
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, errors_utils.CreateErrorMsg()
+			return nil, errors_utils.CreateErrorMsg(errors_utils.ErrTokenParse)
 		}
 		return []byte(os.Getenv("SECRET_KEY")), nil
 
@@ -112,6 +113,7 @@ func ParseToken(tokenString string) (jwt.MapClaims, error) {
 
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 		return claims, nil
+
 	}
 
 	return nil, err

@@ -1,12 +1,10 @@
 package services
 
 import (
-	"fmt"
 	"github.com/rogerok/wflow-backend/errors_utils"
 	"github.com/rogerok/wflow-backend/forms"
 	"github.com/rogerok/wflow-backend/models"
 	"github.com/rogerok/wflow-backend/repositories"
-	"github.com/rogerok/wflow-backend/responses"
 	"github.com/rogerok/wflow-backend/utils"
 	"strings"
 )
@@ -15,7 +13,6 @@ type UsersService interface {
 	UsersList(params *models.UserQueryParams) (users *[]models.User, err error)
 	UserById(id string) (user *models.User, err error)
 	CreateUser(user *forms.UserCreateForm) (id *string, err error)
-	Auth(user *forms.AuthForm) (resp *responses.TokensModel, err error)
 }
 
 type usersService struct {
@@ -84,28 +81,4 @@ func (s *usersService) CreateUser(user *forms.UserCreateForm) (*string, error) {
 	}
 
 	return id, nil
-}
-
-func (s *usersService) Auth(loginForm *forms.AuthForm) (resp *responses.TokensModel, err error) {
-
-	userData, err := s.r.UserByEmail(loginForm.Email)
-
-	if err != nil {
-		fmt.Printf(err.Error())
-
-		return nil, err
-
-	}
-
-	if !utils.ComparePassword(userData.Password, loginForm.Password) {
-		return nil, errors_utils.CreateErrorMsg(errors_utils.ErrEmailOrPasswordError)
-	}
-
-	tokens, err := utils.CreateTokenPair(userData.Id)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return tokens, nil
 }
