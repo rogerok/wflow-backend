@@ -56,7 +56,8 @@ func PasswordValidator(fl validator.FieldLevel) (check bool) {
 }
 
 func CreateToken(id uuid.UUID) (string, error) {
-	claims := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{"sub": id, "iss": "wflow", "exp": time.Now().Add(time.Hour).Unix(), "iat": time.Now().Unix()})
+	claims := jwt.NewWithClaims(jwt.SigningMethodHS256,
+		jwt.MapClaims{"sub": id, "iss": "wflow", "exp": time.Now().Add(time.Minute * 60).Unix(), "iat": time.Now().Unix()})
 
 	token, err := claims.SignedString([]byte(os.Getenv("SECRET_KEY")))
 
@@ -103,6 +104,7 @@ func ParseToken(tokenString string) (jwt.MapClaims, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, errors_utils.CreateErrorMsg(errors_utils.ErrTokenParse)
 		}
+
 		return []byte(os.Getenv("SECRET_KEY")), nil
 
 	})

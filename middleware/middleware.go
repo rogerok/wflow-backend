@@ -15,15 +15,17 @@ func AuthMiddleware() fiber.Handler {
 			return utils.GetUnauthorizedErr(ctx)
 		}
 
-		parsedToken, err := utils.ParseToken(strings.Split(token, "Bearer ")[1])
+		_, err := utils.ParseToken(strings.Split(token, "Bearer ")[1])
 
 		if err != nil {
-			return utils.GetBadRequestError(ctx, err)
+			return utils.GetUnauthorizedErr(ctx)
 		}
 
-		userId := parsedToken["sub"]
+		//userId := parsedToken["sub"]
 
-		fmt.Printf("%v\n", userId)
+		//fmt.Printf("%v\n", userId)
+
+		fmt.Printf("FROM MIDDLEWARE %v \n", ctx.Cookies("rt"))
 		return ctx.Next()
 	}
 }

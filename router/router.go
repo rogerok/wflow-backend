@@ -37,6 +37,7 @@ func SetupRouter(app *fiber.App) (*sqlx.DB, error) {
 	authService := services.NewAuthService(usersRepo, authRepo)
 
 	auth.Post("/", handlers.AuthUser(authService))
+	auth.Post("/refresh", handlers.Refresh(authService))
 
 	return db, nil
 

@@ -130,6 +130,43 @@ info:
   title: Word-Flow app API
   version: "1.0"
 paths:
+  /pub/auth:
+    post:
+      description: Auth User
+      parameters:
+      - description: body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/forms.AuthForm'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/responses.TokenResponse'
+      summary: Auth User
+      tags:
+      - Auth
+  /pub/auth/refresh:
+    post:
+      description: Refresh User token
+      parameters:
+      - description: body
+        in: body
+        name: request
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/responses.TokenResponse'
+      summary: Refresh User token
+      tags:
+      - Auth
   /users:
     get:
       description: Get users list
@@ -181,26 +218,6 @@ paths:
           schema:
             $ref: '#/definitions/models.User'
       summary: Get user by ID
-      tags:
-      - User
-  /users/auth:
-    post:
-      description: Auth User
-      parameters:
-      - description: body
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/forms.AuthForm'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/responses.TokenResponse'
-      summary: Auth User
       tags:
       - User
 swagger: "2.0"

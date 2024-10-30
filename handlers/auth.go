@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"github.com/gofiber/fiber/v2"
 	"github.com/rogerok/wflow-backend/errors_utils"
 	"github.com/rogerok/wflow-backend/forms"
@@ -12,10 +13,10 @@ import (
 // AuthUser Auth user godoc
 // @Summary Auth User
 // @Description Auth User
-// @Tags User
+// @Tags Auth
 // @Param request body forms.AuthForm true "body"
 // @Produce json
-// @Success 200 {object} responses.LoginSuccess
+// @Success 200 {object} responses.TokenResponse
 // @Router /pub/auth [post]
 func AuthUser(s services.AuthService) fiber.Handler {
 	return func(ctx *fiber.Ctx) error {
@@ -37,15 +38,39 @@ func AuthUser(s services.AuthService) fiber.Handler {
 		}
 
 		cookies := fiber.Cookie{
-			Name:     "rt",
-			Value:    tokens.RefreshToken,
-			Expires:  utils.GetRefreshTokenExpTime(),
-			Secure:   true,
-			HTTPOnly: true,
+			Name:    "rt",
+			Value:   tokens.RefreshToken,
+			Expires: utils.GetRefreshTokenExpTime(),
+			Secure:  true,
+			//HTTPOnly: true,
 		}
 
 		ctx.Cookie(&cookies)
 
 		return ctx.Status(http.StatusOK).JSON(tokens)
+	}
+}
+
+// Refresh  user godoc
+// @Summary Refresh User token
+// @Description Refresh User token
+// @Tags Auth
+// @Param request body nil false "body"
+// @Produce json
+// @Success 200 {object} responses.TokenResponse
+// @Router /pub/auth/refresh [post]
+func Refresh(s services.AuthService) fiber.Handler {
+	return func(ctx *fiber.Ctx) error {
+		rt := ctx.Cookies("rt")
+
+		fmt.Printf(rt)
+
+		if rt == "" {
+			return utils.GetUnauthorizedErr(ctx)
+		}
+
+		_, _ = s.Refresh(rt)
+
+		return nil
 	}
 }

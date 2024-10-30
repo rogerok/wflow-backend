@@ -1,6 +1,7 @@
 package services
 
 import (
+	"fmt"
 	"github.com/rogerok/wflow-backend/errors_utils"
 	"github.com/rogerok/wflow-backend/forms"
 	"github.com/rogerok/wflow-backend/repositories"
@@ -10,6 +11,7 @@ import (
 
 type AuthService interface {
 	Auth(user *forms.AuthForm) (resp *responses.TokensModel, err error)
+	Refresh(rt string) (resp *responses.TokensModel, err error)
 }
 
 type authService struct {
@@ -46,4 +48,12 @@ func (s *authService) Auth(loginForm *forms.AuthForm) (resp *responses.TokensMod
 	}
 
 	return tokens, nil
+}
+
+func (s *authService) Refresh(rt string) (resp *responses.TokensModel, err error) {
+	sessionData, err := s.authRepo.GetByRefreshToken(rt)
+
+	fmt.Printf("%v", sessionData)
+
+	return nil, nil
 }
