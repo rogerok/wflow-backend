@@ -25,3 +25,7 @@ func GetParamsParsingError(ctx *fiber.Ctx) error {
 func GetUnauthorizedErr(ctx *fiber.Ctx) error {
 	return GetResponseError(ctx, errors_utils.New(fiber.StatusUnauthorized, errors_utils.ErrUnauthorized))
 }
+
+func GetNotFoundError(ctx *fiber.Ctx, err error) error {
+	return GetResponseError(ctx, errors_utils.New(fiber.StatusNotFound, err.Error()))
+}

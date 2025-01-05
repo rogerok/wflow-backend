@@ -69,8 +69,22 @@ func Refresh(s services.AuthService) fiber.Handler {
 			return utils.GetUnauthorizedErr(ctx)
 		}
 
-		_, _ = s.Refresh(rt)
+		tokens, err := s.Refresh(rt)
 
-		return nil
+		if err != nil {
+			return utils.GetBadRequestError(ctx, err)
+		}
+
+		cookies := fiber.Cookie{
+			Name:    "rt",
+			Value:   tokens.RefreshToken,
+			Expires: utils.GetRefreshTokenExpTime(),
+			Secure:  true,
+			//HTTPOnly: true,
+		}
+
+		ctx.Cookie(&cookies)
+
+		return ctx.Status(http.StatusOK).JSON(tokens)
 	}
 }

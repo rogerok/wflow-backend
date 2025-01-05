@@ -53,7 +53,23 @@ func (s *authService) Auth(loginForm *forms.AuthForm) (resp *responses.TokensMod
 func (s *authService) Refresh(rt string) (resp *responses.TokensModel, err error) {
 	sessionData, err := s.authRepo.GetByRefreshToken(rt)
 
+	if err != nil {
+		return nil, errors_utils.CreateErrorMsg(errors_utils.RefreshTokenNotFound)
+	}
+
+	tokens, err := utils.CreateTokenPair(sessionData.UserId)
+
+	if err != nil {
+		return nil, err
+	}
+
+	err = s.authRepo.CreateSession(sessionData.UserId, tokens.RefreshToken)
+
+	if err != nil {
+		return nil, err
+	}
+
 	fmt.Printf("%v", sessionData)
 
-	return nil, nil
+	return tokens, nil
 }

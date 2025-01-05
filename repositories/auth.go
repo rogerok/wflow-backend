@@ -46,7 +46,5 @@ func (r authRepository) GetByRefreshToken(refreshToken string) (session *models.
 
 	err = r.db.Get(session, query, refreshToken)
 
-	fmt.Printf("\n %v \n", err)
-
 	return session, err
 }
