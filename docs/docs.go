@@ -15,7 +15,7 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/pub/auth": {
+        "/api/auth": {
             "post": {
                 "description": "Auth User",
                 "produces": [
@@ -46,7 +46,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/pub/auth/refresh": {
+        "/auth/refresh": {
             "post": {
                 "description": "Refresh User token",
                 "produces": [
@@ -73,7 +73,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/users": {
+        "/private/users": {
             "get": {
                 "description": "Get users list",
                 "produces": [
@@ -94,7 +94,38 @@ const docTemplate = `{
                         }
                     }
                 }
-            },
+            }
+        },
+        "/private/users/{id}": {
+            "get": {
+                "description": "Get user by ID",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Get user by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.User"
+                        }
+                    }
+                }
+            }
+        },
+        "/users": {
             "post": {
                 "description": "Create User",
                 "produces": [
@@ -120,35 +151,6 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/responses.CreateResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/users/{id}": {
-            "get": {
-                "description": "Get user by ID",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "User"
-                ],
-                "summary": "Get user by ID",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "User ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/models.User"
                         }
                     }
                 }

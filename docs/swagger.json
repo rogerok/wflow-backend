@@ -9,7 +9,7 @@
     "host": "127.0.0.1:5000",
     "basePath": "/api",
     "paths": {
-        "/pub/auth": {
+        "/api/auth": {
             "post": {
                 "description": "Auth User",
                 "produces": [
@@ -40,7 +40,7 @@
                 }
             }
         },
-        "/pub/auth/refresh": {
+        "/auth/refresh": {
             "post": {
                 "description": "Refresh User token",
                 "produces": [
@@ -67,7 +67,7 @@
                 }
             }
         },
-        "/users": {
+        "/private/users": {
             "get": {
                 "description": "Get users list",
                 "produces": [
@@ -88,7 +88,38 @@
                         }
                     }
                 }
-            },
+            }
+        },
+        "/private/users/{id}": {
+            "get": {
+                "description": "Get user by ID",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Get user by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.User"
+                        }
+                    }
+                }
+            }
+        },
+        "/users": {
             "post": {
                 "description": "Create User",
                 "produces": [
@@ -114,35 +145,6 @@
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/responses.CreateResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/users/{id}": {
-            "get": {
-                "description": "Get user by ID",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "User"
-                ],
-                "summary": "Get user by ID",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "User ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/models.User"
                         }
                     }
                 }

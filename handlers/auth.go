@@ -17,7 +17,7 @@ import (
 // @Param request body forms.AuthForm true "body"
 // @Produce json
 // @Success 200 {object} responses.TokenResponse
-// @Router /pub/auth [post]
+// @Router /api/auth [post]
 func AuthUser(s services.AuthService) fiber.Handler {
 	return func(ctx *fiber.Ctx) error {
 
@@ -58,7 +58,7 @@ func AuthUser(s services.AuthService) fiber.Handler {
 // @Param request body nil false "body"
 // @Produce json
 // @Success 200 {object} responses.TokenResponse
-// @Router /pub/auth/refresh [post]
+// @Router /auth/refresh [post]
 func Refresh(s services.AuthService) fiber.Handler {
 	return func(ctx *fiber.Ctx) error {
 		rt := ctx.Cookies("rt")
