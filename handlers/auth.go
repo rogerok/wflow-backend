@@ -5,6 +5,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/rogerok/wflow-backend/errors_utils"
 	"github.com/rogerok/wflow-backend/forms"
+	"github.com/rogerok/wflow-backend/models"
 	"github.com/rogerok/wflow-backend/services"
 	"github.com/rogerok/wflow-backend/utils"
 	"net/http"
@@ -47,7 +48,7 @@ func AuthUser(s services.AuthService) fiber.Handler {
 
 		ctx.Cookie(&cookies)
 
-		return ctx.Status(http.StatusOK).JSON(tokens)
+		return ctx.Status(http.StatusOK).JSON(models.AuthResponse{Token: tokens.Token})
 	}
 }
 

@@ -83,12 +83,6 @@ func validateStruct(s interface{}, v *validator.Validate) error {
 	return nil
 }
 
-func ValidateStruct(s interface{}) error {
-	v := GetValidator()
-
-	return validateStruct(s, v)
-}
-
 func registerCustomValidator(v *validator.Validate, customValidator func(v *validator.Validate) error) error {
 	if err := customValidator(v); err != nil {
 		return err

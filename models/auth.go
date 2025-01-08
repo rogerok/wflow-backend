@@ -13,3 +13,7 @@ type AuthSession struct {
 	UpdatedAt    time.Time  `json:"updated_at" db:"updated_at"`
 	RefreshToken string     `json:"refreshToken" db:"refresh_token"`
 }
+
+type AuthResponse struct {
+	Token string `json:"token"`
+}
