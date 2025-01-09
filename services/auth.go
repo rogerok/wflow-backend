@@ -28,7 +28,7 @@ func (s *authService) Auth(loginForm *forms.AuthForm) (resp *responses.TokensMod
 	userData, err := s.userRepo.UserByEmail(loginForm.Email)
 
 	if err != nil {
-		return nil, err
+		return nil, errors_utils.CreateErrorMsg(errors_utils.ErrEmailOrPasswordError)
 	}
 
 	if !utils.ComparePassword(userData.Password, loginForm.Password) {
