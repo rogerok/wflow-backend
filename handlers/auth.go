@@ -39,11 +39,11 @@ func AuthUser(s services.AuthService) fiber.Handler {
 		}
 
 		cookies := fiber.Cookie{
-			Name:    "rt",
-			Value:   tokens.RefreshToken,
-			Expires: utils.GetRefreshTokenExpTime(),
-			Secure:  true,
-			//HTTPOnly: true,
+			Name:     "rt",
+			Value:    tokens.RefreshToken,
+			Expires:  utils.GetRefreshTokenExpTime(),
+			Secure:   true,
+			HTTPOnly: true,
 		}
 
 		ctx.Cookie(&cookies)
@@ -59,7 +59,7 @@ func AuthUser(s services.AuthService) fiber.Handler {
 // @Param request body nil false "body"
 // @Produce json
 // @Success 200 {object} responses.TokenResponse
-// @Router /auth/refresh [post]
+// @Router /api/auth/refresh [post]
 func Refresh(s services.AuthService) fiber.Handler {
 	return func(ctx *fiber.Ctx) error {
 		rt := ctx.Cookies("rt")
@@ -77,15 +77,15 @@ func Refresh(s services.AuthService) fiber.Handler {
 		}
 
 		cookies := fiber.Cookie{
-			Name:    "rt",
-			Value:   tokens.RefreshToken,
-			Expires: utils.GetRefreshTokenExpTime(),
-			Secure:  true,
-			//HTTPOnly: true,
+			Name:     "rt",
+			Value:    tokens.RefreshToken,
+			Expires:  utils.GetRefreshTokenExpTime(),
+			Secure:   true,
+			HTTPOnly: true,
 		}
 
 		ctx.Cookie(&cookies)
 
-		return ctx.Status(http.StatusOK).JSON(tokens)
+		return ctx.Status(http.StatusOK).JSON(models.AuthResponse{Token: tokens.Token})
 	}
 }

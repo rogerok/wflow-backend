@@ -46,7 +46,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/auth/refresh": {
+        "/api/auth/refresh": {
             "post": {
                 "description": "Refresh User token",
                 "produces": [
