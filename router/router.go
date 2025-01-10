@@ -24,7 +24,7 @@ func SetupRouter(app *fiber.App) (*sqlx.DB, error) {
 
 	api := app.Group("/api")
 
-	apiPrivate := app.Group("/private", middleware.AuthMiddleware())
+	apiPrivate := api.Group("/private", middleware.AuthMiddleware())
 
 	users := apiPrivate.Group("/users")
 	usersRepo := repositories.NewUserRepository(db)

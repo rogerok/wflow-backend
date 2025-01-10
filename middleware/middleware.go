@@ -21,10 +21,6 @@ func AuthMiddleware() fiber.Handler {
 			return utils.GetUnauthorizedErr(ctx)
 		}
 
-		//userId := parsedToken["sub"]
-
-		//fmt.Printf("%v\n", userId)
-
 		fmt.Printf("FROM MIDDLEWARE %v \n", ctx.Cookies("rt"))
 		return ctx.Next()
 	}
