@@ -29,7 +29,7 @@ func UsersList(s services.UsersService) fiber.Handler {
 		users, err := s.UsersList(params)
 
 		if err != nil {
-			return utils.GetBadRequestError(ctx, err)
+			return utils.GetBadRequestError(ctx, err.Error())
 		}
 
 		return ctx.Status(fiber.StatusOK).JSON(users)
@@ -71,17 +71,17 @@ func CreateUser(s services.UsersService) fiber.Handler {
 	return func(ctx *fiber.Ctx) error {
 		formData := new(forms.UserCreateForm)
 		if err := ctx.BodyParser(formData); err != nil {
-			return utils.GetBadRequestError(ctx, err)
+			return utils.GetBadRequestError(ctx, err.Error())
 		}
 
 		if err := formData.Validate(); err != nil {
-			return utils.GetBadRequestError(ctx, err)
+			return utils.GetBadRequestError(ctx, err.Error())
 		}
 
 		id, err := s.CreateUser(formData)
 
 		if err != nil {
-			return utils.GetBadRequestError(ctx, err)
+			return utils.GetBadRequestError(ctx, err.Error())
 		}
 
 		return utils.GetResponseCreate(ctx, id)
