@@ -10,6 +10,7 @@ import (
 type UserRepository interface {
 	UsersList(page int, perPage int) (user *[]models.User, err error)
 	UserById(id string) (user *models.User, err error)
+	UserByEmail(email string) (user *models.User, err error)
 	CheckEmailExists(email string) (exists bool, err error)
 	CreateUser(user *models.User) (id *string, err error)
 }
@@ -77,7 +78,34 @@ func (r *userRepository) UserById(id string) (user *models.User, err error) {
 	err = r.db.Get(user, query, id)
 
 	if err != nil {
-		return nil, errors_utils.GetDBNotFoundError(err, "User")
+		return nil, errors_utils.GetDBNotFoundError("User")
+	}
+
+	return user, nil
+}
+
+func (r *userRepository) UserByEmail(email string) (user *models.User, err error) {
+
+	user = &models.User{}
+
+	query := `
+			SELECT id, email, created_at, updated_at, first_name, last_name, middle_name, password,
+				json_build_object(
+					'firstName', pseudonym_first_name,
+					'lastName', pseudonym_last_name
+				) AS pseudonym,
+				json_build_object(
+					'instagram', social_instagram,
+					'telegram', social_telegram,
+					'tiktok', social_tiktok,
+					'vk', social_vk
+				) AS "socialLinks"
+			FROM users WHERE email=$1`
+
+	err = r.db.Get(user, query, email)
+
+	if err != nil {
+		return nil, err
 	}
 
 	return user, nil

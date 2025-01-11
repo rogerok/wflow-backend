@@ -6,10 +6,9 @@ import (
 	ut "github.com/go-playground/universal-translator"
 	"github.com/go-playground/validator/v10"
 	rutranslations "github.com/go-playground/validator/v10/translations/ru"
-	"log"
+	"github.com/gofiber/fiber/v2/log"
+	"github.com/rogerok/wflow-backend/utils"
 )
-
-type ErrorMap map[string]string
 
 var validate *validator.Validate = nil
 var trans ut.Translator
@@ -19,21 +18,26 @@ func InitTranslation() {
 	uni := ut.New(ruLocale, ruLocale)
 
 	trans, _ = uni.GetTranslator("ru")
+
 	validate = validator.New(validator.WithRequiredStructEnabled())
 
 	err := rutranslations.RegisterDefaultTranslations(validate, trans)
 
 	if err != nil {
-		log.Fatalf(err.Error())
+		log.Errorf(err.Error())
 	}
 
 }
 
 func GetValidator() *validator.Validate {
+	if validate == nil {
+		log.Fatalf("Validator not initialized. Call InitTranslation first.")
+	}
+
 	return validate
 }
 
-func FormatValidationError(err error) error {
+func formatValidationError(err error) error {
 	var errMsg string
 	for _, err := range err.(validator.ValidationErrors) {
 
@@ -59,6 +63,7 @@ func translate(ut ut.Translator, fe validator.FieldError) string {
 	if err != nil {
 		return fe.Error()
 	}
+
 	return msg
 }
 
@@ -68,4 +73,38 @@ func RegisterTranslator(tag string, msg string) {
 	if err != nil {
 		return
 	}
+}
+
+func validateStruct(s interface{}, v *validator.Validate) error {
+	if err := v.Struct(s); err != nil {
+		return formatValidationError(err)
+	}
+
+	return nil
+}
+
+func registerCustomValidator(v *validator.Validate, customValidator func(v *validator.Validate) error) error {
+	if err := customValidator(v); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func ValidateWithCustomValidator(s interface{}, customValidator func(v *validator.Validate) error) error {
+	v := GetValidator()
+
+	if err := registerCustomValidator(v, customValidator); err != nil {
+		return err
+	}
+
+	return validateStruct(s, v)
+}
+
+func RegisterPasswordValidator(v *validator.Validate) error {
+	if err := v.RegisterValidation("passwordValidator", utils.PasswordValidator); err != nil {
+		return err
+	}
+
+	return nil
 }

@@ -1,12 +1,12 @@
 package services
 
 import (
-	"fmt"
 	"github.com/rogerok/wflow-backend/errors_utils"
 	"github.com/rogerok/wflow-backend/forms"
 	"github.com/rogerok/wflow-backend/models"
 	"github.com/rogerok/wflow-backend/repositories"
 	"github.com/rogerok/wflow-backend/utils"
+	"strings"
 )
 
 type UsersService interface {
@@ -39,20 +39,20 @@ func (s *usersService) UserById(id string) (user *models.User, err error) {
 }
 
 func (s *usersService) CreateUser(user *forms.UserCreateForm) (*string, error) {
-	exists, err := s.r.CheckEmailExists(user.Email)
+	exists, err := s.r.CheckEmailExists(strings.ToLower(user.Email))
 
 	if err != nil {
-		return nil, errors_utils.CreateErrorMsg(err, errors_utils.ErrCheckingUnique, "email")
+		return nil, errors_utils.CreateErrorMsg(errors_utils.ErrCheckingUnique, "email")
 	}
 
 	if exists {
-		return nil, fmt.Errorf("%s", errors_utils.ErrEmailAlreadyExists)
+		return nil, errors_utils.CreateErrorMsg(errors_utils.ErrEmailAlreadyExists)
 	}
 
 	encryptedPassword, err := utils.HashPassword(user.Password)
 
 	if err != nil {
-		return nil, errors_utils.CreateErrorMsg(err, errors_utils.ErrHashing)
+		return nil, errors_utils.CreateErrorMsg(errors_utils.ErrHashing)
 	}
 
 	userData := models.User{
