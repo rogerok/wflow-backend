@@ -59,17 +59,17 @@ func UserById(s services.UsersService) fiber.Handler {
 }
 
 // CreateUser godoc
-// @Summary Create User
-// @Description Create User
+// @Summary CreateBook User
+// @Description CreateBook User
 // @Tags User
 // @Param request body forms.UserCreateForm true "body"
 // @Produce json
 // @Success 200 {object} responses.CreateResponse
 // @Router /users [post]
 func CreateUser(s services.UsersService) fiber.Handler {
-
 	return func(ctx *fiber.Ctx) error {
 		formData := new(forms.UserCreateForm)
+
 		if err := ctx.BodyParser(formData); err != nil {
 			return utils.GetBadRequestError(ctx, err.Error())
 		}

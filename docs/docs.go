@@ -127,14 +127,14 @@ const docTemplate = `{
         },
         "/users": {
             "post": {
-                "description": "Create User",
+                "description": "CreateBook User",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "User"
                 ],
-                "summary": "Create User",
+                "summary": "CreateBook User",
                 "parameters": [
                     {
                         "description": "body",

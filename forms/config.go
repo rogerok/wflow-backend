@@ -79,7 +79,6 @@ func validateStruct(s interface{}, v *validator.Validate) error {
 	if err := v.Struct(s); err != nil {
 		return formatValidationError(err)
 	}
-
 	return nil
 }
 
@@ -87,7 +86,6 @@ func registerCustomValidator(v *validator.Validate, customValidator func(v *vali
 	if err := customValidator(v); err != nil {
 		return err
 	}
-
 	return nil
 }
 
