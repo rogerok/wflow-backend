@@ -41,12 +41,12 @@ func (r *userRepository) UsersList(page int, perPage int) (users *[]models.User,
 					'tiktok', social_tiktok,
 					'vk', social_vk
 				) AS "socialLinks"
-			FROM users`
+			FROM users ORDER BY created_at DESC`
 
 	if selectAll {
 		err = r.db.Select(users, query)
 	} else {
-		query = query + ` ORDER BY created_At DESC LIMIT $1 OFFSET $2`
+		query = query + ` LIMIT $1 OFFSET $2`
 		err = r.db.Select(users, query, perPage, offset)
 	}
 

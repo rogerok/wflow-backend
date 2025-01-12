@@ -4,6 +4,7 @@ import (
 	"github.com/go-playground/validator/v10"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
+	"github.com/rogerok/wflow-backend/constants"
 	"github.com/rogerok/wflow-backend/errors_utils"
 	"github.com/rogerok/wflow-backend/responses"
 	"golang.org/x/crypto/bcrypt"
@@ -119,4 +120,12 @@ func ParseToken(tokenString string) (jwt.MapClaims, error) {
 	}
 
 	return nil, err
+}
+
+func GetAllowedOrderBy(order string) string {
+	if constants.AllowedOrderBy[order] == "" {
+		return "createdAt desc"
+	}
+
+	return constants.AllowedOrderBy[order]
 }

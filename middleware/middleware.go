@@ -1,7 +1,6 @@
 package middleware
 
 import (
-	"fmt"
 	"github.com/gofiber/fiber/v2"
 	"github.com/rogerok/wflow-backend/utils"
 	"strings"
@@ -21,7 +20,6 @@ func AuthMiddleware() fiber.Handler {
 			return utils.GetUnauthorizedErr(ctx)
 		}
 
-		fmt.Printf("FROM MIDDLEWARE %v \n", ctx.Cookies("rt"))
 		return ctx.Next()
 	}
 }

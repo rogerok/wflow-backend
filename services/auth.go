@@ -12,6 +12,7 @@ import (
 type AuthService interface {
 	Auth(user *forms.AuthForm) (resp *responses.TokensModel, err error)
 	Refresh(rt string) (resp *responses.TokensModel, err error)
+	Logout(rt string) error
 }
 
 type authService struct {
@@ -57,6 +58,12 @@ func (s *authService) Refresh(rt string) (resp *responses.TokensModel, err error
 		return nil, errors_utils.CreateErrorMsg(errors_utils.RefreshTokenNotFound)
 	}
 
+	fmt.Printf("%V", sessionData)
+
+	if sessionData.IsRevoked == true {
+		return nil, errors_utils.CreateErrorMsg(errors_utils.ErrUnauthorized)
+	}
+
 	tokens, err := utils.CreateTokenPair(sessionData.UserId)
 
 	if err != nil {
@@ -69,7 +76,9 @@ func (s *authService) Refresh(rt string) (resp *responses.TokensModel, err error
 		return nil, err
 	}
 
-	fmt.Printf("%v", sessionData)
-
 	return tokens, nil
+}
+
+func (s *authService) Logout(rt string) error {
+	return nil
 }

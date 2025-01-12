@@ -10,4 +10,5 @@ const (
 	ErrTokenParse           = "Некорректный метод авторизации"
 	ErrUnauthorized         = "Требуется авторизация"
 	RefreshTokenNotFound    = "Refresh token не найден"
+	ErrLogout               = "Ошибка разлогина"
 )

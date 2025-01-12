@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"fmt"
 	"github.com/gofiber/fiber/v2"
 	"github.com/rogerok/wflow-backend/errors_utils"
 	"github.com/rogerok/wflow-backend/forms"
@@ -25,11 +24,11 @@ func AuthUser(s services.AuthService) fiber.Handler {
 		formData := new(forms.AuthForm)
 
 		if err := ctx.BodyParser(formData); err != nil {
-			return utils.GetBadRequestError(ctx, err)
+			return utils.GetBadRequestError(ctx, err.Error())
 		}
 
 		if err := formData.Validate(); err != nil {
-			return utils.GetBadRequestError(ctx, err)
+			return utils.GetBadRequestError(ctx, err.Error())
 		}
 
 		tokens, err := s.Auth(formData)
@@ -64,8 +63,6 @@ func Refresh(s services.AuthService) fiber.Handler {
 	return func(ctx *fiber.Ctx) error {
 		rt := ctx.Cookies("rt")
 
-		fmt.Printf(rt)
-
 		if rt == "" {
 			return utils.GetUnauthorizedErr(ctx)
 		}
@@ -73,7 +70,7 @@ func Refresh(s services.AuthService) fiber.Handler {
 		tokens, err := s.Refresh(rt)
 
 		if err != nil {
-			return utils.GetBadRequestError(ctx, err)
+			return utils.GetUnauthorizedErr(ctx)
 		}
 
 		cookies := fiber.Cookie{
@@ -87,5 +84,23 @@ func Refresh(s services.AuthService) fiber.Handler {
 		ctx.Cookie(&cookies)
 
 		return ctx.Status(http.StatusOK).JSON(models.AuthResponse{Token: tokens.Token})
+	}
+}
+
+func Logout(s services.AuthService) fiber.Handler {
+	return func(ctx *fiber.Ctx) error {
+		rt := ctx.Cookies("rt")
+
+		if rt == "" {
+			return utils.GetBadRequestError(ctx, errors_utils.RefreshTokenNotFound)
+		}
+
+		_, err := utils.ParseToken(rt)
+
+		if err != nil {
+			return utils.GetBadRequestError(ctx, errors_utils.RefreshTokenNotFound)
+		}
+
+		return ctx.SendStatus(http.StatusOK)
 	}
 }
