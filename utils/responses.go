@@ -29,3 +29,7 @@ func GetUnauthorizedErr(ctx *fiber.Ctx) error {
 func GetNotFoundError(ctx *fiber.Ctx, err string) error {
 	return GetResponseError(ctx, errors_utils.New(fiber.StatusNotFound, err))
 }
+
+func GetInvalidTokenError(ctx *fiber.Ctx) error {
+	return GetResponseError(ctx, errors_utils.New(fiber.StatusUnauthorized, errors_utils.ErrInvalidToken))
+}

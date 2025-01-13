@@ -59,8 +59,8 @@ func UserById(s services.UsersService) fiber.Handler {
 }
 
 // CreateUser godoc
-// @Summary CreateBook User
-// @Description CreateBook User
+// @Summary CreateUser User
+// @Description CreateUser User
 // @Tags User
 // @Param request body forms.UserCreateForm true "body"
 // @Produce json

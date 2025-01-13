@@ -7,8 +7,8 @@ const (
 	ErrHashing              = "Ошибка хеширования"
 	ErrQueryParamsParsing   = "Ошибка обработки параметров запроса"
 	ErrEmailOrPasswordError = "Пользователя с таким email не существует, или введён неверный пароль"
-	ErrTokenParse           = "Некорректный метод авторизации"
+	ErrInvalidToken         = "Неверный токен"
 	ErrUnauthorized         = "Требуется авторизация"
-	RefreshTokenNotFound    = "Refresh token не найден"
+	ErrRefreshTokenNotFound = "Refresh token не найден"
 	ErrLogout               = "Ошибка разлогина"
 )

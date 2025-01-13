@@ -1,7 +1,6 @@
 package services
 
 import (
-	"fmt"
 	"github.com/rogerok/wflow-backend/errors_utils"
 	"github.com/rogerok/wflow-backend/forms"
 	"github.com/rogerok/wflow-backend/repositories"
@@ -55,10 +54,8 @@ func (s *authService) Refresh(rt string) (resp *responses.TokensModel, err error
 	sessionData, err := s.authRepo.GetByRefreshToken(rt)
 
 	if err != nil {
-		return nil, errors_utils.CreateErrorMsg(errors_utils.RefreshTokenNotFound)
+		return nil, errors_utils.CreateErrorMsg(errors_utils.ErrRefreshTokenNotFound)
 	}
-
-	fmt.Printf("%V", sessionData)
 
 	if sessionData.IsRevoked == true {
 		return nil, errors_utils.CreateErrorMsg(errors_utils.ErrUnauthorized)

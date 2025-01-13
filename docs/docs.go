@@ -73,6 +73,37 @@ const docTemplate = `{
                 }
             }
         },
+        "/private/books": {
+            "post": {
+                "description": "CreateBook Book",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Books"
+                ],
+                "summary": "CreateBook Book",
+                "parameters": [
+                    {
+                        "description": "body",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/forms.BookCreateForm"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/responses.CreateResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/private/users": {
             "get": {
                 "description": "Get users list",
@@ -127,14 +158,14 @@ const docTemplate = `{
         },
         "/users": {
             "post": {
-                "description": "CreateBook User",
+                "description": "CreateUser User",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "User"
                 ],
-                "summary": "CreateBook User",
+                "summary": "CreateUser User",
                 "parameters": [
                     {
                         "description": "body",
@@ -173,6 +204,24 @@ const docTemplate = `{
                     "type": "string",
                     "maxLength": 255,
                     "minLength": 8
+                }
+            }
+        },
+        "forms.BookCreateForm": {
+            "type": "object",
+            "required": [
+                "name"
+            ],
+            "properties": {
+                "description": {
+                    "type": "string",
+                    "maxLength": 255,
+                    "minLength": 2
+                },
+                "name": {
+                    "type": "string",
+                    "maxLength": 255,
+                    "minLength": 1
                 }
             }
         },

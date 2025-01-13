@@ -2,6 +2,7 @@ package utils
 
 import (
 	"github.com/go-playground/validator/v10"
+	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 	"github.com/rogerok/wflow-backend/constants"
@@ -10,6 +11,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 	"os"
 	"regexp"
+	"strings"
 	"time"
 )
 
@@ -103,7 +105,7 @@ func ParseToken(tokenString string) (jwt.MapClaims, error) {
 
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, errors_utils.CreateErrorMsg(errors_utils.ErrTokenParse)
+			return nil, errors_utils.CreateErrorMsg(errors_utils.ErrInvalidToken)
 		}
 
 		return []byte(os.Getenv("SECRET_KEY")), nil
@@ -128,4 +130,54 @@ func GetAllowedOrderBy(order string) string {
 	}
 
 	return constants.AllowedOrderBy[order]
+}
+
+func GetAccessTokenFromHeader(ctx *fiber.Ctx) (string, error) {
+	token := ctx.Get("Authorization")
+
+	if token == "" {
+		return "", GetInvalidTokenError(ctx)
+	}
+
+	parts := strings.Split(token, "Bearer ")
+
+	if len(parts) != 2 {
+		return "", GetInvalidTokenError(ctx)
+	}
+
+	return parts[1], nil
+}
+
+func GetSubjectFromToken(token string) (string, error) {
+
+	parsed, err := ParseToken(token)
+
+	if err != nil {
+		return "", err
+
+	}
+
+	subject, err := parsed.GetSubject()
+
+	if err != nil {
+		return "", err
+	}
+
+	return subject, nil
+}
+
+func GetSubjectFromHeaderToken(ctx *fiber.Ctx) (string, error) {
+	token, err := GetAccessTokenFromHeader(ctx)
+
+	if err != nil {
+		return "", GetInvalidTokenError(ctx)
+	}
+
+	subject, err := GetSubjectFromToken(token)
+
+	if err != nil {
+		return "", GetInvalidTokenError(ctx)
+	}
+
+	return subject, nil
 }

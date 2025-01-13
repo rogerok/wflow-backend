@@ -92,13 +92,13 @@ func Logout(s services.AuthService) fiber.Handler {
 		rt := ctx.Cookies("rt")
 
 		if rt == "" {
-			return utils.GetBadRequestError(ctx, errors_utils.RefreshTokenNotFound)
+			return utils.GetBadRequestError(ctx, errors_utils.ErrRefreshTokenNotFound)
 		}
 
 		_, err := utils.ParseToken(rt)
 
 		if err != nil {
-			return utils.GetBadRequestError(ctx, errors_utils.RefreshTokenNotFound)
+			return utils.GetBadRequestError(ctx, errors_utils.ErrRefreshTokenNotFound)
 		}
 
 		return ctx.SendStatus(http.StatusOK)

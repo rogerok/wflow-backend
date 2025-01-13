@@ -13,6 +13,19 @@ definitions:
     - email
     - password
     type: object
+  forms.BookCreateForm:
+    properties:
+      description:
+        maxLength: 255
+        minLength: 2
+        type: string
+      name:
+        maxLength: 255
+        minLength: 1
+        type: string
+    required:
+    - name
+    type: object
   forms.Pseudonym:
     properties:
       firstName:
@@ -167,6 +180,26 @@ paths:
       summary: Refresh User token
       tags:
       - Auth
+  /private/books:
+    post:
+      description: CreateBook Book
+      parameters:
+      - description: body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/forms.BookCreateForm'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/responses.CreateResponse'
+      summary: CreateBook Book
+      tags:
+      - Books
   /private/users:
     get:
       description: Get users list
@@ -203,7 +236,7 @@ paths:
       - User
   /users:
     post:
-      description: Create User
+      description: CreateUser User
       parameters:
       - description: body
         in: body
@@ -218,7 +251,7 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/responses.CreateResponse'
-      summary: Create User
+      summary: CreateUser User
       tags:
       - User
 swagger: "2.0"
