@@ -43,15 +43,18 @@ func (r *booksRepository) GetById(id string) (book *models.Book, err error) {
 }
 
 func (r *booksRepository) GetByUserId(params *models.BooksQueryParams) (books *[]models.Book, err error) {
+
 	offset, selectAll := utils.HandlePagination(params.Page, params.PerPage)
+	orderBy := utils.GetAllowedOrderBy(params.OrderBy)
+	books = &[]models.Book{}
 
 	query := `SELECT * FROM books WHERE user_id=$1 ORDER BY $2`
 
 	if selectAll {
-		err = r.db.Select(books, query, params)
+		err = r.db.Select(books, query, params.UserId, orderBy)
 	} else {
 		query = query + ` LIMIT $3 OFFSET $4`
-		err = r.db.Select(&books, query, params.UserId, utils.GetAllowedOrderBy(params.OrderBy), params.PerPage, offset)
+		err = r.db.Select(books, query, params.UserId, utils.GetAllowedOrderBy(params.OrderBy), params.PerPage, offset)
 	}
 	if err != nil {
 		return nil, err
