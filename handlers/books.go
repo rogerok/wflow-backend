@@ -3,6 +3,7 @@ package handlers
 import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/rogerok/wflow-backend/forms"
+	"github.com/rogerok/wflow-backend/models"
 	"github.com/rogerok/wflow-backend/services"
 	"github.com/rogerok/wflow-backend/utils"
 )
@@ -42,5 +43,25 @@ func CreateBook(s services.BooksService) fiber.Handler {
 		}
 
 		return utils.GetResponseCreate(ctx, id)
+	}
+}
+
+func GetBooksList(s services.BooksService) fiber.Handler {
+	return func(ctx *fiber.Ctx) error {
+		params := new(models.BooksQueryParams)
+
+		err := ctx.QueryParser(params)
+
+		if err != nil {
+			return utils.GetParamsParsingError(ctx)
+		}
+
+		books, err := s.GetBooksByUserId(params)
+
+		if err != nil {
+			return utils.GetBadRequestError(ctx, err.Error())
+		}
+
+		return ctx.Status(fiber.StatusOK).JSON(books)
 	}
 }
