@@ -11,4 +11,6 @@ const (
 	ErrUnauthorized         = "Требуется авторизация"
 	ErrRefreshTokenNotFound = "Refresh token не найден"
 	ErrLogout               = "Ошибка разлогина"
+	ErrInvalidGoalEndDate   = "Дата окончания цели не может быть ранее даты начала"
+	ErrPastDate             = "Дата не может быть прошедшей"
 )

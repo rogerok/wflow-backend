@@ -2,6 +2,7 @@ package forms
 
 import (
 	"github.com/rogerok/wflow-backend/errors_utils"
+	"github.com/rogerok/wflow-backend/forms/validators"
 	"time"
 )
 
@@ -26,13 +27,13 @@ type UserCreateForm struct {
 	PasswordConfirm string     `json:"passwordConfirm" validate:"required,min=8,max=255,eqfield=Password"`
 	Pseudonym       *Pseudonym `json:"pseudonym" validate:"required"`
 	SocialLinks     *Social    `json:"socialLinks" validate:"required"`
-	BornDate        *time.Time `json:"bornDate" db:"omitempty,datetime=2006-01-02"`
+	BornDate        *time.Time `json:"bornDate" db:"omitempty,datetime=2006-01-02T15:04:05Z07:00"`
 }
 
 func (uf *UserCreateForm) Validate() error {
-	RegisterTranslator("passwordValidator", errors_utils.ErrInvalidPassword)
+	RegisterTranslator(validators.PasswordValidatorName, errors_utils.ErrInvalidPassword)
 
-	if err := ValidateWithCustomValidator(uf, RegisterPasswordValidator); err != nil {
+	if err := ValidateWithCustomValidator(uf, validators.RegisterPasswordValidator); err != nil {
 		return err
 	}
 

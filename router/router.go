@@ -49,6 +49,11 @@ func SetupRouter(app *fiber.App) (*sqlx.DB, error) {
 	booksService := services.NewBooksService(booksRepo)
 	books.Post("/", handlers.CreateBook(booksService))
 
+	goals := api.Group("/goals")
+	goalsRepo := repositories.NewGoalsRepository(db)
+	goalsService := services.NewGoalsService(goalsRepo)
+	goals.Post("/", handlers.CreateGoal(goalsService))
+
 	return db, nil
 
 }

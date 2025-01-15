@@ -7,7 +7,6 @@ import (
 	"github.com/go-playground/validator/v10"
 	rutranslations "github.com/go-playground/validator/v10/translations/ru"
 	"github.com/gofiber/fiber/v2/log"
-	"github.com/rogerok/wflow-backend/utils"
 )
 
 var validate *validator.Validate = nil
@@ -97,12 +96,4 @@ func ValidateWithCustomValidator(s interface{}, customValidator func(v *validato
 	}
 
 	return validateStruct(s, v)
-}
-
-func RegisterPasswordValidator(v *validator.Validate) error {
-	if err := v.RegisterValidation("passwordValidator", utils.PasswordValidator); err != nil {
-		return err
-	}
-
-	return nil
 }
