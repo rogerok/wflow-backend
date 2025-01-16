@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"github.com/gofiber/fiber/v2"
 	"github.com/rogerok/wflow-backend/forms"
 	"github.com/rogerok/wflow-backend/models"
@@ -65,6 +66,8 @@ func GetBooksList(s services.BooksService) fiber.Handler {
 		params := new(models.BooksQueryParams)
 
 		err = ctx.QueryParser(params)
+
+		fmt.Printf("%v", params.UserId)
 
 		if err != nil {
 			return utils.GetParamsParsingError(ctx)
