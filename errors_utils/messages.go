@@ -13,4 +13,5 @@ const (
 	ErrLogout               = "Ошибка разлогина"
 	ErrInvalidGoalEndDate   = "Дата окончания цели не может быть ранее даты начала"
 	ErrPastDate             = "Дата не может быть прошедшей"
+	ErrFutureDate           = "Дата не может быть будущей"
 )

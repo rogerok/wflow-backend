@@ -26,16 +26,18 @@ func RegisterEndDateValidator(v *validator.Validate) error {
 }
 
 func (gf *GoalCreateForm) Validate() error {
-	if err := ValidateWithCustomValidator(gf, validators.RegisterForbidPastDateValidator); err != nil {
+
+	customValidators := []func(v *validator.Validate) error{
+		validators.RegisterForbidPastDateValidator,
+		RegisterEndDateValidator,
+	}
+
+	if err := validators.ValidateWithCustomValidator(gf, customValidators); err != nil {
 		return err
 	}
 
-	if err := ValidateWithCustomValidator(gf, RegisterEndDateValidator); err != nil {
-		return err
-	}
-
-	RegisterTranslator("endDateValidator", errors_utils.ErrInvalidGoalEndDate)
-	RegisterTranslator(validators.ForbidPastDateValidatorName, errors_utils.ErrPastDate)
+	validators.RegisterTranslator("endDateValidator", errors_utils.ErrInvalidGoalEndDate)
+	validators.RegisterTranslator(validators.ForbidPastDateValidatorName, errors_utils.ErrPastDate)
 
 	return nil
 }

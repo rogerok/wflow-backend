@@ -9,7 +9,7 @@ import (
 	_ "github.com/lib/pq"
 	"github.com/rogerok/wflow-backend/configs"
 	_ "github.com/rogerok/wflow-backend/docs"
-	"github.com/rogerok/wflow-backend/forms"
+	"github.com/rogerok/wflow-backend/forms/validators"
 	"github.com/rogerok/wflow-backend/router"
 	"os"
 )
@@ -27,7 +27,7 @@ func main() {
 		return
 	}
 
-	forms.InitTranslation()
+	validators.InitTranslation()
 
 	app := fiber.New()
 
