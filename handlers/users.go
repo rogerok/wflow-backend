@@ -69,7 +69,6 @@ func UserById(s services.UsersService) fiber.Handler {
 func CreateUser(s services.UsersService) fiber.Handler {
 	return func(ctx *fiber.Ctx) error {
 		formData := new(forms.UserCreateForm)
-
 		if err := ctx.BodyParser(formData); err != nil {
 			return utils.GetBadRequestError(ctx, err.Error())
 		}
@@ -79,7 +78,6 @@ func CreateUser(s services.UsersService) fiber.Handler {
 		}
 
 		id, err := s.CreateUser(formData)
-
 		if err != nil {
 			return utils.GetBadRequestError(ctx, err.Error())
 		}

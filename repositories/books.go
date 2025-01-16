@@ -10,7 +10,7 @@ import (
 type BooksRepository interface {
 	Create(book *models.Book) (id *string, err error)
 	GetById(id string) (book *models.Book, err error)
-	GetByUserId(params *models.BooksQueryParams) (book *[]models.Book, err error)
+	GetListByUserId(params *models.BooksQueryParams) (book *[]models.Book, err error)
 }
 
 type booksRepository struct {
@@ -42,17 +42,22 @@ func (r *booksRepository) GetById(id string) (book *models.Book, err error) {
 	return book, nil
 }
 
-func (r *booksRepository) GetByUserId(params *models.BooksQueryParams) (books *[]models.Book, err error) {
+func (r *booksRepository) GetListByUserId(params *models.BooksQueryParams) (books *[]models.Book, err error) {
 	offset, selectAll := utils.HandlePagination(params.Page, params.PerPage)
 
-	query := `SELECT * FROM books WHERE user_id=$1 ORDER BY $2`
+	query := `SELECT created_at, updated_at, description, id, book_name FROM books WHERE user_id=$1`
+	query += utils.GetAllowedOrderBy(params.OrderBy)
+
+	books = &[]models.Book{}
 
 	if selectAll {
-		err = r.db.Select(books, query, params)
+		err = r.db.Select(books, query, params.UserId)
 	} else {
-		query = query + ` LIMIT $3 OFFSET $4`
-		err = r.db.Select(&books, query, params.UserId, utils.GetAllowedOrderBy(params.OrderBy), params.PerPage, offset)
+		query += utils.GetOffsetLimitQuery(params.PerPage, offset)
+
+		err = r.db.Select(books, query, params.UserId)
 	}
+
 	if err != nil {
 		return nil, err
 	}

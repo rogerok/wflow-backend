@@ -77,33 +77,24 @@ func ParseToken(tokenString string) (jwt.MapClaims, error) {
 	return nil, err
 }
 
-func GetAccessTokenFromHeader(ctx *fiber.Ctx) (string, error) {
+func ExtractTokenFromHeader(ctx *fiber.Ctx) (string, error) {
 	token := ctx.Get("Authorization")
 
-	if token == "" {
+	if !strings.HasPrefix(token, "Bearer ") {
 		return "", GetInvalidTokenError(ctx)
 	}
 
-	parts := strings.Split(token, "Bearer ")
-
-	if len(parts) != 2 {
-		return "", GetInvalidTokenError(ctx)
-	}
-
-	return parts[1], nil
+	return strings.TrimPrefix(token, "Bearer "), nil
 }
 
 func GetSubjectFromToken(token string) (string, error) {
-
 	parsed, err := ParseToken(token)
-
 	if err != nil {
 		return "", err
 
 	}
 
 	subject, err := parsed.GetSubject()
-
 	if err != nil {
 		return "", err
 	}
@@ -112,17 +103,25 @@ func GetSubjectFromToken(token string) (string, error) {
 }
 
 func GetSubjectFromHeaderToken(ctx *fiber.Ctx) (string, error) {
-	token, err := GetAccessTokenFromHeader(ctx)
+	token, err := ExtractTokenFromHeader(ctx)
 
 	if err != nil {
 		return "", GetInvalidTokenError(ctx)
 	}
 
-	subject, err := GetSubjectFromToken(token)
+	return GetSubjectFromToken(token)
+}
 
+func GetSubjectUuidFromHeaderToken(ctx *fiber.Ctx) (uuid.UUID, error) {
+	subject, err := GetSubjectFromHeaderToken(ctx)
 	if err != nil {
-		return "", GetInvalidTokenError(ctx)
+		return uuid.Nil, err
 	}
 
-	return subject, nil
+	parsed, err := uuid.Parse(subject)
+	if err != nil {
+		return uuid.Nil, GetInvalidTokenError(ctx)
+	}
+
+	return parsed, nil
 }

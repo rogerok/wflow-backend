@@ -22,15 +22,19 @@ func NewBooksService(r repositories.BooksRepository) BooksService {
 	}
 }
 
-func (s *booksService) CreateBook(book *forms.BookCreateForm) (id *string, err error) {
-
-	bookData := models.Book{
+func mapFormToBookModel(book *forms.BookCreateForm) *models.Book {
+	return &models.Book{
 		Description: book.Description,
 		Name:        book.Name,
 		UserId:      book.UserId,
 	}
+}
 
-	id, err = s.r.Create(&bookData)
+func (s *booksService) CreateBook(book *forms.BookCreateForm) (id *string, err error) {
+
+	bookData := mapFormToBookModel(book)
+
+	id, err = s.r.Create(bookData)
 
 	if err != nil {
 		return nil, err
@@ -50,7 +54,7 @@ func (s *booksService) GetBookById(id string) (book *models.Book, err error) {
 }
 
 func (s *booksService) GetBooksByUserId(params *models.BooksQueryParams) (books *[]models.Book, err error) {
-	books, err = s.r.GetByUserId(params)
+	books, err = s.r.GetListByUserId(params)
 
 	if err != nil {
 		return nil, err

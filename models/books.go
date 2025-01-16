@@ -16,6 +16,6 @@ type Book struct {
 
 type BooksQueryParams struct {
 	PaginationQuery `json:"-"`
-	OrderBy         string `json:"-" default:"createdAt desc"`
-	UserId          string `json:"-"`
+	OrderBy         string    `json:"-" default:"createdAt desc"`
+	UserId          uuid.UUID `json:"-"`
 }

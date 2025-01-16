@@ -26,6 +26,32 @@ definitions:
     required:
     - name
     type: object
+  forms.GoalCreateForm:
+    properties:
+      bookId:
+        type: string
+      description:
+        maxLength: 255
+        minLength: 2
+        type: string
+      endDate:
+        type: string
+      goalWords:
+        minimum: 2
+        type: integer
+      startDate:
+        type: string
+      title:
+        maxLength: 255
+        minLength: 2
+        type: string
+    required:
+    - bookId
+    - endDate
+    - goalWords
+    - startDate
+    - title
+    type: object
   forms.Pseudonym:
     properties:
       firstName:
@@ -200,6 +226,24 @@ paths:
       summary: CreateBook Book
       tags:
       - Books
+  /private/goals:
+    post:
+      description: Create goal for book Goal
+      parameters:
+      - description: body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/forms.GoalCreateForm'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/responses.CreateResponse'
+      summary: CreateGoal Goals
+      tags:
+      - Goals
   /private/users:
     get:
       description: Get users list

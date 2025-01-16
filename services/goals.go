@@ -8,7 +8,9 @@ import (
 )
 
 type GoalsService interface {
-	CreateGoal(goal *forms.GoalCreateForm) (id *string, err error)
+	Create(goal *forms.GoalCreateForm) (id *string, err error)
+	GetListByBookId(params *models.GoalsQueryParams) (goals *[]models.GoalsModel, err error)
+	GetById(id string) (goal *models.GoalsModel, err error)
 }
 
 type goalsService struct {
@@ -21,9 +23,8 @@ func NewGoalsService(r repositories.GoalsRepository) GoalsService {
 	}
 }
 
-func (s *goalsService) CreateGoal(goal *forms.GoalCreateForm) (id *string, err error) {
-
-	goalData := models.GoalsModel{
+func mapFormToModel(goal *forms.GoalCreateForm) *models.GoalsModel {
+	return &models.GoalsModel{
 		BookId:       goal.BookId,
 		EndDate:      goal.EndDate,
 		GoalWords:    goal.GoalWords,
@@ -35,8 +36,12 @@ func (s *goalsService) CreateGoal(goal *forms.GoalCreateForm) (id *string, err e
 		WrittenWords: 0,
 		WordsPerDay:  utils.CalculateWordsPerDay(goal.GoalWords, int(goal.EndDate.Sub(goal.StartDate).Hours())),
 	}
+}
 
-	id, err = s.r.CreateGoal(&goalData)
+func (s *goalsService) Create(goal *forms.GoalCreateForm) (id *string, err error) {
+	goalData := mapFormToModel(goal)
+
+	id, err = s.r.Create(goalData)
 
 	if err != nil {
 		return nil, err
@@ -44,4 +49,24 @@ func (s *goalsService) CreateGoal(goal *forms.GoalCreateForm) (id *string, err e
 
 	return id, nil
 
+}
+
+func (s *goalsService) GetListByBookId(params *models.GoalsQueryParams) (goals *[]models.GoalsModel, err error) {
+	goals, err = s.r.GetListByBookId(params)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return goals, nil
+}
+
+func (s *goalsService) GetById(id string) (goal *models.GoalsModel, err error) {
+	goal, err = s.r.GetById(id)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return goal, nil
 }

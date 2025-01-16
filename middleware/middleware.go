@@ -8,7 +8,7 @@ import (
 func AuthMiddleware() fiber.Handler {
 	return func(ctx *fiber.Ctx) error {
 
-		token, err := utils.GetAccessTokenFromHeader(ctx)
+		token, err := utils.ExtractTokenFromHeader(ctx)
 
 		if err != nil {
 			return err

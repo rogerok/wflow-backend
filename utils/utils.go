@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"fmt"
 	"github.com/rogerok/wflow-backend/constants"
 	"golang.org/x/crypto/bcrypt"
 	"math"
@@ -29,10 +30,14 @@ func HandlePagination(page int, perPage int) (offset int, selectAll bool) {
 
 func GetAllowedOrderBy(order string) string {
 	if constants.AllowedOrderBy[order] == "" {
-		return "createdAt desc"
+		return " ORDER BY created_at desc "
 	}
 
-	return constants.AllowedOrderBy[order]
+	return " ODER BY " + constants.AllowedOrderBy[order]
+}
+
+func GetOffsetLimitQuery(perPage int, offset int) string {
+	return fmt.Sprintf(" LIMIT %v OFFSET %v", perPage, offset)
 }
 
 func CalculateWordsPerDay(totalWords int, totalDays int) float64 {

@@ -104,6 +104,34 @@ const docTemplate = `{
                 }
             }
         },
+        "/private/goals": {
+            "post": {
+                "description": "Create goal for book Goal",
+                "tags": [
+                    "Goals"
+                ],
+                "summary": "Create Goals",
+                "parameters": [
+                    {
+                        "description": "body",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/forms.GoalCreateForm"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/responses.CreateResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/private/users": {
             "get": {
                 "description": "Get users list",
@@ -222,6 +250,41 @@ const docTemplate = `{
                     "type": "string",
                     "maxLength": 255,
                     "minLength": 1
+                }
+            }
+        },
+        "forms.GoalCreateForm": {
+            "type": "object",
+            "required": [
+                "bookId",
+                "endDate",
+                "goalWords",
+                "startDate",
+                "title"
+            ],
+            "properties": {
+                "bookId": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string",
+                    "maxLength": 255,
+                    "minLength": 2
+                },
+                "endDate": {
+                    "type": "string"
+                },
+                "goalWords": {
+                    "type": "integer",
+                    "minimum": 2
+                },
+                "startDate": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string",
+                    "maxLength": 255,
+                    "minLength": 2
                 }
             }
         },

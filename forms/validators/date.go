@@ -17,7 +17,14 @@ func GoalEndDateValidator(fl validator.FieldLevel) (check bool) {
 
 func ForbidPastDateValidator(fl validator.FieldLevel) (check bool) {
 
-	return fl.Field().Interface().(time.Time).After(time.Now())
+	fieldValue, ok := fl.Field().Interface().(time.Time)
+
+	if !ok {
+		return false
+	}
+
+	return !fieldValue.Before(time.Now().Truncate(24 * time.Hour))
+
 }
 
 func RegisterForbidPastDateValidator(v *validator.Validate) error {
