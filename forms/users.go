@@ -34,7 +34,7 @@ type UserCreateForm struct {
 func (uf *UserCreateForm) Validate() error {
 
 	validators.RegisterTranslator(validators.PasswordValidatorName, errors_utils.ErrInvalidPassword)
-	validators.RegisterTranslator(validators.PasswordValidatorName, errors_utils.ErrFutureDate)
+	validators.RegisterTranslator(validators.ForbidFutureDateValidatorName, errors_utils.ErrFutureDate)
 
 	customValidators := []func(v *validator.Validate) error{
 		validators.RegisterPasswordValidator,
