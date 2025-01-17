@@ -75,7 +75,7 @@ func GetListByBookId(s services.GoalsService) fiber.Handler {
 	}
 }
 
-// GetById  Goals list godoc
+// GetGoalById  Goals list godoc
 // @Summary Get by id
 // @Description Get goal by id
 // @Tags Goals
@@ -83,7 +83,7 @@ func GetListByBookId(s services.GoalsService) fiber.Handler {
 // @Param id path string true "Goal id"
 // @Success 200 {object} models.Goals
 // @Router /private/goals/{id} [get]
-func GetById(s services.GoalsService) fiber.Handler {
+func GetGoalById(s services.GoalsService) fiber.Handler {
 	return func(ctx *fiber.Ctx) error {
 		id := ctx.Params("id")
 
