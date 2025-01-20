@@ -7,8 +7,11 @@ const (
 	ErrHashing              = "Ошибка хеширования"
 	ErrQueryParamsParsing   = "Ошибка обработки параметров запроса"
 	ErrEmailOrPasswordError = "Пользователя с таким email не существует, или введён неверный пароль"
-	ErrTokenParse           = "Некорректный метод авторизации"
+	ErrInvalidToken         = "Неверный токен"
 	ErrUnauthorized         = "Требуется авторизация"
-	RefreshTokenNotFound    = "Refresh token не найден"
+	ErrRefreshTokenNotFound = "Refresh token не найден"
 	ErrLogout               = "Ошибка разлогина"
+	ErrInvalidGoalEndDate   = "Дата окончания цели не может быть ранее даты начала"
+	ErrPastDate             = "Дата не может быть прошедшей"
+	ErrFutureDate           = "Дата не может быть будущей"
 )

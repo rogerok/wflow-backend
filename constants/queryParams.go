@@ -1,6 +1,6 @@
 package constants
 
 var AllowedOrderBy = map[string]string{
-	"createdAt desc": "createdAt desc",
-	"createdAt asc":  "createdAt asc",
+	"createdAt desc": "created_at desc",
+	"createdAt asc":  "created_at asc",
 }

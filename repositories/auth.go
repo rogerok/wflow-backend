@@ -1,7 +1,6 @@
 package repositories
 
 import (
-	"fmt"
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 	"github.com/rogerok/wflow-backend/models"
@@ -33,8 +32,6 @@ func (r authRepository) CreateSession(userId uuid.UUID, refreshToken string) err
 `
 
 	_, err := r.db.Exec(query, userId, refreshToken)
-
-	fmt.Printf("%v", err)
 
 	return err
 }

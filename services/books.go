@@ -9,7 +9,7 @@ import (
 type BooksService interface {
 	CreateBook(book *forms.BookCreateForm) (id *string, err error)
 	GetBookById(id string) (book *models.Book, err error)
-	GetBookByUserId(params *models.BooksQueryParams) (book *[]models.Book, err error)
+	GetBooksByUserId(params *models.BooksQueryParams) (book *[]models.Book, err error)
 }
 
 type booksService struct {
@@ -22,15 +22,19 @@ func NewBooksService(r repositories.BooksRepository) BooksService {
 	}
 }
 
-func (s *booksService) CreateBook(book *forms.BookCreateForm) (id *string, err error) {
-
-	bookData := models.Book{
+func mapFormToBookModel(book *forms.BookCreateForm) *models.Book {
+	return &models.Book{
 		Description: book.Description,
 		Name:        book.Name,
 		UserId:      book.UserId,
 	}
+}
 
-	id, err = s.r.Create(&bookData)
+func (s *booksService) CreateBook(book *forms.BookCreateForm) (id *string, err error) {
+
+	bookData := mapFormToBookModel(book)
+
+	id, err = s.r.Create(bookData)
 
 	if err != nil {
 		return nil, err
@@ -49,8 +53,8 @@ func (s *booksService) GetBookById(id string) (book *models.Book, err error) {
 	return book, nil
 }
 
-func (s *booksService) GetBookByUserId(params *models.BooksQueryParams) (books *[]models.Book, err error) {
-	books, err = s.r.GetByUserId(params)
+func (s *booksService) GetBooksByUserId(params *models.BooksQueryParams) (books *[]models.Book, err error) {
+	books, err = s.r.GetListByUserId(params)
 
 	if err != nil {
 		return nil, err

@@ -3,7 +3,14 @@ package router
 import (
 	"fmt"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/compress"
+	"github.com/gofiber/fiber/v2/middleware/encryptcookie"
+	"github.com/gofiber/fiber/v2/middleware/limiter"
 	"github.com/gofiber/fiber/v2/middleware/logger"
+	"os"
+
+	"time"
+
 	"github.com/jmoiron/sqlx"
 	"github.com/rogerok/wflow-backend/configs"
 	"github.com/rogerok/wflow-backend/handlers"
@@ -20,7 +27,20 @@ func SetupRouter(app *fiber.App) (*sqlx.DB, error) {
 		return nil, dbError
 	}
 
-	app.Use(logger.New())
+	app.Use(logger.New(),
+		limiter.New(limiter.Config{
+			Max:        1000,
+			Expiration: 60 * time.Second,
+		}),
+		compress.New(),
+		encryptcookie.New(encryptcookie.Config{
+			Key: os.Getenv("COOKIES_SECRET_KEY"),
+		}),
+		func(c *fiber.Ctx) error {
+			c.Set("Accept-Encoding", "gzip, deflate, br")
+			return c.Next()
+		},
+	)
 
 	api := app.Group("/api")
 	usersRepo := repositories.NewUserRepository(db)
@@ -44,10 +64,23 @@ func SetupRouter(app *fiber.App) (*sqlx.DB, error) {
 	users.Get("/", handlers.UsersList(userService))
 	users.Get("/:id", handlers.UserById(userService))
 
-	books := api.Group("/books")
+	books := apiPrivate.Group("/books")
 	booksRepo := repositories.NewBooksRepository(db)
 	booksService := services.NewBooksService(booksRepo)
 	books.Post("/", handlers.CreateBook(booksService))
+	books.Get("/", handlers.GetBooksList(booksService))
+
+	goals := apiPrivate.Group("/goals")
+	goalsRepo := repositories.NewGoalsRepository(db)
+	goalsService := services.NewGoalsService(goalsRepo)
+	goals.Post("/", handlers.CreateGoal(goalsService))
+	goals.Get("/", handlers.GetListByBookId(goalsService))
+	goals.Get("/:id", handlers.GetGoalById(goalsService))
+
+	reports := apiPrivate.Group("/reports")
+	reportsRepo := repositories.NewReportsRepository(db)
+	reportsService := services.NewReportsService(reportsRepo, goalsRepo)
+	reports.Post("/", handlers.CreateReport(reportsService))
 
 	return db, nil
 

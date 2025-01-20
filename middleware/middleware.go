@@ -3,18 +3,19 @@ package middleware
 import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/rogerok/wflow-backend/utils"
-	"strings"
 )
 
 func AuthMiddleware() fiber.Handler {
 	return func(ctx *fiber.Ctx) error {
-		token := ctx.Get("Authorization")
 
-		if token == "" {
-			return utils.GetUnauthorizedErr(ctx)
+		token, err := utils.ExtractTokenFromHeader(ctx)
+
+		if err != nil {
+			return err
+
 		}
 
-		_, err := utils.ParseToken(strings.Split(token, "Bearer ")[1])
+		_, err = utils.ParseToken(token)
 
 		if err != nil {
 			return utils.GetUnauthorizedErr(ctx)
