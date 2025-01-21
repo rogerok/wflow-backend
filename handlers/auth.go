@@ -128,6 +128,22 @@ func Logout(s services.AuthService) fiber.Handler {
 			return utils.GetBadRequestError(ctx, errors_utils.ErrRefreshTokenNotFound)
 		}
 
+		cookies := fiber.Cookie{
+			Name:     "rt",
+			Value:    "",
+			Expires:  utils.CreateRefreshTokenExpTime(),
+			Secure:   true,
+			HTTPOnly: true,
+		}
+
+		err = s.Logout(rt)
+
+		if err != nil {
+			return utils.GetBadRequestError(ctx, errors_utils.ErrRefreshTokenNotFound)
+		}
+
+		ctx.Cookie(&cookies)
+
 		return ctx.SendStatus(http.StatusOK)
 	}
 }

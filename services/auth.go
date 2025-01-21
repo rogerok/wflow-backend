@@ -77,5 +77,6 @@ func (s *authService) Refresh(rt string) (resp *responses.TokensModel, err error
 }
 
 func (s *authService) Logout(rt string) error {
-	return nil
+
+	return s.authRepo.RevokeSession(rt)
 }
