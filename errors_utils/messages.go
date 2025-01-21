@@ -8,6 +8,7 @@ const (
 	ErrQueryParamsParsing   = "Ошибка обработки параметров запроса"
 	ErrEmailOrPasswordError = "Пользователя с таким email не существует, или введён неверный пароль"
 	ErrInvalidToken         = "Неверный токен"
+	ErrTokenExpired         = "Токен просрочен"
 	ErrUnauthorized         = "Требуется авторизация"
 	ErrRefreshTokenNotFound = "Refresh token не найден"
 	ErrLogout               = "Ошибка разлогина"

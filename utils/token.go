@@ -21,12 +21,12 @@ func CreateToken(id uuid.UUID) (string, error) {
 
 }
 
-func GetRefreshTokenExpTime() time.Time {
+func CreateRefreshTokenExpTime() time.Time {
 	return time.Now().Add(time.Hour * 24)
 }
 
 func CreateRefreshToken(id uuid.UUID) (string, error) {
-	claims := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{"sub": id, "exp": GetRefreshTokenExpTime().Unix()})
+	claims := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{"sub": id, "exp": CreateRefreshTokenExpTime().Unix()})
 
 	rt, err := claims.SignedString([]byte(os.Getenv("SECRET_KEY")))
 

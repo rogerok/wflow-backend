@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"github.com/gofiber/fiber/v2"
 	"github.com/rogerok/wflow-backend/errors_utils"
 	"github.com/rogerok/wflow-backend/forms"
@@ -8,6 +9,7 @@ import (
 	"github.com/rogerok/wflow-backend/services"
 	"github.com/rogerok/wflow-backend/utils"
 	"net/http"
+	"time"
 )
 
 // AuthUser Auth user godoc
@@ -40,7 +42,7 @@ func AuthUser(s services.AuthService) fiber.Handler {
 		cookies := fiber.Cookie{
 			Name:     "rt",
 			Value:    tokens.RefreshToken,
-			Expires:  utils.GetRefreshTokenExpTime(),
+			Expires:  utils.CreateRefreshTokenExpTime(),
 			Secure:   true,
 			HTTPOnly: true,
 		}
@@ -67,6 +69,23 @@ func Refresh(s services.AuthService) fiber.Handler {
 			return utils.GetUnauthorizedErr(ctx)
 		}
 
+		claims, err := utils.ParseToken(rt)
+		if err != nil {
+			return utils.GetBadRequestError(ctx, errors_utils.ErrInvalidToken)
+		}
+
+		expTime, err := claims.GetExpirationTime()
+
+		if err != nil {
+			return utils.GetBadRequestError(ctx, errors_utils.ErrInvalidToken)
+		}
+
+		fmt.Println(expTime.Time)
+
+		if time.Now().After(expTime.Time) {
+			return utils.GetBadRequestError(ctx, errors_utils.ErrTokenExpired)
+		}
+
 		tokens, err := s.Refresh(rt)
 
 		if err != nil {
@@ -76,7 +95,7 @@ func Refresh(s services.AuthService) fiber.Handler {
 		cookies := fiber.Cookie{
 			Name:     "rt",
 			Value:    tokens.RefreshToken,
-			Expires:  utils.GetRefreshTokenExpTime(),
+			Expires:  utils.CreateRefreshTokenExpTime(),
 			Secure:   true,
 			HTTPOnly: true,
 		}
