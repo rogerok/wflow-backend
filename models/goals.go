@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-type GoalsModel struct {
+type Goals struct {
 	BookId       string    `json:"book_id" db:"book_id"`
 	CreatedAt    time.Time `json:"createdAt" db:"created_at"`
 	EndDate      time.Time `json:"endDate" db:"end_date"`

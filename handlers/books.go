@@ -48,12 +48,12 @@ func CreateBook(s services.BooksService) fiber.Handler {
 }
 
 // GetBooksList Books list godoc
-// @Summary Get books list
-// @Description Get books list
+// @Summary GetBooksList
+// @Description GetBooksList
 // @Tags Books
 // @Produce json
-// @Param models.BooksQueryParams
-// @Success 200 {object} []models.Books
+// @Param RequestBody body models.BooksQueryParams true "Query parameters for books list"
+// @Success 200 {object} []models.Book
 // @Router /private/books [get]
 func GetBooksList(s services.BooksService) fiber.Handler {
 	return func(ctx *fiber.Ctx) error {

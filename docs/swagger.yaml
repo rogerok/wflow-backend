@@ -63,6 +63,29 @@ definitions:
         minLength: 2
         type: string
     type: object
+  forms.ReportCreateForm:
+    properties:
+      bookId:
+        type: string
+      description:
+        maxLength: 255
+        minLength: 2
+        type: string
+      goalId:
+        type: string
+      title:
+        maxLength: 255
+        minLength: 2
+        type: string
+      wordsAmount:
+        minimum: 2
+        type: integer
+    required:
+    - bookId
+    - goalId
+    - title
+    - wordsAmount
+    type: object
   forms.Social:
     properties:
       instagram:
@@ -113,6 +136,66 @@ definitions:
     - pseudonym
     - socialLinks
     type: object
+  models.Book:
+    properties:
+      createdAt:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      updatedAt:
+        type: string
+      userId:
+        type: string
+    type: object
+  models.BooksQueryParams:
+    properties:
+      orderBy:
+        default: createdAt desc
+        type: string
+    type: object
+  models.Goals:
+    properties:
+      book_id:
+        type: string
+      createdAt:
+        type: string
+      description:
+        type: string
+      endDate:
+        type: string
+      goalWords:
+        type: integer
+      id:
+        type: string
+      isExpired:
+        type: boolean
+      isFinished:
+        type: boolean
+      startDate:
+        type: string
+      title:
+        type: string
+      updatedAt:
+        type: string
+      userId:
+        type: string
+      wordsPerDay:
+        type: number
+      writtenWords:
+        type: integer
+    type: object
+  models.GoalsQueryParams:
+    properties:
+      bookId:
+        type: string
+      orderBy:
+        default: createdAt desc
+        type: string
+    type: object
   models.Pseudonym:
     properties:
       firstName:
@@ -138,8 +221,6 @@ definitions:
       email:
         type: string
       firstName:
-        type: string
-      id:
         type: string
       lastName:
         type: string
@@ -189,6 +270,21 @@ paths:
       summary: Auth User
       tags:
       - Auth
+  /api/auth/logout:
+    post:
+      description: Logout User
+      parameters:
+      - description: body
+        in: body
+        name: request
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Logout User
+      tags:
+      - Auth
   /api/auth/refresh:
     post:
       description: Refresh User token
@@ -207,6 +303,27 @@ paths:
       tags:
       - Auth
   /private/books:
+    get:
+      description: GetBooksList
+      parameters:
+      - description: Query parameters for books list
+        in: body
+        name: RequestBody
+        required: true
+        schema:
+          $ref: '#/definitions/models.BooksQueryParams'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Book'
+            type: array
+      summary: GetBooksList
+      tags:
+      - Books
     post:
       description: CreateBook Book
       parameters:
@@ -227,8 +344,29 @@ paths:
       tags:
       - Books
   /private/goals:
+    get:
+      description: Get goals list by book id
+      parameters:
+      - description: Query parameters for goals list
+        in: body
+        name: RequestBody
+        required: true
+        schema:
+          $ref: '#/definitions/models.GoalsQueryParams'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Goals'
+            type: array
+      summary: Get goals list by book id
+      tags:
+      - Goals
     post:
-      description: Create goal for book Goal
+      description: Create goal for book Goals
       parameters:
       - description: body
         in: body
@@ -244,6 +382,45 @@ paths:
       summary: CreateGoal Goals
       tags:
       - Goals
+  /private/goals/{id}:
+    get:
+      description: Get goal by id
+      parameters:
+      - description: Goals id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Goals'
+      summary: Get by id
+      tags:
+      - Goals
+  /private/reports:
+    post:
+      description: CreateReport Report
+      parameters:
+      - description: body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/forms.ReportCreateForm'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/responses.CreateResponse'
+      summary: CreateReport Report
+      tags:
+      - Report
   /private/users:
     get:
       description: Get users list

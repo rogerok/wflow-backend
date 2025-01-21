@@ -80,7 +80,7 @@ func Refresh(s services.AuthService) fiber.Handler {
 			return utils.GetBadRequestError(ctx, errors_utils.ErrInvalidToken)
 		}
 
-		fmt.Println(expTime.Time)
+		fmt.Print(expTime.Time)
 
 		if time.Now().After(expTime.Time) {
 			return utils.GetBadRequestError(ctx, errors_utils.ErrTokenExpired)
@@ -106,6 +106,14 @@ func Refresh(s services.AuthService) fiber.Handler {
 	}
 }
 
+// Logout  user godoc
+// @Summary Logout User
+// @Description Logout User
+// @Tags Auth
+// @Param request body nil false "body"
+// @Produce json
+// @Success 200
+// @Router /api/auth/logout [post]
 func Logout(s services.AuthService) fiber.Handler {
 	return func(ctx *fiber.Ctx) error {
 		rt := ctx.Cookies("rt")
