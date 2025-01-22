@@ -4,11 +4,8 @@ import (
 	"fmt"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/compress"
-	"github.com/gofiber/fiber/v2/middleware/encryptcookie"
 	"github.com/gofiber/fiber/v2/middleware/limiter"
 	"github.com/gofiber/fiber/v2/middleware/logger"
-	"os"
-
 	"time"
 
 	"github.com/jmoiron/sqlx"
@@ -33,9 +30,6 @@ func SetupRouter(app *fiber.App) (*sqlx.DB, error) {
 			Expiration: 60 * time.Second,
 		}),
 		compress.New(),
-		encryptcookie.New(encryptcookie.Config{
-			Key: os.Getenv("COOKIES_SECRET_KEY"),
-		}),
 		func(c *fiber.Ctx) error {
 			c.Set("Accept-Encoding", "gzip, deflate, br")
 			return c.Next()
@@ -55,6 +49,7 @@ func SetupRouter(app *fiber.App) (*sqlx.DB, error) {
 
 	auth.Post("/", handlers.AuthUser(authService))
 	auth.Post("/refresh", handlers.Refresh(authService))
+	auth.Post("/logout", handlers.Logout(authService))
 
 	// private
 	apiPrivate := api.Group("/private", middleware.AuthMiddleware())

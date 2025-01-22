@@ -11,7 +11,7 @@ import (
 
 // CreateGoal godoc
 // @Summary CreateGoal Goals
-// @Description Create goal for book Goal
+// @Description Create goal for book Goals
 // @Tags Goals
 // @Param request body forms.GoalCreateForm true "body"
 // Produce json
@@ -52,7 +52,7 @@ func CreateGoal(s services.GoalsService) fiber.Handler {
 // @Description Get goals list by book id
 // @Tags Goals
 // @Produce json
-// @Param models.GoalsQueryParams
+// @Param RequestBody body models.GoalsQueryParams true "Query parameters for goals list"
 // @Success 200 {object} []models.Goals
 // @Router /private/goals [get]
 func GetListByBookId(s services.GoalsService) fiber.Handler {
@@ -80,7 +80,7 @@ func GetListByBookId(s services.GoalsService) fiber.Handler {
 // @Description Get goal by id
 // @Tags Goals
 // @Produce json
-// @Param id path string true "Goal id"
+// @Param id path string true "Goals id"
 // @Success 200 {object} models.Goals
 // @Router /private/goals/{id} [get]
 func GetGoalById(s services.GoalsService) fiber.Handler {

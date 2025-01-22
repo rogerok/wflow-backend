@@ -48,7 +48,8 @@ func (r authRepository) GetByRefreshToken(refreshToken string) (session *models.
 }
 
 func (r authRepository) RevokeSession(refreshToken string) error {
-	query := `UPDATE sessions SET 'is_revoked' = true WHERE 'refresh_token' = $1`
+
+	query := `UPDATE sessions SET is_revoked = true WHERE refresh_token = $1`
 
 	_, err := r.db.Exec(query, refreshToken)
 
