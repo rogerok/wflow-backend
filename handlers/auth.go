@@ -144,6 +144,6 @@ func Logout(s services.AuthService) fiber.Handler {
 
 		ctx.Cookie(&cookies)
 
-		return ctx.SendStatus(http.StatusOK)
+		return utils.GetSuccessResponse(ctx, true)
 	}
 }

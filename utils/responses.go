@@ -14,6 +14,10 @@ func GetResponseCreate(ctx *fiber.Ctx, id *string) error {
 	return ctx.Status(fiber.StatusCreated).JSON(responses.CreateResponse{Id: id})
 }
 
+func GetSuccessResponse(ctx *fiber.Ctx, isSuccess bool) error {
+	return ctx.Status(fiber.StatusOK).JSON(responses.StatusResponse{Status: isSuccess})
+}
+
 func GetBadRequestError(ctx *fiber.Ctx, err string) error {
 	return GetResponseError(ctx, errors_utils.New(fiber.StatusBadRequest, err))
 }
