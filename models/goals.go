@@ -15,7 +15,7 @@ type Goals struct {
 	StartDate    time.Time `json:"startDate" db:"start_date"`
 	Title        string    `json:"title" db:"title"`
 	UpdatedAt    time.Time `json:"updatedAt" db:"updated_at"`
-	UserId       string    `json:"userId,omitempty" db:"user_id"`
+	UserId       string    `json:"-" db:"user_id"`
 	Description  *string   `json:"description" db:"description"`
 	WrittenWords int       `json:"writtenWords" db:"written_words"`
 	WordsPerDay  float64   `json:"wordsPerDay" db:"words_per_day"`
