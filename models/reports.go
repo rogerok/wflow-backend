@@ -9,7 +9,7 @@ type ReportsModel struct {
 	WordsAmount int     `json:"wordsAmount" db:"words_amount"`
 	Description *string `json:"description" db:"description"`
 	Title       string  `json:"title" db:"title"`
-	UserId      string  `json:"userId" db:"user_id"`
+	UserId      string  `json:"-" db:"user_id"`
 }
 
 type ReportsQueryParams struct {
