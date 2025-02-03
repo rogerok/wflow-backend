@@ -24,6 +24,7 @@ type Goals struct {
 
 type GoalsQueryParams struct {
 	PaginationQuery `json:"-"`
-	OrderBy         string `json:"orderBy" default:"createdAt desc"`
-	BookId          string `json:"bookId"`
+	OrderBy         string    `json:"orderBy" default:"createdAt desc"`
+	BookId          *string   `json:"bookId"`
+	UserId          uuid.UUID `json:"-"`
 }

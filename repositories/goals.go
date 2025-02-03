@@ -9,7 +9,7 @@ import (
 type GoalsRepository interface {
 	Create(goal *models.Goals) (id *string, err error)
 	GetById(id string) (goal *models.Goals, err error)
-	GetListByBookId(params *models.GoalsQueryParams) (goals *[]models.Goals, err error)
+	GetList(params *models.GoalsQueryParams) (goals *[]models.Goals, err error)
 	RecalculateGoal(wordsAmount int, goalId string) (err error)
 }
 
@@ -47,21 +47,35 @@ func (r *goalsRepository) GetById(id string) (goal *models.Goals, err error) {
 	return goal, nil
 }
 
-func (r *goalsRepository) GetListByBookId(params *models.GoalsQueryParams) (goals *[]models.Goals, err error) {
+func (r *goalsRepository) GetList(params *models.GoalsQueryParams) (goals *[]models.Goals, err error) {
 
-	query := `SELECT created_at, updated_at, end_date, goal_words, id, is_finished, start_date, title, description, written_words, words_per_day, is_expired FROM goals WHERE book_id=$1`
+	query := `
+				SELECT
+					created_at, updated_at, end_date, goal_words, id,
+					is_finished, start_date, title, description, written_words,
+					words_per_day, is_expired, book_id
+				FROM goals WHERE user_id=$1
+			`
+
+	var queryParams []interface{}
+	queryParams = append(queryParams, params.UserId)
+
+	if params.BookId != nil && *params.BookId != "" {
+		query += " AND book_id=$2"
+		queryParams = append(queryParams, *params.BookId)
+	}
+
 	query += utils.GetAllowedOrderBy(params.OrderBy)
 
 	offset, selectAll := utils.HandlePagination(params.Page, params.PerPage)
 
 	goals = &[]models.Goals{}
 
-	if selectAll {
-		err = r.db.Select(goals, query, params.BookId)
-	} else {
+	if !selectAll {
 		query += utils.GetOffsetLimitQuery(params.PerPage, offset)
-		err = r.db.Select(goals, query, params.BookId)
 	}
+
+	err = r.db.Select(goals, query, queryParams...)
 
 	if err != nil {
 		return nil, err

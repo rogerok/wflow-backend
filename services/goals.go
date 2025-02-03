@@ -9,7 +9,7 @@ import (
 
 type GoalsService interface {
 	Create(goal *forms.GoalCreateForm) (id *string, err error)
-	GetListByBookId(params *models.GoalsQueryParams) (goals *[]models.Goals, err error)
+	GetList(params *models.GoalsQueryParams) (goals *[]models.Goals, err error)
 	GetById(id string) (goal *models.Goals, err error)
 }
 
@@ -51,8 +51,8 @@ func (s *goalsService) Create(goal *forms.GoalCreateForm) (id *string, err error
 
 }
 
-func (s *goalsService) GetListByBookId(params *models.GoalsQueryParams) (goals *[]models.Goals, err error) {
-	goals, err = s.r.GetListByBookId(params)
+func (s *goalsService) GetList(params *models.GoalsQueryParams) (goals *[]models.Goals, err error) {
+	goals, err = s.r.GetList(params)
 
 	if err != nil {
 		return nil, err
