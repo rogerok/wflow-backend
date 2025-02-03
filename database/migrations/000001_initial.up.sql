@@ -3,7 +3,15 @@ create extension if not exists "uuid-ossp";
 set timezone = "Europe/Moscow";
 
 
-CREATE TYPE role AS ENUM ('admin', 'user');
+DO
+$$
+    BEGIN
+        CREATE TYPE role as ENUM ('admin', 'user');
+    EXCEPTION
+        WHEN duplicate_object THEN null;
+    END
+$$;
+
 
 CREATE TABLE IF NOT EXISTS users
 (
@@ -31,9 +39,10 @@ CREATE TABLE IF NOT EXISTS sessions
     user_id       uuid unique                                            not null primary key,
     created_at    timestamp(0) default (now())::timestamp with time zone not null,
     updated_at    timestamp(0) default (now())::timestamp with time zone not null,
-    refresh_token TEXT                                                   not null,
-    is_revoked    BOOLEAN                                                not null default false,
-    CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users (id)
+    refresh_token text                                                   not null,
+    is_revoked    boolean                                                not null default false,
+
+    CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
 );
 
 
@@ -44,8 +53,9 @@ CREATE TABLE IF NOT EXISTS books
     id          uuid         default uuid_generate_v4()                not null primary key,
     created_at  timestamp(0) default (now())::timestamp with time zone not null,
     updated_at  timestamp(0) default (now())::timestamp with time zone not null,
-    book_name   VARCHAR(255)                                           not NULL,
-    CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users (id)
+    book_name   varchar(255)                                           not NULL,
+
+    CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
 );
 
 
@@ -66,8 +76,8 @@ CREATE TABLE IF NOT EXISTS goals
     words_per_day real                                                   not null,
     is_expired    boolean      default false,
 
-    CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users (id),
-    CONSTRAINT fk_book FOREIGN KEY (book_id) REFERENCES books (id)
+    CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
+    CONSTRAINT fk_book FOREIGN KEY (book_id) REFERENCES books (id) ON DELETE CASCADE
 );
 
 CREATE INDEX idx_user_id ON goals (user_id);
@@ -86,12 +96,54 @@ CREATE TABLE IF NOT EXISTS reports
     user_id      uuid                                                   not null,
     description  varchar(255),
 
-    CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users (id),
-    CONSTRAINT fk_book FOREIGN KEY (book_id) REFERENCES books (id),
-    CONSTRAINT fk_goal FOREIGN KEY (goal_id) REFERENCES goals (id)
+    CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
+    CONSTRAINT fk_book FOREIGN KEY (book_id) REFERENCES books (id) ON DELETE CASCADE,
+    CONSTRAINT fk_goal FOREIGN KEY (goal_id) REFERENCES goals (id) ON DELETE CASCADE
 );
 
-
+CREATE INDEX idx_books_user_id ON books (user_id);
+CREATE INDEX idx_goals_book_id ON goals (book_id);
 CREATE INDEX idx_reports_book_id ON reports (book_id);
 CREATE INDEX idx_reports_goal_id ON reports (goal_id);
 CREATE INDEX idx_reports_user_id ON reports (user_id);
+
+
+CREATE OR REPLACE FUNCTION update_timestamp()
+    RETURNS TRIGGER AS
+$$
+BEGIN
+    NEW.updated_at = now();
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+
+CREATE TRIGGER update_users_timestamp
+    BEFORE UPDATE
+    ON users
+    FOR EACH ROW
+EXECUTE FUNCTION update_timestamp();
+
+CREATE TRIGGER update_sessions_timestamp
+    BEFORE UPDATE
+    ON sessions
+    FOR EACH ROW
+EXECUTE FUNCTION update_timestamp();
+
+CREATE TRIGGER update_books_timestamp
+    BEFORE UPDATE
+    ON books
+    FOR EACH ROW
+EXECUTE FUNCTION update_timestamp();
+
+CREATE TRIGGER update_goals_timestamp
+    BEFORE UPDATE
+    ON goals
+    FOR EACH ROW
+EXECUTE FUNCTION update_timestamp();
+
+CREATE TRIGGER update_reports_timestamp
+    BEFORE UPDATE
+    ON reports
+    FOR EACH ROW
+EXECUTE FUNCTION update_timestamp();

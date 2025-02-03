@@ -47,7 +47,7 @@ func CreateGoal(s services.GoalsService) fiber.Handler {
 	}
 }
 
-// GetListByBookId  Goals list godoc
+// GetList  Goals list godoc
 // @Summary Get goals list by book id
 // @Description Get goals list by book id
 // @Tags Goals
@@ -55,17 +55,25 @@ func CreateGoal(s services.GoalsService) fiber.Handler {
 // @Param RequestBody body models.GoalsQueryParams true "Query parameters for goals list"
 // @Success 200 {object} []models.Goals
 // @Router /private/goals [get]
-func GetListByBookId(s services.GoalsService) fiber.Handler {
+func GetList(s services.GoalsService) fiber.Handler {
 	return func(ctx *fiber.Ctx) error {
+		userId, err := utils.GetSubjectUuidFromHeaderToken(ctx)
+
+		if err != nil {
+			return err
+		}
+
 		params := new(models.GoalsQueryParams)
 
-		err := ctx.QueryParser(params)
+		err = ctx.QueryParser(params)
+
+		params.UserId = userId
 
 		if err != nil {
 			return utils.GetParamsParsingError(ctx)
 		}
 
-		goals, err := s.GetListByBookId(params)
+		goals, err := s.GetList(params)
 
 		if err != nil {
 			return utils.GetBadRequestError(ctx, err.Error())
