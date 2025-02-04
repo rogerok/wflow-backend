@@ -13,7 +13,7 @@ type ReportsModel struct {
 }
 
 type ReportsQueryParams struct {
-	PaginationQuery `json:"-"`
-	OrderBy         string `json:"orderBy" default:"createdAt desc"`
-	GoalId          string `json:"goalId" validate:"required"`
+	PaginationQuery
+	OrderBy string `json:"orderBy" default:"createdAt desc"`
+	GoalId  string `json:"goalId" validate:"required"`
 }

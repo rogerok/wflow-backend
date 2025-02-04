@@ -6,7 +6,7 @@ import (
 )
 
 type Goals struct {
-	BookId       string    `json:"book_id" db:"book_id"`
+	BookId       string    `json:"bookId" db:"book_id"`
 	CreatedAt    time.Time `json:"createdAt" db:"created_at"`
 	EndDate      time.Time `json:"endDate" db:"end_date"`
 	GoalWords    int       `json:"goalWords" db:"goal_words"`
@@ -23,8 +23,8 @@ type Goals struct {
 }
 
 type GoalsQueryParams struct {
-	PaginationQuery `json:"-"`
-	OrderBy         string    `json:"orderBy" default:"createdAt desc"`
-	BookId          *string   `json:"bookId"`
-	UserId          uuid.UUID `json:"-"`
+	PaginationQuery
+	OrderBy string    `json:"orderBy" default:"createdAt desc"`
+	BookId  *string   `json:"bookId"`
+	UserId  uuid.UUID `json:"-"`
 }

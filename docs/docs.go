@@ -567,9 +567,6 @@ const docTemplate = `{
                 },
                 "updatedAt": {
                     "type": "string"
-                },
-                "userId": {
-                    "type": "string"
                 }
             }
         },
@@ -585,7 +582,7 @@ const docTemplate = `{
         "models.Goals": {
             "type": "object",
             "properties": {
-                "book_id": {
+                "bookId": {
                     "type": "string"
                 },
                 "createdAt": {
@@ -618,9 +615,6 @@ const docTemplate = `{
                 "updatedAt": {
                     "type": "string"
                 },
-                "userId": {
-                    "type": "string"
-                },
                 "wordsPerDay": {
                     "type": "number"
                 },
@@ -638,6 +632,12 @@ const docTemplate = `{
                 "orderBy": {
                     "type": "string",
                     "default": "createdAt desc"
+                },
+                "page": {
+                    "type": "integer"
+                },
+                "perPage": {
+                    "type": "integer"
                 }
             }
         },

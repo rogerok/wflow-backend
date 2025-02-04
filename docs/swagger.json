@@ -561,9 +561,6 @@
                 },
                 "updatedAt": {
                     "type": "string"
-                },
-                "userId": {
-                    "type": "string"
                 }
             }
         },
@@ -579,7 +576,7 @@
         "models.Goals": {
             "type": "object",
             "properties": {
-                "book_id": {
+                "bookId": {
                     "type": "string"
                 },
                 "createdAt": {
@@ -612,9 +609,6 @@
                 "updatedAt": {
                     "type": "string"
                 },
-                "userId": {
-                    "type": "string"
-                },
                 "wordsPerDay": {
                     "type": "number"
                 },
@@ -632,6 +626,12 @@
                 "orderBy": {
                     "type": "string",
                     "default": "createdAt desc"
+                },
+                "page": {
+                    "type": "integer"
+                },
+                "perPage": {
+                    "type": "integer"
                 }
             }
         },
