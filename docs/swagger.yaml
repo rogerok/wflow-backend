@@ -148,8 +148,6 @@ definitions:
         type: string
       updatedAt:
         type: string
-      userId:
-        type: string
     type: object
   models.BooksQueryParams:
     properties:
@@ -159,7 +157,7 @@ definitions:
     type: object
   models.Goals:
     properties:
-      book_id:
+      bookId:
         type: string
       createdAt:
         type: string
@@ -181,8 +179,6 @@ definitions:
         type: string
       updatedAt:
         type: string
-      userId:
-        type: string
       wordsPerDay:
         type: number
       writtenWords:
@@ -195,6 +191,10 @@ definitions:
       orderBy:
         default: createdAt desc
         type: string
+      page:
+        type: integer
+      perPage:
+        type: integer
     type: object
   models.Pseudonym:
     properties:

@@ -63,6 +63,6 @@ func (p *Pseudonym) Value() (driver.Value, error) {
 }
 
 type UserQueryParams struct {
-	PaginationQuery `json:"-"`
-	OrderBy         string `json:"-" default:"createdAt desc"`
+	PaginationQuery
+	OrderBy string `json:"-" default:"createdAt desc"`
 }
