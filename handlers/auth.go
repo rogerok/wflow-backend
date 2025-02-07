@@ -71,19 +71,19 @@ func Refresh(s services.AuthService) fiber.Handler {
 
 		claims, err := utils.ParseToken(rt)
 		if err != nil {
-			return utils.GetBadRequestError(ctx, errors_utils.ErrInvalidToken)
+			return utils.GetUnauthorizedErr(ctx)
 		}
 
 		expTime, err := claims.GetExpirationTime()
 
 		if err != nil {
-			return utils.GetBadRequestError(ctx, errors_utils.ErrInvalidToken)
+			return utils.GetUnauthorizedErr(ctx)
 		}
 
 		fmt.Print(expTime.Time)
 
 		if time.Now().After(expTime.Time) {
-			return utils.GetBadRequestError(ctx, errors_utils.ErrTokenExpired)
+			return utils.GetUnauthorizedErr(ctx)
 		}
 
 		tokens, err := s.Refresh(rt)

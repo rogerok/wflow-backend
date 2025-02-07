@@ -17,7 +17,7 @@ import (
 // @title Word-Flow app API
 // @version 1.0
 // @description Word-Flow API docs
-// @host 127.0.0.1:5000
+// @host  http://127.0.0.1:5000
 // @BasePath /api
 func main() {
 
