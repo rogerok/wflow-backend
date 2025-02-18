@@ -24,6 +24,12 @@ func NewGoalsService(r repositories.GoalsRepository) GoalsService {
 }
 
 func mapFormToModel(goal *forms.GoalCreateForm) *models.Goals {
+	days := int(goal.EndDate.Sub(goal.StartDate).Hours() / 24)
+
+	if days <= 0 {
+		days = days + 1
+	}
+
 	return &models.Goals{
 		BookId:       goal.BookId,
 		EndDate:      goal.EndDate,
@@ -34,7 +40,7 @@ func mapFormToModel(goal *forms.GoalCreateForm) *models.Goals {
 		UserId:       goal.UserId,
 		Description:  goal.Description,
 		WrittenWords: 0,
-		WordsPerDay:  utils.CalculateWordsPerDay(goal.GoalWords, int(goal.EndDate.Sub(goal.StartDate).Hours())),
+		WordsPerDay:  utils.CalculateWordsPerDay(goal.GoalWords, days),
 	}
 }
 

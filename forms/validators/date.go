@@ -24,7 +24,7 @@ func ForbidPastDateValidator(fl validator.FieldLevel) (check bool) {
 		return false
 	}
 
-	return !fieldValue.Before(time.Now().Truncate(24 * time.Hour))
+	return !fieldValue.Truncate(24 * time.Hour).Before(time.Now().Truncate(24 * time.Hour))
 
 }
 
