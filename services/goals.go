@@ -5,6 +5,7 @@ import (
 	"github.com/rogerok/wflow-backend/models"
 	"github.com/rogerok/wflow-backend/repositories"
 	"github.com/rogerok/wflow-backend/utils"
+	"time"
 )
 
 type GoalsService interface {
@@ -24,11 +25,10 @@ func NewGoalsService(r repositories.GoalsRepository) GoalsService {
 }
 
 func mapFormToModel(goal *forms.GoalCreateForm) *models.Goals {
-	days := int(goal.EndDate.Sub(goal.StartDate).Hours() / 24)
+	start := time.Date(goal.StartDate.Year(), goal.StartDate.Month(), goal.StartDate.Day(), 0, 0, 0, 0, goal.StartDate.Location())
+	end := time.Date(goal.EndDate.Year(), goal.EndDate.Month(), goal.EndDate.Day(), 0, 0, 0, 0, goal.EndDate.Location())
 
-	if days <= 0 {
-		days = days + 1
-	}
+	days := int(end.Sub(start).Hours()/24) + 1
 
 	return &models.Goals{
 		BookId:       goal.BookId,

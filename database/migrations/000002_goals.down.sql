@@ -1,0 +1,1 @@
+ALTER TABLE goals ALTER COLUMN goal_words TYPE REAL;

@@ -44,10 +44,6 @@ func CalculateWordsPerDay(totalWords int, totalDays int) float64 {
 	wordsPerDay := float64(totalWords) / float64(totalDays)
 	roundedWordsPerDay := math.Round(wordsPerDay*10) / 10
 
-	if int(roundedWordsPerDay*float64(totalDays)) < totalWords {
-		roundedWordsPerDay += 0.1
-	}
-
 	return roundedWordsPerDay
 
 }
