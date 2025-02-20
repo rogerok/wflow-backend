@@ -99,14 +99,14 @@ const docTemplate = `{
         },
         "/private/books": {
             "get": {
-                "description": "GetBooksList",
+                "description": "Get book by id",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "Books"
                 ],
-                "summary": "GetBooksList",
+                "summary": "Get book by id",
                 "parameters": [
                     {
                         "description": "Query parameters for books list",
@@ -155,6 +155,35 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/responses.CreateResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/private/books/{id}": {
+            "get": {
+                "description": "GetBooksList",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Books"
+                ],
+                "summary": "GetBooksList",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Book ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Book"
                         }
                     }
                 }
@@ -576,6 +605,12 @@ const docTemplate = `{
                 "orderBy": {
                     "type": "string",
                     "default": "createdAt desc"
+                },
+                "page": {
+                    "type": "integer"
+                },
+                "perPage": {
+                    "type": "integer"
                 }
             }
         },
@@ -720,7 +755,7 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
-	Host:             "127.0.0.1:5000",
+	Host:             "http://127.0.0.1:5000",
 	BasePath:         "/api",
 	Schemes:          []string{},
 	Title:            "Word-Flow app API",

@@ -9,7 +9,7 @@ import (
 
 type BooksRepository interface {
 	Create(book *models.Book) (id *string, err error)
-	GetById(id string) (book *models.Book, err error)
+	GetById(id string, userId string) (book *models.Book, err error)
 	GetListByUserId(params *models.BooksQueryParams) (book *[]models.Book, err error)
 }
 
@@ -30,10 +30,12 @@ func (r *booksRepository) Create(book *models.Book) (id *string, err error) {
 	return id, err
 }
 
-func (r *booksRepository) GetById(id string) (book *models.Book, err error) {
-	query := `SELECT * FROM books WHERE id=$1`
+func (r *booksRepository) GetById(id string, userId string) (book *models.Book, err error) {
+	query := `SELECT * FROM books WHERE id=$1 AND user_id=$2`
 
-	err = r.db.Get(&book, query, id)
+	book = &models.Book{}
+
+	err = r.db.Get(book, query, id, userId)
 
 	if err != nil {
 		return nil, errors_utils.GetDBNotFoundError("Book")
