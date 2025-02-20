@@ -8,7 +8,7 @@ import (
 
 type BooksService interface {
 	CreateBook(book *forms.BookCreateForm) (id *string, err error)
-	GetBookById(id string) (book *models.Book, err error)
+	GetBookById(id string, userId string) (book *models.Book, err error)
 	GetBooksByUserId(params *models.BooksQueryParams) (book *[]models.Book, err error)
 }
 
@@ -43,8 +43,8 @@ func (s *booksService) CreateBook(book *forms.BookCreateForm) (id *string, err e
 	return id, nil
 }
 
-func (s *booksService) GetBookById(id string) (book *models.Book, err error) {
-	book, err = s.r.GetById(id)
+func (s *booksService) GetBookById(id string, userId string) (book *models.Book, err error) {
+	book, err = s.r.GetById(id, userId)
 
 	if err != nil {
 		return nil, err

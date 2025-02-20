@@ -154,6 +154,10 @@ definitions:
       orderBy:
         default: createdAt desc
         type: string
+      page:
+        type: integer
+      perPage:
+        type: integer
     type: object
   models.Goals:
     properties:
@@ -243,7 +247,7 @@ definitions:
       token:
         type: string
     type: object
-host: 127.0.0.1:5000
+host: http://127.0.0.1:5000
 info:
   contact: {}
   description: Word-Flow API docs
@@ -304,7 +308,7 @@ paths:
       - Auth
   /private/books:
     get:
-      description: GetBooksList
+      description: Get book by id
       parameters:
       - description: Query parameters for books list
         in: body
@@ -321,7 +325,7 @@ paths:
             items:
               $ref: '#/definitions/models.Book'
             type: array
-      summary: GetBooksList
+      summary: Get book by id
       tags:
       - Books
     post:
@@ -341,6 +345,25 @@ paths:
           schema:
             $ref: '#/definitions/responses.CreateResponse'
       summary: CreateBook Book
+      tags:
+      - Books
+  /private/books/{id}:
+    get:
+      description: GetBooksList
+      parameters:
+      - description: Book ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Book'
+      summary: GetBooksList
       tags:
       - Books
   /private/goals:

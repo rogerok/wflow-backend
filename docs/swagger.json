@@ -6,7 +6,7 @@
         "contact": {},
         "version": "1.0"
     },
-    "host": "127.0.0.1:5000",
+    "host": "http://127.0.0.1:5000",
     "basePath": "/api",
     "paths": {
         "/api/auth": {
@@ -93,14 +93,14 @@
         },
         "/private/books": {
             "get": {
-                "description": "GetBooksList",
+                "description": "Get book by id",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "Books"
                 ],
-                "summary": "GetBooksList",
+                "summary": "Get book by id",
                 "parameters": [
                     {
                         "description": "Query parameters for books list",
@@ -149,6 +149,35 @@
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/responses.CreateResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/private/books/{id}": {
+            "get": {
+                "description": "GetBooksList",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Books"
+                ],
+                "summary": "GetBooksList",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Book ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Book"
                         }
                     }
                 }
@@ -570,6 +599,12 @@
                 "orderBy": {
                     "type": "string",
                     "default": "createdAt desc"
+                },
+                "page": {
+                    "type": "integer"
+                },
+                "perPage": {
+                    "type": "integer"
                 }
             }
         },
