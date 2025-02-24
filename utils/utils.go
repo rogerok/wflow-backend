@@ -40,8 +40,8 @@ func GetOffsetLimitQuery(perPage int, offset int) string {
 	return fmt.Sprintf(" LIMIT %v OFFSET %v", perPage, offset)
 }
 
-func CalculateWordsPerDay(totalWords int, totalDays int) float64 {
-	wordsPerDay := float64(totalWords) / float64(totalDays)
+func CalculateWordsPerDay(totalWords float64, totalDays int) float64 {
+	wordsPerDay := totalWords / float64(totalDays)
 	roundedWordsPerDay := math.Round(wordsPerDay*10) / 10
 
 	return roundedWordsPerDay

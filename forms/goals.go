@@ -9,7 +9,7 @@ import (
 
 type GoalCreateForm struct {
 	EndDate     time.Time `json:"endDate" validate:"required,gt=StartDate,pastDateValidator"`
-	GoalWords   int       `json:"goalWords" validate:"required,min=2"`
+	GoalWords   float64   `json:"goalWords" validate:"required,min=2"`
 	StartDate   time.Time `json:"startDate" validate:"required,pastDateValidator"`
 	Title       string    `json:"title" validate:"required,min=2,max=255"`
 	UserId      string    `json:"-"`

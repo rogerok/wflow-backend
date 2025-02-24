@@ -10,7 +10,7 @@ type GoalsRepository interface {
 	Create(goal *models.Goals) (id *string, err error)
 	GetById(id string) (goal *models.Goals, err error)
 	GetList(params *models.GoalsQueryParams) (goals *[]models.Goals, err error)
-	RecalculateGoal(wordsAmount int, goalId string) (err error)
+	RecalculateGoal(wordsAmount float64, goalId string) (err error)
 }
 
 type goalsRepository struct {
@@ -85,26 +85,29 @@ func (r *goalsRepository) GetList(params *models.GoalsQueryParams) (goals *[]mod
 
 }
 
-func (r *goalsRepository) RecalculateGoal(wordsAmount int, goalId string) (err error) {
+func (r *goalsRepository) RecalculateGoal(wordsAmount float64, goalId string) (err error) {
 
 	query := `
-				WITH calculated AS (SELECT id,
-										   written_words + $1                                   AS updated_written_words,
-										   ROUND((goal_words / (written_words + $1)) * 10) / 10 AS calculated_words_per_day
-									FROM goals
-									WHERE id = $2)
+				
+	WITH calculated AS (
+					SELECT id,
+						   written_words + $1 AS updated_written_words,
+						   EXTRACT(DAY FROM end_date - start_date) AS total_days,
+						   (goal_words - (written_words + $1)) / NULLIF(EXTRACT(DAY FROM end_date - start_date), 0) AS calculated_words_per_day
+					FROM goals
+					WHERE id = $2
+				)
 				UPDATE goals
 				SET written_words = updated_written_words,
-					words_per_day =
+					words_per_day = 
 						CASE
 							WHEN calculated_words_per_day < 1 THEN 0
 							WHEN calculated_words_per_day * updated_written_words < goal_words
 								THEN calculated_words_per_day + 0.1
 							ELSE calculated_words_per_day
-							END
+						END
 				FROM calculated
-				WHERE goals.id = calculated.id;
-				`
+				WHERE goals.id = calculated.id;`
 
 	_, err = r.db.Exec(query, wordsAmount, goalId)
 
