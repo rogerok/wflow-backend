@@ -29,14 +29,14 @@ func CreateReport(s services.Reports) fiber.Handler {
 		}
 		formData.UserId = userId
 
-		id, err := s.Create(formData)
+		resp, err := s.Create(formData)
 
 		if err != nil {
 			return utils.GetBadRequestError(ctx, err.Error())
 
 		}
 
-		return utils.GetResponseCreate(ctx, id)
+		return ctx.Status(fiber.StatusCreated).JSON(resp)
 
 	}
 }

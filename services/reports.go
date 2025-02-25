@@ -7,7 +7,7 @@ import (
 )
 
 type Reports interface {
-	Create(report *forms.ReportCreateForm) (id *string, err error)
+	Create(report *forms.ReportCreateForm) (model *models.ReportCreateResponseModel, err error)
 	GetListByGoalId(params *models.ReportsQueryParams) (reports *[]models.ReportsModel, err error)
 }
 
@@ -31,23 +31,29 @@ func mapFormToReportModel(report *forms.ReportCreateForm) *models.ReportsModel {
 	}
 }
 
-func (s *reportsService) Create(report *forms.ReportCreateForm) (id *string, err error) {
+func (s *reportsService) Create(report *forms.ReportCreateForm) (resp *models.ReportCreateResponseModel, err error) {
 
 	reportData := mapFormToReportModel(report)
 
-	id, err = s.rReports.Create(reportData)
+	id, err := s.rReports.Create(reportData)
 
 	if err != nil {
 		return nil, err
 	}
 
-	err = s.rGoals.RecalculateGoal(reportData.WordsAmount, reportData.GoalId)
+	stats, err := s.rGoals.RecalculateGoal(reportData.WordsAmount, reportData.GoalId)
 
 	if err != nil {
 		return nil, err
 	}
 
-	return id, nil
+	return &models.ReportCreateResponseModel{
+		Id: *id,
+		GoalStats: models.GoalStats{
+			WrittenWords: stats.WrittenWords,
+			WordsPerDay:  stats.WordsPerDay,
+		},
+	}, nil
 }
 
 func (s *reportsService) GetListByGoalId(params *models.ReportsQueryParams) (reports *[]models.ReportsModel, err error) {

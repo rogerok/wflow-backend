@@ -5,6 +5,11 @@ import (
 	"time"
 )
 
+type GoalStats struct {
+	WrittenWords float64 `json:"writtenWords" db:"written_words"`
+	WordsPerDay  float64 `json:"wordsPerDay" db:"words_per_day"`
+}
+
 type Goals struct {
 	BookId       string    `json:"bookId" db:"book_id"`
 	CreatedAt    time.Time `json:"createdAt" db:"created_at"`
@@ -17,9 +22,9 @@ type Goals struct {
 	UpdatedAt    time.Time `json:"updatedAt" db:"updated_at"`
 	UserId       string    `json:"-" db:"user_id"`
 	Description  *string   `json:"description" db:"description"`
+	IsExpired    bool      `json:"isExpired" db:"is_expired"`
 	WrittenWords float64   `json:"writtenWords" db:"written_words"`
 	WordsPerDay  float64   `json:"wordsPerDay" db:"words_per_day"`
-	IsExpired    bool      `json:"isExpired" db:"is_expired"`
 }
 
 type GoalsQueryParams struct {
