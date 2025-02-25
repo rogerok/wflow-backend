@@ -12,6 +12,11 @@ type ReportsModel struct {
 	UserId      string  `json:"-" db:"user_id"`
 }
 
+type ReportCreateResponseModel struct {
+	Id string `json:"id"`
+	GoalStats
+}
+
 type ReportsQueryParams struct {
 	PaginationQuery
 	OrderBy string `json:"orderBy" default:"createdAt desc"`

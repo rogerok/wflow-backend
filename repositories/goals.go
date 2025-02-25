@@ -10,7 +10,7 @@ type GoalsRepository interface {
 	Create(goal *models.Goals) (id *string, err error)
 	GetById(id string) (goal *models.Goals, err error)
 	GetList(params *models.GoalsQueryParams) (goals *[]models.Goals, err error)
-	RecalculateGoal(wordsAmount float64, goalId string) (err error)
+	RecalculateGoal(wordsAmount float64, goalId string) (goalStats *models.GoalStats, err error)
 }
 
 type goalsRepository struct {
@@ -85,7 +85,9 @@ func (r *goalsRepository) GetList(params *models.GoalsQueryParams) (goals *[]mod
 
 }
 
-func (r *goalsRepository) RecalculateGoal(wordsAmount float64, goalId string) (err error) {
+func (r *goalsRepository) RecalculateGoal(wordsAmount float64, goalId string) (goalStats *models.GoalStats, err error) {
+
+	goalStats = &models.GoalStats{}
 
 	query := `
 				
@@ -107,9 +109,18 @@ func (r *goalsRepository) RecalculateGoal(wordsAmount float64, goalId string) (e
 							ELSE calculated_words_per_day
 						END
 				FROM calculated
-				WHERE goals.id = calculated.id;`
+				WHERE goals.id = calculated.id RETURNING written_words, words_per_day`
 
-	_, err = r.db.Exec(query, wordsAmount, goalId)
+	rows, err := r.db.Queryx(query, wordsAmount, goalId)
 
-	return err
+	if rows != nil {
+		for rows.Next() {
+			err := rows.Scan(&goalStats.WrittenWords, &goalStats.WordsPerDay)
+			if err != nil {
+				return nil, err
+			}
+		}
+	}
+
+	return goalStats, err
 }
