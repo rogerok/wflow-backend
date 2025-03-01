@@ -31,13 +31,13 @@ func main() {
 
 	app := fiber.New()
 
-	// TODO: setup cors before release
 	app.Use(cors.New(cors.Config{
-		AllowMethods: "GET,POST,PUT,DELETE,PATCH,OPTIONS",
-		//AllowHeaders:     "Content-Type,Authorization,Accept,Origin,Access-Control-Request-Method,Access-Control-Request-Headers,Access-Control-Allow-Origin,Access-Control-Allow-Headers,Access-Control-Allow-Methods,Access-Control-Expose-Headers,Access-Control-Max-Age,Access-Control-Allow-Credentials",
-		AllowHeaders: "Content-Type,Authorization,Accept,Origin,Access-Control-Request-Method,Access-Control-Request-Headers,Access-Control-Allow-Headers,Access-Control-Allow-Methods,Access-Control-Expose-Headers,Access-Control-Max-Age,Access-Control-Allow-Credentials",
-		//AllowCredentials: true,
-		AllowOrigins: "*",
+		AllowMethods:     "GET,POST,PUT,DELETE,PATCH,OPTIONS",
+		AllowHeaders:     "Content-Type,Authorization,Accept,Origin,Access-Control-Request-Method,Access-Control-Request-Headers,Access-Control-Allow-Origin,Access-Control-Allow-Headers,Access-Control-Allow-Methods,Access-Control-Expose-Headers,Access-Control-Max-Age,Access-Control-Allow-Credentials",
+		AllowCredentials: true,
+		AllowOriginsFunc: func(origin string) bool {
+			return origin == "http://193.46.217.8:4200" || origin == "https://localhost:4200"
+		},
 	}))
 
 	db, err := router.SetupRouter(app)
