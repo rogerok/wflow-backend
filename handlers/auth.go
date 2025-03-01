@@ -9,6 +9,7 @@ import (
 	"github.com/rogerok/wflow-backend/services"
 	"github.com/rogerok/wflow-backend/utils"
 	"net/http"
+	"time"
 )
 
 // AuthUser Auth user godoc
@@ -25,11 +26,11 @@ func AuthUser(s services.AuthService) fiber.Handler {
 		formData := new(forms.AuthForm)
 
 		if err := ctx.BodyParser(formData); err != nil {
-			return utils.GetBadRequestError(ctx, err)
+			return utils.GetBadRequestError(ctx, err.Error())
 		}
 
 		if err := formData.Validate(); err != nil {
-			return utils.GetBadRequestError(ctx, err)
+			return utils.GetBadRequestError(ctx, err.Error())
 		}
 
 		tokens, err := s.Auth(formData)
@@ -41,7 +42,7 @@ func AuthUser(s services.AuthService) fiber.Handler {
 		cookies := fiber.Cookie{
 			Name:     "rt",
 			Value:    tokens.RefreshToken,
-			Expires:  utils.GetRefreshTokenExpTime(),
+			Expires:  utils.CreateRefreshTokenExpTime(),
 			Secure:   true,
 			HTTPOnly: true,
 		}
@@ -64,22 +65,37 @@ func Refresh(s services.AuthService) fiber.Handler {
 	return func(ctx *fiber.Ctx) error {
 		rt := ctx.Cookies("rt")
 
-		fmt.Printf(rt)
-
 		if rt == "" {
+			return utils.GetUnauthorizedErr(ctx)
+		}
+
+		claims, err := utils.ParseToken(rt)
+		if err != nil {
+			return utils.GetUnauthorizedErr(ctx)
+		}
+
+		expTime, err := claims.GetExpirationTime()
+
+		if err != nil {
+			return utils.GetUnauthorizedErr(ctx)
+		}
+
+		fmt.Print(expTime.Time)
+
+		if time.Now().After(expTime.Time) {
 			return utils.GetUnauthorizedErr(ctx)
 		}
 
 		tokens, err := s.Refresh(rt)
 
 		if err != nil {
-			return utils.GetBadRequestError(ctx, err)
+			return utils.GetUnauthorizedErr(ctx)
 		}
 
 		cookies := fiber.Cookie{
 			Name:     "rt",
 			Value:    tokens.RefreshToken,
-			Expires:  utils.GetRefreshTokenExpTime(),
+			Expires:  utils.CreateRefreshTokenExpTime(),
 			Secure:   true,
 			HTTPOnly: true,
 		}
@@ -87,5 +103,47 @@ func Refresh(s services.AuthService) fiber.Handler {
 		ctx.Cookie(&cookies)
 
 		return ctx.Status(http.StatusOK).JSON(models.AuthResponse{Token: tokens.Token})
+	}
+}
+
+// Logout  user godoc
+// @Summary Logout User
+// @Description Logout User
+// @Tags Auth
+// @Param request body nil false "body"
+// @Produce json
+// @Success 200
+// @Router /api/auth/logout [post]
+func Logout(s services.AuthService) fiber.Handler {
+	return func(ctx *fiber.Ctx) error {
+		rt := ctx.Cookies("rt")
+
+		if rt == "" {
+			return utils.GetBadRequestError(ctx, errors_utils.ErrRefreshTokenNotFound)
+		}
+
+		_, err := utils.ParseToken(rt)
+
+		if err != nil {
+			return utils.GetBadRequestError(ctx, errors_utils.ErrRefreshTokenNotFound)
+		}
+
+		cookies := fiber.Cookie{
+			Name:     "rt",
+			Value:    "",
+			Expires:  utils.CreateRefreshTokenExpTime(),
+			Secure:   true,
+			HTTPOnly: true,
+		}
+
+		err = s.Logout(rt)
+
+		if err != nil {
+			return utils.GetBadRequestError(ctx, errors_utils.ErrRefreshTokenNotFound)
+		}
+
+		ctx.Cookie(&cookies)
+
+		return utils.GetSuccessResponse(ctx, true)
 	}
 }

@@ -6,12 +6,12 @@ import (
 )
 
 type AuthSession struct {
-	UserId       uuid.UUID  `json:"userId" db:"user_id"`
-	IsRevoked    bool       `json:"isRevoked" db:"is_revoked"`
-	ExpiresAt    *time.Time `json:"expiresAt" db:"expires_at"`
 	CreatedAt    time.Time  `json:"createdAt" db:"created_at"`
-	UpdatedAt    time.Time  `json:"updated_at" db:"updated_at"`
+	ExpiresAt    *time.Time `json:"expiresAt" db:"expires_at"`
+	IsRevoked    bool       `json:"isRevoked" db:"is_revoked"`
 	RefreshToken string     `json:"refreshToken" db:"refresh_token"`
+	UpdatedAt    time.Time  `json:"updated_at" db:"updated_at"`
+	UserId       uuid.UUID  `json:"userId" db:"user_id"`
 }
 
 type AuthResponse struct {

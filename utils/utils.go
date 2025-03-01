@@ -1,15 +1,10 @@
 package utils
 
 import (
-	"github.com/go-playground/validator/v10"
-	"github.com/golang-jwt/jwt/v5"
-	"github.com/google/uuid"
-	"github.com/rogerok/wflow-backend/errors_utils"
-	"github.com/rogerok/wflow-backend/responses"
+	"fmt"
+	"github.com/rogerok/wflow-backend/constants"
 	"golang.org/x/crypto/bcrypt"
-	"os"
-	"regexp"
-	"time"
+	"math"
 )
 
 func HashPassword(password string) ([]byte, error) {
@@ -33,90 +28,22 @@ func HandlePagination(page int, perPage int) (offset int, selectAll bool) {
 	return offset, selectAll
 }
 
-func PasswordValidator(fl validator.FieldLevel) (check bool) {
-
-	patterns := []string{
-		`[0-9]`,                          // At least one digit
-		`[a-z]`,                          // At least one lowercase letter
-		`[A-Z]`,                          // At least one uppercase letter
-		`[!@#$%^&*()\-+}{'"[:;>.?/_~\|]`, // At least one special character
+func GetAllowedOrderBy(order string) string {
+	if constants.AllowedOrderBy[order] == "" {
+		return " ORDER BY created_at desc "
 	}
 
-	password := fl.Field().String()
-
-	for _, pattern := range patterns {
-		match, _ := regexp.MatchString(pattern, password)
-		if !match {
-			return false
-		}
-	}
-
-	return true
-
+	return " ODER BY " + constants.AllowedOrderBy[order]
 }
 
-func CreateToken(id uuid.UUID) (string, error) {
-	claims := jwt.NewWithClaims(jwt.SigningMethodHS256,
-		jwt.MapClaims{"sub": id, "iss": "wflow", "exp": time.Now().Add(time.Minute * 60).Unix(), "iat": time.Now().Unix()})
-
-	token, err := claims.SignedString([]byte(os.Getenv("SECRET_KEY")))
-
-	return token, err
-
+func GetOffsetLimitQuery(perPage int, offset int) string {
+	return fmt.Sprintf(" LIMIT %v OFFSET %v", perPage, offset)
 }
 
-func GetRefreshTokenExpTime() time.Time {
-	return time.Now().Add(time.Hour * 24)
-}
+func CalculateWordsPerDay(totalWords float64, totalDays int) float64 {
+	wordsPerDay := totalWords / float64(totalDays)
+	roundedWordsPerDay := math.Round(wordsPerDay*10) / 10
 
-func CreateRefreshToken(id uuid.UUID) (string, error) {
-	claims := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{"sub": id, "exp": GetRefreshTokenExpTime().Unix()})
+	return roundedWordsPerDay
 
-	rt, err := claims.SignedString([]byte(os.Getenv("SECRET_KEY")))
-
-	return rt, err
-}
-
-func CreateTokenPair(id uuid.UUID) (*responses.TokensModel, error) {
-
-	token, err := CreateToken(id)
-
-	if err != nil {
-		return nil, err
-	}
-
-	refreshToken, err := CreateRefreshToken(id)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return &responses.TokensModel{
-		Token:        token,
-		RefreshToken: refreshToken,
-	}, err
-
-}
-
-func ParseToken(tokenString string) (jwt.MapClaims, error) {
-
-	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, errors_utils.CreateErrorMsg(errors_utils.ErrTokenParse)
-		}
-
-		return []byte(os.Getenv("SECRET_KEY")), nil
-
-	})
-
-	if err != nil {
-		return nil, err
-	}
-
-	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-		return claims, nil
-
-	}
-
-	return nil, err
 }

@@ -9,7 +9,7 @@ import (
 	_ "github.com/lib/pq"
 	"github.com/rogerok/wflow-backend/configs"
 	_ "github.com/rogerok/wflow-backend/docs"
-	"github.com/rogerok/wflow-backend/forms"
+	"github.com/rogerok/wflow-backend/forms/validators"
 	"github.com/rogerok/wflow-backend/router"
 	"os"
 )
@@ -17,7 +17,7 @@ import (
 // @title Word-Flow app API
 // @version 1.0
 // @description Word-Flow API docs
-// @host 127.0.0.1:5000
+// @host  http://127.0.0.1:5000
 // @BasePath /api
 func main() {
 
@@ -27,7 +27,7 @@ func main() {
 		return
 	}
 
-	forms.InitTranslation()
+	validators.InitTranslation()
 
 	app := fiber.New()
 

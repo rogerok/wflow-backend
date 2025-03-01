@@ -1,7 +1,6 @@
 package services
 
 import (
-	"fmt"
 	"github.com/rogerok/wflow-backend/errors_utils"
 	"github.com/rogerok/wflow-backend/forms"
 	"github.com/rogerok/wflow-backend/repositories"
@@ -12,6 +11,7 @@ import (
 type AuthService interface {
 	Auth(user *forms.AuthForm) (resp *responses.TokensModel, err error)
 	Refresh(rt string) (resp *responses.TokensModel, err error)
+	Logout(rt string) error
 }
 
 type authService struct {
@@ -54,7 +54,11 @@ func (s *authService) Refresh(rt string) (resp *responses.TokensModel, err error
 	sessionData, err := s.authRepo.GetByRefreshToken(rt)
 
 	if err != nil {
-		return nil, errors_utils.CreateErrorMsg(errors_utils.RefreshTokenNotFound)
+		return nil, errors_utils.CreateErrorMsg(errors_utils.ErrRefreshTokenNotFound)
+	}
+
+	if sessionData.IsRevoked == true {
+		return nil, errors_utils.CreateErrorMsg(errors_utils.ErrUnauthorized)
 	}
 
 	tokens, err := utils.CreateTokenPair(sessionData.UserId)
@@ -69,7 +73,10 @@ func (s *authService) Refresh(rt string) (resp *responses.TokensModel, err error
 		return nil, err
 	}
 
-	fmt.Printf("%v", sessionData)
-
 	return tokens, nil
+}
+
+func (s *authService) Logout(rt string) error {
+
+	return s.authRepo.RevokeSession(rt)
 }

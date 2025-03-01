@@ -1,7 +1,6 @@
 package repositories
 
 import (
-	"fmt"
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 	"github.com/rogerok/wflow-backend/models"
@@ -10,6 +9,7 @@ import (
 type AuthRepository interface {
 	CreateSession(userId uuid.UUID, refreshToken string) error
 	GetByRefreshToken(refreshToken string) (session *models.AuthSession, err error)
+	RevokeSession(refreshToken string) error
 }
 
 type authRepository struct {
@@ -33,8 +33,6 @@ func (r authRepository) CreateSession(userId uuid.UUID, refreshToken string) err
 
 	_, err := r.db.Exec(query, userId, refreshToken)
 
-	fmt.Printf("%v", err)
-
 	return err
 }
 
@@ -47,4 +45,13 @@ func (r authRepository) GetByRefreshToken(refreshToken string) (session *models.
 	err = r.db.Get(session, query, refreshToken)
 
 	return session, err
+}
+
+func (r authRepository) RevokeSession(refreshToken string) error {
+
+	query := `UPDATE sessions SET is_revoked = true WHERE refresh_token = $1`
+
+	_, err := r.db.Exec(query, refreshToken)
+
+	return err
 }

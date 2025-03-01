@@ -46,6 +46,30 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/auth/logout": {
+            "post": {
+                "description": "Logout User",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Logout User",
+                "parameters": [
+                    {
+                        "description": "body",
+                        "name": "request",
+                        "in": "body"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
         "/api/auth/refresh": {
             "post": {
                 "description": "Refresh User token",
@@ -68,6 +92,218 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/responses.TokenResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/private/books": {
+            "get": {
+                "description": "Get book by id",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Books"
+                ],
+                "summary": "Get book by id",
+                "parameters": [
+                    {
+                        "description": "Query parameters for books list",
+                        "name": "RequestBody",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.BooksQueryParams"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Book"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "CreateBook Book",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Books"
+                ],
+                "summary": "CreateBook Book",
+                "parameters": [
+                    {
+                        "description": "body",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/forms.BookCreateForm"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/responses.CreateResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/private/books/{id}": {
+            "get": {
+                "description": "GetBooksList",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Books"
+                ],
+                "summary": "GetBooksList",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Book ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Book"
+                        }
+                    }
+                }
+            }
+        },
+        "/private/goals": {
+            "get": {
+                "description": "Get goals list by book id",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Goals"
+                ],
+                "summary": "Get goals list by book id",
+                "parameters": [
+                    {
+                        "description": "Query parameters for goals list",
+                        "name": "RequestBody",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.GoalsQueryParams"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Goals"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Create goal for book Goals",
+                "tags": [
+                    "Goals"
+                ],
+                "summary": "CreateGoal Goals",
+                "parameters": [
+                    {
+                        "description": "body",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/forms.GoalCreateForm"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/responses.CreateResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/private/goals/{id}": {
+            "get": {
+                "description": "Get goal by id",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Goals"
+                ],
+                "summary": "Get by id",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Goals id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Goals"
+                        }
+                    }
+                }
+            }
+        },
+        "/private/reports": {
+            "post": {
+                "description": "CreateReport Report",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Report"
+                ],
+                "summary": "CreateReport Report",
+                "parameters": [
+                    {
+                        "description": "body",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/forms.ReportCreateForm"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/responses.CreateResponse"
                         }
                     }
                 }
@@ -127,14 +363,14 @@ const docTemplate = `{
         },
         "/users": {
             "post": {
-                "description": "Create User",
+                "description": "CreateUser User",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "User"
                 ],
-                "summary": "Create User",
+                "summary": "CreateUser User",
                 "parameters": [
                     {
                         "description": "body",
@@ -176,6 +412,59 @@ const docTemplate = `{
                 }
             }
         },
+        "forms.BookCreateForm": {
+            "type": "object",
+            "required": [
+                "name"
+            ],
+            "properties": {
+                "description": {
+                    "type": "string",
+                    "maxLength": 255,
+                    "minLength": 2
+                },
+                "name": {
+                    "type": "string",
+                    "maxLength": 255,
+                    "minLength": 1
+                }
+            }
+        },
+        "forms.GoalCreateForm": {
+            "type": "object",
+            "required": [
+                "bookId",
+                "endDate",
+                "goalWords",
+                "startDate",
+                "title"
+            ],
+            "properties": {
+                "bookId": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string",
+                    "maxLength": 255,
+                    "minLength": 2
+                },
+                "endDate": {
+                    "type": "string"
+                },
+                "goalWords": {
+                    "type": "integer",
+                    "minimum": 2
+                },
+                "startDate": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string",
+                    "maxLength": 255,
+                    "minLength": 2
+                }
+            }
+        },
         "forms.Pseudonym": {
             "type": "object",
             "properties": {
@@ -188,6 +477,37 @@ const docTemplate = `{
                     "type": "string",
                     "maxLength": 50,
                     "minLength": 2
+                }
+            }
+        },
+        "forms.ReportCreateForm": {
+            "type": "object",
+            "required": [
+                "bookId",
+                "goalId",
+                "title",
+                "wordsAmount"
+            ],
+            "properties": {
+                "bookId": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string",
+                    "maxLength": 255,
+                    "minLength": 2
+                },
+                "goalId": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string",
+                    "maxLength": 255,
+                    "minLength": 2
+                },
+                "wordsAmount": {
+                    "type": "integer",
+                    "minimum": 2
                 }
             }
         },
@@ -259,6 +579,103 @@ const docTemplate = `{
                 }
             }
         },
+        "models.Book": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.BooksQueryParams": {
+            "type": "object",
+            "properties": {
+                "orderBy": {
+                    "type": "string",
+                    "default": "createdAt desc"
+                },
+                "page": {
+                    "type": "integer"
+                },
+                "perPage": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.Goals": {
+            "type": "object",
+            "properties": {
+                "bookId": {
+                    "type": "string"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "endDate": {
+                    "type": "string"
+                },
+                "goalWords": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "isExpired": {
+                    "type": "boolean"
+                },
+                "isFinished": {
+                    "type": "boolean"
+                },
+                "startDate": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "wordsPerDay": {
+                    "type": "number"
+                },
+                "writtenWords": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.GoalsQueryParams": {
+            "type": "object",
+            "properties": {
+                "bookId": {
+                    "type": "string"
+                },
+                "orderBy": {
+                    "type": "string",
+                    "default": "createdAt desc"
+                },
+                "page": {
+                    "type": "integer"
+                },
+                "perPage": {
+                    "type": "integer"
+                }
+            }
+        },
         "models.Pseudonym": {
             "type": "object",
             "properties": {
@@ -297,9 +714,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "firstName": {
-                    "type": "string"
-                },
-                "id": {
                     "type": "string"
                 },
                 "lastName": {
@@ -341,7 +755,7 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
-	Host:             "127.0.0.1:5000",
+	Host:             "http://127.0.0.1:5000",
 	BasePath:         "/api",
 	Schemes:          []string{},
 	Title:            "Word-Flow app API",
