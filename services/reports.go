@@ -25,8 +25,6 @@ func mapFormToReportModel(report *forms.ReportCreateForm) *models.ReportsModel {
 		BookId:      report.BookId,
 		GoalId:      report.GoalId,
 		WordsAmount: report.WordsAmount,
-		Title:       report.Title,
-		Description: report.Description,
 		UserId:      report.UserId,
 	}
 }
