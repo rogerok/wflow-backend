@@ -7,8 +7,6 @@ type ReportsModel struct {
 	Id          string  `json:"id" db:"id"`
 	UpdatedAt   string  `json:"updatedAt" db:"updated_at"`
 	WordsAmount float64 `json:"wordsAmount" db:"words_amount"`
-	Description *string `json:"description" db:"description"`
-	Title       string  `json:"title" db:"title"`
 	UserId      string  `json:"-" db:"user_id"`
 }
 

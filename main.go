@@ -36,7 +36,7 @@ func main() {
 		AllowHeaders:     "Content-Type,Authorization,Accept,Origin,Access-Control-Request-Method,Access-Control-Request-Headers,Access-Control-Allow-Origin,Access-Control-Allow-Headers,Access-Control-Allow-Methods,Access-Control-Expose-Headers,Access-Control-Max-Age,Access-Control-Allow-Credentials",
 		AllowCredentials: true,
 		AllowOriginsFunc: func(origin string) bool {
-			return origin == "http://193.46.217.8:4200" || origin == "https://localhost:4200"
+			return origin == "http://193.46.217.8:4200" || origin == "http://localhost:4200"
 		},
 	}))
 
