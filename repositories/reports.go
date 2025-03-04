@@ -20,9 +20,9 @@ func NewReportsRepository(db *sqlx.DB) ReportsRepository {
 }
 
 func (r *reportsRepository) Create(report *models.ReportsModel) (id *string, err error) {
-	query := `INSERT INTO reports (book_id, goal_id, user_id, words_amount, title, description) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id`
+	query := `INSERT INTO reports (book_id, goal_id, user_id, words_amount) VALUES ($1, $2, $3, $4) RETURNING id`
 
-	err = r.db.QueryRow(query, report.BookId, report.GoalId, report.UserId, report.WordsAmount, report.Title, report.Description).Scan(&id)
+	err = r.db.QueryRow(query, report.BookId, report.GoalId, report.UserId, report.WordsAmount).Scan(&id)
 
 	if err != nil {
 		return nil, err
@@ -33,7 +33,7 @@ func (r *reportsRepository) Create(report *models.ReportsModel) (id *string, err
 }
 
 func (r *reportsRepository) GetListByGoalId(params *models.ReportsQueryParams) (reports *[]models.ReportsModel, err error) {
-	query := `SELECT words_amount, title, description FROM reports WHERE goal_id=$1`
+	query := `SELECT words_amount, created_at, updated_at FROM reports WHERE goal_id=$1`
 
 	query += utils.GetAllowedOrderBy(params.OrderBy)
 
