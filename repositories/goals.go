@@ -1,6 +1,7 @@
 package repositories
 
 import (
+	"fmt"
 	"github.com/jmoiron/sqlx"
 	"github.com/rogerok/wflow-backend/models"
 	"github.com/rogerok/wflow-backend/utils"
@@ -11,6 +12,7 @@ type GoalsRepository interface {
 	GetById(id string) (goal *models.Goals, err error)
 	GetList(params *models.GoalsQueryParams) (goals *[]models.Goals, err error)
 	RecalculateGoal(wordsAmount float64, goalId string) (goalStats *models.GoalStats, err error)
+	RecalculateGoals()
 }
 
 type goalsRepository struct {
@@ -123,4 +125,46 @@ func (r *goalsRepository) RecalculateGoal(wordsAmount float64, goalId string) (g
 	}
 
 	return goalStats, err
+}
+
+func (r *goalsRepository) RecalculateGoals() {
+	query := `
+		WITH calculated AS (
+			SELECT
+				id,
+				goal_words - written_words AS written_goal_difference,
+				CASE
+					WHEN EXTRACT(DAY FROM (end_date - now() + INTERVAL '1 day')) < 1 THEN NULL
+					ELSE (goal_words - written_words) / EXTRACT(DAY FROM (end_date - now() + INTERVAL '1 day'))
+					END AS calculated_words_per_day
+			FROM goals
+		)
+		UPDATE goals
+		SET
+			words_per_day =
+				CASE
+				    WHEN EXTRACT(DAY FROM (end_date - now() + INTERVAL '1 day')) < 0 AND calculated.written_goal_difference > 0 THEN 0
+					WHEN calculated.written_goal_difference < 1 THEN words_per_day
+					WHEN calculated.calculated_words_per_day IS NULL THEN words_per_day
+					ELSE calculated.calculated_words_per_day
+					END,
+			is_expired =
+				CASE
+					WHEN EXTRACT(DAY FROM (end_date - now() + INTERVAL '1 day')) < 0 AND calculated.written_goal_difference > 0 THEN true
+					ELSE false
+					END,
+			is_finished =
+				CASE
+					WHEN goals.written_words >= goals.goal_words THEN true
+					ELSE false
+					END
+		FROM calculated
+		WHERE goals.id = calculated.id;
+			`
+
+	_, err := r.db.Queryx(query)
+
+	if err != nil {
+		fmt.Println(err)
+	}
 }

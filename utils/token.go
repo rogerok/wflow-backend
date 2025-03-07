@@ -22,7 +22,7 @@ func CreateToken(id uuid.UUID) (string, error) {
 }
 
 func CreateRefreshTokenExpTime() time.Time {
-	return time.Now().Add(time.Hour * 24)
+	return time.Now().Add(time.Hour * 24 * 30)
 }
 
 func CreateRefreshToken(id uuid.UUID) (string, error) {

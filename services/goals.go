@@ -12,6 +12,7 @@ type GoalsService interface {
 	Create(goal *forms.GoalCreateForm) (id *string, err error)
 	GetList(params *models.GoalsQueryParams) (goals *[]models.Goals, err error)
 	GetById(id string) (goal *models.Goals, err error)
+	RecalculateGoals()
 }
 
 type goalsService struct {
@@ -75,4 +76,8 @@ func (s *goalsService) GetById(id string) (goal *models.Goals, err error) {
 	}
 
 	return goal, nil
+}
+
+func (s *goalsService) RecalculateGoals() {
+	s.r.RecalculateGoals()
 }

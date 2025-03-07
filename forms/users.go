@@ -13,10 +13,10 @@ type Pseudonym struct {
 }
 
 type Social struct {
-	Instagram *string `json:"instagram" validate:"omitempty,url"`
-	Telegram  *string `json:"telegram" validate:"omitempty,url"`
-	TikTok    *string `json:"tiktok" validate:"omitempty,url"`
-	Vk        *string `json:"vk" validate:"omitempty,url"`
+	Instagram *string `json:"instagram" validate:"omitempty,max=250"`
+	Telegram  *string `json:"telegram" validate:"omitempty,max=250"`
+	TikTok    *string `json:"tiktok" validate:"omitempty,max=250"`
+	Vk        *string `json:"vk" validate:"omitempty,max=250"`
 }
 
 type UserCreateForm struct {
