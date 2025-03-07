@@ -143,7 +143,8 @@ func (r *goalsRepository) RecalculateGoals() {
 		SET
 			words_per_day =
 				CASE
-				    WHEN EXTRACT(DAY FROM (end_date - now() + INTERVAL '1 day')) < 0 AND calculated.written_goal_difference > 0 THEN 0
+				    WHEN EXTRACT(DAY FROM (end_date - now() + INTERVAL '1 day')) < 0 THEN 0
+				    WHEN calculated.written_goal_difference < 0 THEN 0
 					WHEN calculated.written_goal_difference < 1 THEN words_per_day
 					WHEN calculated.calculated_words_per_day IS NULL THEN words_per_day
 					ELSE calculated.calculated_words_per_day
