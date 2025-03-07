@@ -79,6 +79,10 @@ func SetupRouter(app *fiber.App) (*sqlx.DB, error) {
 	reportsService := services.NewReportsService(reportsRepo, goalsRepo)
 	reports.Post("/", handlers.CreateReport(reportsService))
 
+	// inner commands
+	command := app.Group("/command")
+	command.Get("/goals", handlers.RecalculateGoals(goalsService))
+
 	return db, nil
 
 }
