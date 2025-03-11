@@ -83,6 +83,11 @@ func SetupRouter(app *fiber.App) (*sqlx.DB, error) {
 	command := app.Group("/command")
 	command.Get("/goals", handlers.RecalculateGoals(goalsService))
 
+	statistics := apiPrivate.Group("/statistics")
+	statisticsRepo := repositories.NewStatisticsRepository(db)
+	statisticsService := services.NewStatisticService(statisticsRepo)
+	statistics.Get("/user", handlers.GetUserStatistics(statisticsService))
+
 	return db, nil
 
 }
