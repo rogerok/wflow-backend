@@ -303,6 +303,26 @@
                 }
             }
         },
+        "/private/statistics/": {
+            "get": {
+                "description": "Get profile full chart data user id",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Statistics"
+                ],
+                "summary": "Get profile full chart data user id",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.FullProfileChartData"
+                        }
+                    }
+                }
+            }
+        },
         "/private/users": {
             "get": {
                 "description": "Get users list",
@@ -414,7 +434,7 @@
             "properties": {
                 "description": {
                     "type": "string",
-                    "maxLength": 255,
+                    "maxLength": 1000,
                     "minLength": 2
                 },
                 "name": {
@@ -446,7 +466,7 @@
                     "type": "string"
                 },
                 "goalWords": {
-                    "type": "integer",
+                    "type": "number",
                     "minimum": 2
                 },
                 "startDate": {
@@ -479,28 +499,17 @@
             "required": [
                 "bookId",
                 "goalId",
-                "title",
                 "wordsAmount"
             ],
             "properties": {
                 "bookId": {
                     "type": "string"
                 },
-                "description": {
-                    "type": "string",
-                    "maxLength": 255,
-                    "minLength": 2
-                },
                 "goalId": {
                     "type": "string"
                 },
-                "title": {
-                    "type": "string",
-                    "maxLength": 255,
-                    "minLength": 2
-                },
                 "wordsAmount": {
-                    "type": "integer",
+                    "type": "number",
                     "minimum": 2
                 }
             }
@@ -509,16 +518,20 @@
             "type": "object",
             "properties": {
                 "instagram": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 250
                 },
                 "telegram": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 250
                 },
                 "tiktok": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 250
                 },
                 "vk": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 250
                 }
             }
         },
@@ -608,6 +621,63 @@
                 }
             }
         },
+        "models.FullProfileChartData": {
+            "type": "object",
+            "properties": {
+                "cumulative_progress": {
+                    "description": "DailyProgress      []DailyProgressPoint `json:\"daily_progress\"`",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.ProgressPoint"
+                    }
+                },
+                "goal_completion": {
+                    "description": "MonthlyComparison  []MonthlyStats       `json:\"monthly_comparison\"`",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.GoalsChart"
+                    }
+                }
+            }
+        },
+        "models.GoalStatistics": {
+            "type": "object",
+            "properties": {
+                "average_words_per_day": {
+                    "type": "number"
+                },
+                "book_id": {
+                    "type": "string"
+                },
+                "daily_words_required": {
+                    "type": "number"
+                },
+                "days_elapsed": {
+                    "type": "integer"
+                },
+                "days_remaining": {
+                    "type": "integer"
+                },
+                "goal_id": {
+                    "type": "string"
+                },
+                "percentage_complete": {
+                    "type": "number"
+                },
+                "remaining_words": {
+                    "type": "number"
+                },
+                "reports_count": {
+                    "type": "integer"
+                },
+                "total_words_written": {
+                    "type": "number"
+                },
+                "trend_compared_to_target": {
+                    "type": "number"
+                }
+            }
+        },
         "models.Goals": {
             "type": "object",
             "properties": {
@@ -624,7 +694,7 @@
                     "type": "string"
                 },
                 "goalWords": {
-                    "type": "integer"
+                    "type": "number"
                 },
                 "id": {
                     "type": "string"
@@ -648,7 +718,60 @@
                     "type": "number"
                 },
                 "writtenWords": {
+                    "type": "number"
+                }
+            }
+        },
+        "models.GoalsChart": {
+            "type": "object",
+            "properties": {
+                "averageWordsPerDay": {
+                    "type": "number"
+                },
+                "bookId": {
+                    "type": "string"
+                },
+                "bookTitle": {
+                    "type": "string"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "dailyWordsRequired": {
+                    "type": "number"
+                },
+                "daysElapsed": {
                     "type": "integer"
+                },
+                "daysRemaining": {
+                    "type": "integer"
+                },
+                "goalId": {
+                    "type": "string"
+                },
+                "goalTitle": {
+                    "type": "string"
+                },
+                "isExpired": {
+                    "type": "boolean"
+                },
+                "isFinished": {
+                    "type": "boolean"
+                },
+                "percentageComplete": {
+                    "type": "number"
+                },
+                "remainingWords": {
+                    "type": "number"
+                },
+                "reportsCount": {
+                    "type": "integer"
+                },
+                "totalWordsWritten": {
+                    "type": "number"
+                },
+                "trendComparedToTarget": {
+                    "type": "number"
                 }
             }
         },
@@ -667,6 +790,35 @@
                 },
                 "perPage": {
                     "type": "integer"
+                }
+            }
+        },
+        "models.ProgressPoint": {
+            "type": "object",
+            "properties": {
+                "bookId": {
+                    "type": "string"
+                },
+                "bookName": {
+                    "type": "string"
+                },
+                "completion_percent": {
+                    "type": "number"
+                },
+                "date": {
+                    "type": "string"
+                },
+                "goalId": {
+                    "type": "string"
+                },
+                "goalTitle": {
+                    "type": "string"
+                },
+                "target_total_words": {
+                    "type": "number"
+                },
+                "total_words": {
+                    "type": "number"
                 }
             }
         },
@@ -723,6 +875,53 @@
                     "$ref": "#/definitions/models.Social"
                 },
                 "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.UserStatistics": {
+            "type": "object",
+            "properties": {
+                "average_days_to_complete": {
+                    "type": "number"
+                },
+                "average_words_per_day": {
+                    "type": "number"
+                },
+                "average_words_per_report": {
+                    "type": "number"
+                },
+                "completed_goals": {
+                    "type": "integer"
+                },
+                "current_streak": {
+                    "type": "integer"
+                },
+                "longest_streak": {
+                    "type": "integer"
+                },
+                "max_words_in_day": {
+                    "type": "number"
+                },
+                "most_productive_day": {
+                    "type": "string"
+                },
+                "total_books": {
+                    "type": "integer"
+                },
+                "total_days_with_activity": {
+                    "type": "integer"
+                },
+                "total_goals": {
+                    "type": "integer"
+                },
+                "total_reports": {
+                    "type": "integer"
+                },
+                "total_words": {
+                    "type": "number"
+                },
+                "user_id": {
                     "type": "string"
                 }
             }
