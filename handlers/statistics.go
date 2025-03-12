@@ -55,3 +55,29 @@ func GetGoalStatistics(s services.StatisticsService) fiber.Handler {
 
 	}
 }
+
+// GetFullProfileChartData statistics  godoc
+// @Summary Get profile full chart data user id
+// @Description  Get profile full chart data user id
+// @Tags Statistics
+// @Produce json
+// @Success 200 {object} models.FullProfileChartData
+// @Router /private/statistics/ [get]
+func GetFullProfileChartData(s services.StatisticsService) fiber.Handler {
+	return func(ctx *fiber.Ctx) error {
+		userId, err := utils.GetSubjectUuidFromHeaderToken(ctx)
+
+		if err != nil {
+			return utils.GetInvalidTokenError(ctx)
+		}
+
+		data, err := s.GetFullProfileChartData(userId)
+
+		if err != nil {
+			return utils.GetNotFoundError(ctx, err.Error())
+		}
+
+		return ctx.Status(fiber.StatusOK).JSON(data)
+
+	}
+}

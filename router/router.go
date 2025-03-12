@@ -87,6 +87,7 @@ func SetupRouter(app *fiber.App) (*sqlx.DB, error) {
 	statisticsRepo := repositories.NewStatisticsRepository(db)
 	statisticsService := services.NewStatisticService(statisticsRepo)
 	statistics.Get("/user", handlers.GetUserStatistics(statisticsService))
+	statistics.Get("/user/full", handlers.GetFullProfileChartData(statisticsService))
 	statistics.Get("/goal/:id", handlers.GetGoalStatistics(statisticsService))
 
 	return db, nil

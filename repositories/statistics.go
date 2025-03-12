@@ -1,14 +1,19 @@
 package repositories
 
 import (
+	"context"
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 	"github.com/rogerok/wflow-backend/models"
+	"log"
+	"time"
 )
 
 type StatisticsRepository interface {
 	GetUserStatistics(userId uuid.UUID) (*models.UserStatistics, error)
 	GetGoalStatistics(goalId string) (*models.GoalStatistics, error)
+	GetFullProfileChartData(userId uuid.UUID) (*models.FullProfileChartData, error)
+	GetGoalsChart(userID uuid.UUID) ([]models.GoalsChart, error)
 }
 
 type statisticsRepository struct {
@@ -137,6 +142,7 @@ func (r *statisticsRepository) GetGoalStatistics(goalId string) (*models.GoalSta
 		COUNT(DISTINCT r.id) as reports_count,
 		CASE
 			WHEN g.words_per_day = 0 THEN 0
+			WHEN g.written_words = 0 THEN 0
 			ELSE (
 					 CASE
 						 WHEN COUNT(DISTINCT dr.report_date) = 0 THEN 0
@@ -156,4 +162,187 @@ func (r *statisticsRepository) GetGoalStatistics(goalId string) (*models.GoalSta
 		return nil, err
 	}
 	return statistic, err
+}
+
+func (r *statisticsRepository) getDateRangeForPeriod(period string) (time.Time, time.Time) {
+	now := time.Now()
+	endDate := now
+
+	switch period {
+	case "week":
+		startDate := now.AddDate(0, 0, -7)
+		return startDate, endDate
+	case "month":
+		startDate := now.AddDate(0, -1, 0)
+		return startDate, endDate
+	case "quarter":
+		startDate := now.AddDate(0, -3, 0)
+		return startDate, endDate
+	case "year":
+		startDate := now.AddDate(-1, 0, 0)
+		return startDate, endDate
+	case "all_time":
+		// Get the user's first report date or default to 1 year ago
+		var firstReportDate time.Time
+		query := `
+		SELECT MIN(created_at) AS first_date
+		FROM reports
+		WHERE user_id = $1
+		`
+		err := r.db.GetContext(context.Background(), &firstReportDate, query, period)
+		if err != nil || firstReportDate.IsZero() {
+			firstReportDate = now.AddDate(-1, 0, 0)
+		}
+		return firstReportDate, endDate
+	default: // Default to last 30 days
+		startDate := now.AddDate(0, 0, -30)
+		return startDate, endDate
+	}
+}
+
+func (r *statisticsRepository) GetGoalsChart(userID uuid.UUID) ([]models.GoalsChart, error) {
+	var goals []models.GoalsChart
+	query := `
+WITH daily_reports AS (
+    SELECT
+        DATE(created_at) as report_date,
+        SUM(words_amount) as daily_words
+    FROM reports
+    GROUP BY DATE(created_at)
+)
+SELECT
+    g.id as goal_id,
+    g.book_id,
+    g.created_at,
+    g.is_finished,
+    g.is_expired,
+    g.title as goal_title,
+    COALESCE(SUM(r.words_amount), 0) as total_words_written,
+    CASE
+        WHEN g.goal_words = 0 THEN 0
+        ELSE (COALESCE(SUM(r.words_amount), 0) / g.goal_words) * 100
+        END as percentage_complete,
+    GREATEST(g.goal_words - COALESCE(SUM(r.words_amount), 0), 0) as remaining_words,
+    CASE
+        WHEN CURRENT_DATE > g.end_date THEN 0
+        WHEN g.is_expired THEN 0
+        WHEN g.is_finished THEN 0
+        WHEN g.goal_words <= COALESCE(SUM(r.words_amount), 0) THEN 0
+        ELSE (g.goal_words - COALESCE(SUM(r.words_amount), 0)) /
+             GREATEST(1, EXTRACT(EPOCH FROM (g.end_date - CURRENT_DATE)) / 86400)
+        END as daily_words_required,
+    CASE
+        WHEN CURRENT_DATE > g.end_date THEN 0
+        WHEN g.is_expired THEN 0
+        WHEN g.is_finished THEN 0
+        ELSE GREATEST(0, (CURRENT_DATE - g.start_date::DATE) + 1)::int
+        END as days_elapsed,
+    GREATEST(0, EXTRACT(DAY FROM (g.end_date - CURRENT_DATE)) + 1)::int as days_remaining,
+    CASE
+        WHEN COUNT(DISTINCT dr.report_date) = 0 THEN 0
+        ELSE COALESCE(SUM(r.words_amount), 0) / COUNT(DISTINCT dr.report_date)
+        END as average_words_per_day,
+    COUNT(DISTINCT r.id) as reports_count,
+    CASE
+        WHEN g.words_per_day = 0 THEN 0
+        WHEN g.written_words = 0 THEN 0
+        ELSE (
+                 CASE
+                     WHEN COUNT(DISTINCT dr.report_date) = 0 THEN 0
+                     ELSE COALESCE(SUM(r.words_amount), 0) / COUNT(DISTINCT dr.report_date)
+                     END
+                 ) / g.words_per_day * 100 - 100
+        END as trend_compared_to_target,
+    b.book_name AS book_title
+FROM goals g
+         LEFT JOIN reports r ON g.id = r.goal_id
+         LEFT JOIN daily_reports dr ON DATE(r.created_at) = dr.report_date
+         LEFT JOIN books b ON g.book_id = b.id
+WHERE g.user_id = $1
+GROUP BY b.book_name, g.id, g.book_id, g.goal_words, g.start_date, g.end_date, g.words_per_day, g.created_at, g.title
+ORDER BY g.created_at;
+    `
+
+	err := r.db.Select(&goals, query, userID)
+	if err != nil {
+		log.Printf("Error fetching goals for user %s: %v", userID, err)
+		return nil, err
+	}
+	return goals, nil
+}
+
+func (r *statisticsRepository) getReportsForGoal(goalId uuid.UUID) ([]models.ReportStatistic, error) {
+	var reports []models.ReportStatistic
+
+	query := `
+		SELECT r.id, r.goal_id, r.created_at, r.updated_at, r.words_amount, r.book_id, b.book_name, g.goal_words, g.title as goal_title
+		FROM reports r
+				 LEFT JOIN goals g ON g.id = r.goal_id
+				 LEFT JOIN books b ON b.id = r.book_id
+		WHERE goal_id = $1
+		GROUP BY b.book_name, r.id, r.book_id,r.created_at, r.updated_at, r.words_amount, g.goal_words, g.title
+		ORDER BY r.created_at;
+	`
+
+	err := r.db.Select(&reports, query, goalId)
+	if err != nil {
+		log.Printf("Error fetching reports for goal %s: %v", goalId, err)
+
+		return nil, err
+	}
+
+	return reports, nil
+}
+
+func (r *statisticsRepository) calculateCumulativeProgress(goalId uuid.UUID) ([]models.ProgressPoint, error) {
+	// Fetch all reports for the goal
+	reports, err := r.getReportsForGoal(goalId)
+	if err != nil {
+		return nil, err
+	}
+
+	var cumulativeProgress []models.ProgressPoint
+	var totalWordsWritten float64
+	totalGoalWords := reports[0].GoalWords
+
+	for _, report := range reports {
+		totalWordsWritten += report.WordsAmount
+		completionPercent := (totalWordsWritten / totalGoalWords) * 100
+
+		cumulativeProgress = append(cumulativeProgress, models.ProgressPoint{
+			Date:              report.CreatedAt,
+			TotalWords:        totalWordsWritten,
+			TargetTotalWords:  totalGoalWords,
+			CompletionPercent: completionPercent,
+			GoalTitle:         report.GoalTitle,
+			BookName:          report.BookName,
+			GoalId:            report.GoalId,
+			BookId:            report.BookId,
+		})
+	}
+
+	return cumulativeProgress, nil
+}
+
+func (r *statisticsRepository) GetFullProfileChartData(userId uuid.UUID) (*models.FullProfileChartData, error) {
+	goals, err := r.GetGoalsChart(userId)
+
+	if err != nil {
+		return nil, err
+	}
+	var cumulativeProgress []models.ProgressPoint
+
+	for _, goal := range goals {
+		cumulative, err := r.calculateCumulativeProgress(goal.GoalID)
+		if err != nil {
+			return nil, err
+		}
+		cumulativeProgress = append(cumulativeProgress, cumulative...)
+
+	}
+
+	return &models.FullProfileChartData{
+		CumulativeProgress: cumulativeProgress,
+		GoalCompletion:     goals,
+	}, nil
 }

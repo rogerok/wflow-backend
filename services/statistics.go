@@ -9,6 +9,7 @@ import (
 type StatisticsService interface {
 	GetUserStatistics(userId uuid.UUID) (*models.UserStatistics, error)
 	GetGoalStatistics(goalId string) (*models.GoalStatistics, error)
+	GetFullProfileChartData(userId uuid.UUID) (*models.FullProfileChartData, error)
 }
 
 type statisticsService struct {
@@ -25,4 +26,8 @@ func (s *statisticsService) GetUserStatistics(userId uuid.UUID) (*models.UserSta
 
 func (s *statisticsService) GetGoalStatistics(goalId string) (*models.GoalStatistics, error) {
 	return s.r.GetGoalStatistics(goalId)
+}
+
+func (s *statisticsService) GetFullProfileChartData(userId uuid.UUID) (*models.FullProfileChartData, error) {
+	return s.r.GetFullProfileChartData(userId)
 }

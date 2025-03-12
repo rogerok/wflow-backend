@@ -16,7 +16,7 @@ definitions:
   forms.BookCreateForm:
     properties:
       description:
-        maxLength: 255
+        maxLength: 1000
         minLength: 2
         type: string
       name:
@@ -38,7 +38,7 @@ definitions:
         type: string
       goalWords:
         minimum: 2
-        type: integer
+        type: number
       startDate:
         type: string
       title:
@@ -67,34 +67,29 @@ definitions:
     properties:
       bookId:
         type: string
-      description:
-        maxLength: 255
-        minLength: 2
-        type: string
       goalId:
-        type: string
-      title:
-        maxLength: 255
-        minLength: 2
         type: string
       wordsAmount:
         minimum: 2
-        type: integer
+        type: number
     required:
     - bookId
     - goalId
-    - title
     - wordsAmount
     type: object
   forms.Social:
     properties:
       instagram:
+        maxLength: 250
         type: string
       telegram:
+        maxLength: 250
         type: string
       tiktok:
+        maxLength: 250
         type: string
       vk:
+        maxLength: 250
         type: string
     type: object
   forms.UserCreateForm:
@@ -159,6 +154,44 @@ definitions:
       perPage:
         type: integer
     type: object
+  models.FullProfileChartData:
+    properties:
+      cumulative_progress:
+        description: DailyProgress      []DailyProgressPoint `json:"daily_progress"`
+        items:
+          $ref: '#/definitions/models.ProgressPoint'
+        type: array
+      goal_completion:
+        description: MonthlyComparison  []MonthlyStats       `json:"monthly_comparison"`
+        items:
+          $ref: '#/definitions/models.GoalsChart'
+        type: array
+    type: object
+  models.GoalStatistics:
+    properties:
+      average_words_per_day:
+        type: number
+      book_id:
+        type: string
+      daily_words_required:
+        type: number
+      days_elapsed:
+        type: integer
+      days_remaining:
+        type: integer
+      goal_id:
+        type: string
+      percentage_complete:
+        type: number
+      remaining_words:
+        type: number
+      reports_count:
+        type: integer
+      total_words_written:
+        type: number
+      trend_compared_to_target:
+        type: number
+    type: object
   models.Goals:
     properties:
       bookId:
@@ -170,7 +203,7 @@ definitions:
       endDate:
         type: string
       goalWords:
-        type: integer
+        type: number
       id:
         type: string
       isExpired:
@@ -186,7 +219,42 @@ definitions:
       wordsPerDay:
         type: number
       writtenWords:
+        type: number
+    type: object
+  models.GoalsChart:
+    properties:
+      averageWordsPerDay:
+        type: number
+      bookId:
+        type: string
+      bookTitle:
+        type: string
+      createdAt:
+        type: string
+      dailyWordsRequired:
+        type: number
+      daysElapsed:
         type: integer
+      daysRemaining:
+        type: integer
+      goalId:
+        type: string
+      goalTitle:
+        type: string
+      isExpired:
+        type: boolean
+      isFinished:
+        type: boolean
+      percentageComplete:
+        type: number
+      remainingWords:
+        type: number
+      reportsCount:
+        type: integer
+      totalWordsWritten:
+        type: number
+      trendComparedToTarget:
+        type: number
     type: object
   models.GoalsQueryParams:
     properties:
@@ -199,6 +267,25 @@ definitions:
         type: integer
       perPage:
         type: integer
+    type: object
+  models.ProgressPoint:
+    properties:
+      bookId:
+        type: string
+      bookName:
+        type: string
+      completion_percent:
+        type: number
+      date:
+        type: string
+      goalId:
+        type: string
+      goalTitle:
+        type: string
+      target_total_words:
+        type: number
+      total_words:
+        type: number
     type: object
   models.Pseudonym:
     properties:
@@ -235,6 +322,37 @@ definitions:
       socialLinks:
         $ref: '#/definitions/models.Social'
       updatedAt:
+        type: string
+    type: object
+  models.UserStatistics:
+    properties:
+      average_days_to_complete:
+        type: number
+      average_words_per_day:
+        type: number
+      average_words_per_report:
+        type: number
+      completed_goals:
+        type: integer
+      current_streak:
+        type: integer
+      longest_streak:
+        type: integer
+      max_words_in_day:
+        type: number
+      most_productive_day:
+        type: string
+      total_books:
+        type: integer
+      total_days_with_activity:
+        type: integer
+      total_goals:
+        type: integer
+      total_reports:
+        type: integer
+      total_words:
+        type: number
+      user_id:
         type: string
     type: object
   responses.CreateResponse:
@@ -444,6 +562,19 @@ paths:
       summary: CreateReport Report
       tags:
       - Report
+  /private/statistics/:
+    get:
+      description: Get profile full chart data user id
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.FullProfileChartData'
+      summary: Get profile full chart data user id
+      tags:
+      - Statistics
   /private/users:
     get:
       description: Get users list
