@@ -90,6 +90,11 @@ func SetupRouter(app *fiber.App) (*sqlx.DB, error) {
 	statistics.Get("/user/full", handlers.GetFullProfileChartData(statisticsService))
 	statistics.Get("/goal/:id", handlers.GetGoalStatistics(statisticsService))
 
+	quotes := apiPrivate.Group("/quotes")
+	quotesRepo := repositories.NewQuotesRepository(db)
+	quotesService := services.NewQuotesService(quotesRepo)
+	quotes.Get("/", handlers.GetRandomQuote(quotesService))
+
 	return db, nil
 
 }
