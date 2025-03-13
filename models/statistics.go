@@ -6,34 +6,34 @@ import (
 )
 
 type UserStatistics struct {
-	UserID                uuid.UUID `json:"user_id" db:"user_id"`
-	TotalWords            float64   `json:"total_words" db:"total_words"`
-	TotalBooks            int       `json:"total_books" db:"total_books"`
-	TotalGoals            int       `json:"total_goals" db:"total_goals"`
-	CompletedGoals        int       `json:"completed_goals" db:"completed_goals"`
-	TotalReports          int       `json:"total_reports" db:"total_reports"`
-	AverageWordsPerDay    float64   `json:"average_words_per_day" db:"average_words_per_day"`
-	AverageWordsPerReport float64   `json:"average_words_per_report" db:"average_words_per_report"`
-	AverageDaysToComplete float64   `json:"average_days_to_complete" db:"average_days_to_complete"`
-	MostProductiveDay     time.Time `json:"most_productive_day" db:"most_productive_day"`
-	MaxWordsInDay         float64   `json:"max_words_in_day" db:"max_words_in_day"`
-	CurrentStreak         int       `json:"current_streak" db:"current_streak"`
-	LongestStreak         int       `json:"longest_streak" db:"longest_streak"`
-	TotalDaysWithActivity int       `json:"total_days_with_activity" db:"total_days_with_activity"`
+	UserID                uuid.UUID `json:"userId" db:"user_id"`
+	TotalWords            float64   `json:"totalWords" db:"total_words"`
+	TotalBooks            int       `json:"totalBooks" db:"total_books"`
+	TotalGoals            int       `json:"totalGoals" db:"total_goals"`
+	CompletedGoals        int       `json:"completedGoals" db:"completed_goals"`
+	TotalReports          int       `json:"totalReports" db:"total_reports"`
+	AverageWordsPerDay    float64   `json:"averageWordsPerDay" db:"average_words_per_day"`
+	AverageWordsPerReport float64   `json:"averageWordsPerReport" db:"average_words_per_report"`
+	AverageDaysToComplete float64   `json:"averageDaysToComplete" db:"average_days_to_complete"`
+	MostProductiveDay     time.Time `json:"mostProductiveDay" db:"most_productive_day"`
+	MaxWordsInDay         float64   `json:"maxWordsInDay" db:"max_words_in_day"`
+	CurrentStreak         int       `json:"currentStreak" db:"current_streak"`
+	LongestStreak         int       `json:"longestStreak" db:"longest_streak"`
+	TotalDaysWithActivity int       `json:"totalDaysWithActivity" db:"total_days_with_activity"`
 }
 
 type GoalStatistics struct {
-	GoalID                uuid.UUID `json:"goal_id" db:"goal_id"`
-	BookID                uuid.UUID `json:"book_id" db:"book_id"`
-	TotalWordsWritten     float64   `json:"total_words_written" db:"total_words_written"`
-	PercentageComplete    float64   `json:"percentage_complete" db:"percentage_complete"`
-	RemainingWords        float64   `json:"remaining_words" db:"remaining_words"`
-	DailyWordsRequired    float64   `json:"daily_words_required" db:"daily_words_required"`
-	DaysElapsed           int       `json:"days_elapsed" db:"days_elapsed"`
-	DaysRemaining         int       `json:"days_remaining" db:"days_remaining"`
-	AverageWordsPerDay    float64   `json:"average_words_per_day" db:"average_words_per_day"`
-	ReportsCount          int       `json:"reports_count" db:"reports_count"`
-	TrendComparedToTarget float64   `json:"trend_compared_to_target" db:"trend_compared_to_target"`
+	GoalID                uuid.UUID `json:"goalId" db:"goal_id"`
+	BookID                uuid.UUID `json:"bookId" db:"book_id"`
+	TotalWordsWritten     float64   `json:"totalWordsWritten" db:"total_words_written"`
+	PercentageComplete    float64   `json:"percentageComplete" db:"percentage_complete"`
+	RemainingWords        float64   `json:"remainingWords" db:"remaining_words"`
+	DailyWordsRequired    float64   `json:"dailyWordsRequired" db:"daily_words_required"`
+	DaysElapsed           int       `json:"daysElapsed" db:"days_elapsed"`
+	DaysRemaining         int       `json:"daysRemaining" db:"days_remaining"`
+	AverageWordsPerDay    float64   `json:"averageWordsPerDay" db:"average_words_per_day"`
+	ReportsCount          int       `json:"reportsCount" db:"reports_count"`
+	TrendComparedToTarget float64   `json:"trendComparedToTarget" db:"trend_compared_to_target"`
 }
 
 type GoalsChart struct {
@@ -87,9 +87,9 @@ type DailyProgressPoint struct {
 // ProgressPoint represents progress data over time
 type ProgressPoint struct {
 	Date              string  `json:"date"`
-	TotalWords        float64 `json:"total_words"`
-	TargetTotalWords  float64 `json:"target_total_words"`
-	CompletionPercent float64 `json:"completion_percent"`
+	TotalWords        float64 `json:"totalWords"`
+	TargetTotalWords  float64 `json:"targetTotalWords"`
+	CompletionPercent float64 `json:"completionPercent"`
 	GoalTitle         string  `json:"goalTitle"`
 	BookName          string  `json:"bookName"`
 	BookId            string  `json:"bookId"`
@@ -136,8 +136,8 @@ type TimeOfDayStats struct {
 
 type FullProfileChartData struct {
 	//DailyProgress      []DailyProgressPoint `json:"daily_progress"`
-	CumulativeProgress []ProgressPoint `json:"cumulative_progress"`
+	CumulativeProgress []ProgressPoint `json:"cumulativeProgress"`
 	//MonthlyComparison  []MonthlyStats       `json:"monthly_comparison"`
-	GoalCompletion []GoalsChart `json:"goal_completion"`
+	GoalCompletion []GoalsChart `json:"goalCompletion"`
 	//ProductivityPatterns *ProductivityPatterns `json:"productivity_patterns"`
 }
