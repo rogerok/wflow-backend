@@ -6,20 +6,34 @@ import (
 )
 
 type UserStatistics struct {
-	UserID                uuid.UUID `json:"userId" db:"user_id"`
-	TotalWords            float64   `json:"totalWords" db:"total_words"`
-	TotalBooks            int       `json:"totalBooks" db:"total_books"`
-	TotalGoals            int       `json:"totalGoals" db:"total_goals"`
-	CompletedGoals        int       `json:"completedGoals" db:"completed_goals"`
-	TotalReports          int       `json:"totalReports" db:"total_reports"`
-	AverageWordsPerDay    float64   `json:"averageWordsPerDay" db:"average_words_per_day"`
-	AverageWordsPerReport float64   `json:"averageWordsPerReport" db:"average_words_per_report"`
-	AverageDaysToComplete float64   `json:"averageDaysToComplete" db:"average_days_to_complete"`
-	MostProductiveDay     time.Time `json:"mostProductiveDay" db:"most_productive_day"`
-	MaxWordsInDay         float64   `json:"maxWordsInDay" db:"max_words_in_day"`
-	CurrentStreak         int       `json:"currentStreak" db:"current_streak"`
-	LongestStreak         int       `json:"longestStreak" db:"longest_streak"`
-	TotalDaysWithActivity int       `json:"totalDaysWithActivity" db:"total_days_with_activity"`
+	// AboveAverageReportsRate is the percentage of reports where the user wrote more words than the average report.
+	AboveAverageReportsRate float64 `json:"aboveAverageReportsRate" db:"above_average_reports_rate"`
+	// ActivityConsistencyRate is the percentage of days with activity relative to the total number of days since the first report.
+	ActivityConsistencyRate float64 `json:"activityConsistencyRate" db:"activity_consistency_rate"`
+	AverageDaysToComplete   float64 `json:"averageDaysToComplete" db:"average_days_to_complete"`
+	AverageWordsPerDay      float64 `json:"averageWordsPerDay" db:"average_words_per_day"`
+	AverageWordsPerReport   float64 `json:"averageWordsPerReport" db:"average_words_per_report"`
+	CompletedGoals          int     `json:"completedGoals" db:"completed_goals"`
+	// CurrentStreak is the current streak of consecutive days the user has written.
+	CurrentStreak int `json:"currentStreak" db:"current_streak"`
+	// ExpiredGoalsCompletionRate is the percentage of expired goals that have been completed.
+	ExpiredGoalsCompletionRate float64 `json:"expiredGoalsCompletionRate" db:"expired_goals_completion_rate"`
+	// GoalCompletionRate is the percentage of completed goals out of the total goals.
+	GoalCompletionRate float64 `json:"goalCompletionRate" db:"goal_completion_rate"`
+	// LongestStreak is the longest streak of consecutive days the user has written.
+	LongestStreak     int       `json:"longestStreak" db:"longest_streak"`
+	MaxWordsInDay     float64   `json:"maxWordsInDay" db:"max_words_in_day"`
+	MostProductiveDay time.Time `json:"mostProductiveDay" db:"most_productive_day"`
+	// OverachievementRate is the percentage of goals where the user has written more words than planned.
+	OverachievementRate float64 `json:"overachievementRate" db:"overachievement_rate"`
+	// OverallGoalProgressRate is the percentage of goal progress based on written words and goal words.
+	OverallGoalProgressRate float64   `json:"overallGoalProgressRate" db:"overall_goal_progress_rate"`
+	TotalBooks              int       `json:"totalBooks" db:"total_books"`
+	TotalDaysWithActivity   int       `json:"totalDaysWithActivity" db:"total_days_with_activity"`
+	TotalGoals              int       `json:"totalGoals" db:"total_goals"`
+	TotalReports            int       `json:"totalReports" db:"total_reports"`
+	TotalWords              float64   `json:"totalWords" db:"total_words"`
+	UserId                  uuid.UUID `json:"userId" db:"user_id"`
 }
 
 type GoalStatistics struct {

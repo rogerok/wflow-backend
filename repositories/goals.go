@@ -103,6 +103,7 @@ func (r *goalsRepository) RecalculateGoal(wordsAmount float64, goalId string) (g
 				)
 				UPDATE goals
 				SET written_words = updated_written_words,
+				    is_finished = written_words + $1 >= goal_words,
 					words_per_day = 
 						CASE
 							WHEN calculated_words_per_day < 1 THEN 0

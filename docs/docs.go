@@ -278,6 +278,26 @@ const docTemplate = `{
                 }
             }
         },
+        "/private/quotes": {
+            "get": {
+                "description": "Get random quote",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Quotes"
+                ],
+                "summary": "Get random quote",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Quotes"
+                        }
+                    }
+                }
+            }
+        },
         "/private/reports": {
             "post": {
                 "description": "CreateReport Report",
@@ -309,7 +329,56 @@ const docTemplate = `{
                 }
             }
         },
-        "/private/statistics/": {
+        "/private/statistics/goal/{id}": {
+            "get": {
+                "description": "get goal's activity statistics",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Statistics"
+                ],
+                "summary": "Get statistics by goal id",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Goal ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.GoalStatistics"
+                        }
+                    }
+                }
+            }
+        },
+        "/private/statistics/user": {
+            "get": {
+                "description": "get user's activity statistics",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Statistics"
+                ],
+                "summary": "Get statistics by user id",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.UserStatistics"
+                        }
+                    }
+                }
+            }
+        },
+        "/private/statistics/user/full": {
             "get": {
                 "description": "Get profile full chart data user id",
                 "produces": [
@@ -630,14 +699,14 @@ const docTemplate = `{
         "models.FullProfileChartData": {
             "type": "object",
             "properties": {
-                "cumulative_progress": {
+                "cumulativeProgress": {
                     "description": "DailyProgress      []DailyProgressPoint ` + "`" + `json:\"daily_progress\"` + "`" + `",
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/models.ProgressPoint"
                     }
                 },
-                "goal_completion": {
+                "goalCompletion": {
                     "description": "MonthlyComparison  []MonthlyStats       ` + "`" + `json:\"monthly_comparison\"` + "`" + `",
                     "type": "array",
                     "items": {
@@ -649,37 +718,37 @@ const docTemplate = `{
         "models.GoalStatistics": {
             "type": "object",
             "properties": {
-                "average_words_per_day": {
+                "averageWordsPerDay": {
                     "type": "number"
                 },
-                "book_id": {
+                "bookId": {
                     "type": "string"
                 },
-                "daily_words_required": {
+                "dailyWordsRequired": {
                     "type": "number"
                 },
-                "days_elapsed": {
+                "daysElapsed": {
                     "type": "integer"
                 },
-                "days_remaining": {
+                "daysRemaining": {
                     "type": "integer"
                 },
-                "goal_id": {
+                "goalId": {
                     "type": "string"
                 },
-                "percentage_complete": {
+                "percentageComplete": {
                     "type": "number"
                 },
-                "remaining_words": {
+                "remainingWords": {
                     "type": "number"
                 },
-                "reports_count": {
+                "reportsCount": {
                     "type": "integer"
                 },
-                "total_words_written": {
+                "totalWordsWritten": {
                     "type": "number"
                 },
-                "trend_compared_to_target": {
+                "trendComparedToTarget": {
                     "type": "number"
                 }
             }
@@ -808,7 +877,7 @@ const docTemplate = `{
                 "bookName": {
                     "type": "string"
                 },
-                "completion_percent": {
+                "completionPercent": {
                     "type": "number"
                 },
                 "date": {
@@ -820,10 +889,10 @@ const docTemplate = `{
                 "goalTitle": {
                     "type": "string"
                 },
-                "target_total_words": {
+                "targetTotalWords": {
                     "type": "number"
                 },
-                "total_words": {
+                "totalWords": {
                     "type": "number"
                 }
             }
@@ -835,6 +904,17 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "lastName": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.Quotes": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "text": {
                     "type": "string"
                 }
             }
@@ -888,46 +968,46 @@ const docTemplate = `{
         "models.UserStatistics": {
             "type": "object",
             "properties": {
-                "average_days_to_complete": {
+                "averageDaysToComplete": {
                     "type": "number"
                 },
-                "average_words_per_day": {
+                "averageWordsPerDay": {
                     "type": "number"
                 },
-                "average_words_per_report": {
+                "averageWordsPerReport": {
                     "type": "number"
                 },
-                "completed_goals": {
+                "completedGoals": {
                     "type": "integer"
                 },
-                "current_streak": {
+                "currentStreak": {
                     "type": "integer"
                 },
-                "longest_streak": {
+                "longestStreak": {
                     "type": "integer"
                 },
-                "max_words_in_day": {
+                "maxWordsInDay": {
                     "type": "number"
                 },
-                "most_productive_day": {
+                "mostProductiveDay": {
                     "type": "string"
                 },
-                "total_books": {
+                "totalBooks": {
                     "type": "integer"
                 },
-                "total_days_with_activity": {
+                "totalDaysWithActivity": {
                     "type": "integer"
                 },
-                "total_goals": {
+                "totalGoals": {
                     "type": "integer"
                 },
-                "total_reports": {
+                "totalReports": {
                     "type": "integer"
                 },
-                "total_words": {
+                "totalWords": {
                     "type": "number"
                 },
-                "user_id": {
+                "userId": {
                     "type": "string"
                 }
             }

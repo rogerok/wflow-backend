@@ -156,12 +156,12 @@ definitions:
     type: object
   models.FullProfileChartData:
     properties:
-      cumulative_progress:
+      cumulativeProgress:
         description: DailyProgress      []DailyProgressPoint `json:"daily_progress"`
         items:
           $ref: '#/definitions/models.ProgressPoint'
         type: array
-      goal_completion:
+      goalCompletion:
         description: MonthlyComparison  []MonthlyStats       `json:"monthly_comparison"`
         items:
           $ref: '#/definitions/models.GoalsChart'
@@ -169,27 +169,27 @@ definitions:
     type: object
   models.GoalStatistics:
     properties:
-      average_words_per_day:
+      averageWordsPerDay:
         type: number
-      book_id:
+      bookId:
         type: string
-      daily_words_required:
+      dailyWordsRequired:
         type: number
-      days_elapsed:
+      daysElapsed:
         type: integer
-      days_remaining:
+      daysRemaining:
         type: integer
-      goal_id:
+      goalId:
         type: string
-      percentage_complete:
+      percentageComplete:
         type: number
-      remaining_words:
+      remainingWords:
         type: number
-      reports_count:
+      reportsCount:
         type: integer
-      total_words_written:
+      totalWordsWritten:
         type: number
-      trend_compared_to_target:
+      trendComparedToTarget:
         type: number
     type: object
   models.Goals:
@@ -274,7 +274,7 @@ definitions:
         type: string
       bookName:
         type: string
-      completion_percent:
+      completionPercent:
         type: number
       date:
         type: string
@@ -282,9 +282,9 @@ definitions:
         type: string
       goalTitle:
         type: string
-      target_total_words:
+      targetTotalWords:
         type: number
-      total_words:
+      totalWords:
         type: number
     type: object
   models.Pseudonym:
@@ -292,6 +292,13 @@ definitions:
       firstName:
         type: string
       lastName:
+        type: string
+    type: object
+  models.Quotes:
+    properties:
+      id:
+        type: string
+      text:
         type: string
     type: object
   models.Social:
@@ -326,33 +333,33 @@ definitions:
     type: object
   models.UserStatistics:
     properties:
-      average_days_to_complete:
+      averageDaysToComplete:
         type: number
-      average_words_per_day:
+      averageWordsPerDay:
         type: number
-      average_words_per_report:
+      averageWordsPerReport:
         type: number
-      completed_goals:
+      completedGoals:
         type: integer
-      current_streak:
+      currentStreak:
         type: integer
-      longest_streak:
+      longestStreak:
         type: integer
-      max_words_in_day:
+      maxWordsInDay:
         type: number
-      most_productive_day:
+      mostProductiveDay:
         type: string
-      total_books:
+      totalBooks:
         type: integer
-      total_days_with_activity:
+      totalDaysWithActivity:
         type: integer
-      total_goals:
+      totalGoals:
         type: integer
-      total_reports:
+      totalReports:
         type: integer
-      total_words:
+      totalWords:
         type: number
-      user_id:
+      userId:
         type: string
     type: object
   responses.CreateResponse:
@@ -542,6 +549,19 @@ paths:
       summary: Get by id
       tags:
       - Goals
+  /private/quotes:
+    get:
+      description: Get random quote
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Quotes'
+      summary: Get random quote
+      tags:
+      - Quotes
   /private/reports:
     post:
       description: CreateReport Report
@@ -562,7 +582,39 @@ paths:
       summary: CreateReport Report
       tags:
       - Report
-  /private/statistics/:
+  /private/statistics/goal/{id}:
+    get:
+      description: get goal's activity statistics
+      parameters:
+      - description: Goal ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.GoalStatistics'
+      summary: Get statistics by goal id
+      tags:
+      - Statistics
+  /private/statistics/user:
+    get:
+      description: get user's activity statistics
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.UserStatistics'
+      summary: Get statistics by user id
+      tags:
+      - Statistics
+  /private/statistics/user/full:
     get:
       description: Get profile full chart data user id
       produces:

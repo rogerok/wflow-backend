@@ -11,9 +11,8 @@ import (
 // @Description get user's activity statistics
 // @Tags Statistics
 // @Produce json
-// @Param id path string true "User ID"
 // @Success 200 {object} models.UserStatistics
-// @Router /private/statistics/ [get]
+// @Router /private/statistics/user [get]
 func GetUserStatistics(s services.StatisticsService) fiber.Handler {
 	return func(ctx *fiber.Ctx) error {
 		userId, err := utils.GetSubjectUuidFromHeaderToken(ctx)
@@ -40,7 +39,7 @@ func GetUserStatistics(s services.StatisticsService) fiber.Handler {
 // @Produce json
 // @Param id path string true "Goal ID"
 // @Success 200 {object} models.GoalStatistics
-// @Router /private/statistics/ [get]
+// @Router /private/statistics/goal/{id} [get]
 func GetGoalStatistics(s services.StatisticsService) fiber.Handler {
 	return func(ctx *fiber.Ctx) error {
 		id := ctx.Params("id")
@@ -62,7 +61,7 @@ func GetGoalStatistics(s services.StatisticsService) fiber.Handler {
 // @Tags Statistics
 // @Produce json
 // @Success 200 {object} models.FullProfileChartData
-// @Router /private/statistics/ [get]
+// @Router /private/statistics/user/full [get]
 func GetFullProfileChartData(s services.StatisticsService) fiber.Handler {
 	return func(ctx *fiber.Ctx) error {
 		userId, err := utils.GetSubjectUuidFromHeaderToken(ctx)
