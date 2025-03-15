@@ -49,7 +49,6 @@ type GoalStatistics struct {
 	AverageWordsPerDay    float64   `json:"averageWordsPerDay" db:"average_words_per_day"`
 	EstimatedEndDate      time.Time `json:"estimatedEndDate" db:"estimated_end_date"`
 	ReportsCount          int       `json:"reportsCount" db:"reports_count"`
-	TrendComparedToTarget float64   `json:"trendComparedToTarget" db:"trend_compared_to_target"`
 }
 
 type GoalsChart struct {
