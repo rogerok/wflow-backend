@@ -45,7 +45,9 @@ type GoalStatistics struct {
 	DailyWordsRequired    float64   `json:"dailyWordsRequired" db:"daily_words_required"`
 	DaysElapsed           int       `json:"daysElapsed" db:"days_elapsed"`
 	DaysRemaining         int       `json:"daysRemaining" db:"days_remaining"`
+	AverageWordsPerReport float64   `json:"averageWordsPerReport" db:"average_words_per_report"`
 	AverageWordsPerDay    float64   `json:"averageWordsPerDay" db:"average_words_per_day"`
+	EstimatedEndDate      time.Time `json:"estimatedEndDate" db:"estimated_end_date"`
 	ReportsCount          int       `json:"reportsCount" db:"reports_count"`
 	TrendComparedToTarget float64   `json:"trendComparedToTarget" db:"trend_compared_to_target"`
 }

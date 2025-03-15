@@ -148,57 +148,80 @@ func (r *statisticsRepository) GetGoalStatistics(goalId string) (*models.GoalSta
 	statistic := &models.GoalStatistics{}
 
 	query := `WITH daily_reports AS (
-		SELECT
-			DATE(created_at) as report_date,
-			SUM(words_amount) as daily_words
-		FROM reports
-		WHERE goal_id = $1
-		GROUP BY DATE(created_at)
-	)
-	SELECT
-		g.id as goal_id,
-		g.book_id,
-		COALESCE(SUM(r.words_amount), 0) as total_words_written,
-		CASE
-			WHEN g.goal_words = 0 THEN 0
-			ELSE (COALESCE(SUM(r.words_amount), 0) / g.goal_words) * 100
-			END as percentage_complete,
-		GREATEST(g.goal_words - COALESCE(SUM(r.words_amount), 0), 0) as remaining_words,
-		CASE
-			WHEN CURRENT_DATE > g.end_date THEN 0
-			WHEN g.is_expired THEN 0
-			WHEN g.is_finished THEN 0
-			WHEN g.goal_words <= COALESCE(SUM(r.words_amount), 0) THEN 0
-			ELSE (g.goal_words - COALESCE(SUM(r.words_amount), 0)) /
-				 GREATEST(1, EXTRACT(EPOCH FROM (g.end_date - CURRENT_DATE)) / 86400)
-			END as daily_words_required,
-		CASE
-			WHEN CURRENT_DATE > g.end_date THEN 0
-			WHEN g.is_expired THEN 0
-			WHEN g.is_finished THEN 0
-			ELSE GREATEST(0, (CURRENT_DATE - g.start_date::DATE) + 1)::int
-			END as days_elapsed,
-		GREATEST(0, EXTRACT(DAY FROM (g.end_date - CURRENT_DATE)) + 1)::int as days_remaining,
-		CASE
-			WHEN COUNT(DISTINCT dr.report_date) = 0 THEN 0
-			ELSE COALESCE(SUM(r.words_amount), 0) / COUNT(DISTINCT dr.report_date)
-			END as average_words_per_day,
-		COUNT(DISTINCT r.id) as reports_count,
-		CASE
-			WHEN g.words_per_day = 0 THEN 0
-			WHEN g.written_words = 0 THEN 0
-			ELSE (
-					 CASE
-						 WHEN COUNT(DISTINCT dr.report_date) = 0 THEN 0
-						 ELSE COALESCE(SUM(r.words_amount), 0) / COUNT(DISTINCT dr.report_date)
-						 END
-					 ) / g.words_per_day * 100 - 100
-			END as trend_compared_to_target
-	FROM goals g
-			 LEFT JOIN reports r ON g.id = r.goal_id
-			 LEFT JOIN daily_reports dr ON  DATE(r.created_at) = dr.report_date
-	WHERE g.id = $1
-	GROUP BY g.id, g.book_id, g.goal_words, g.start_date, g.end_date, g.words_per_day
+    SELECT
+        DATE(created_at) as report_date,
+        SUM(words_amount) as daily_words
+    FROM reports
+    WHERE goal_id = $1
+    GROUP BY DATE(created_at)
+),
+     goal_progress AS (
+         SELECT
+             g.id as goal_id,
+             g.book_id,
+             g.goal_words,
+             g.start_date,
+             g.end_date,
+             -- Общие слова, написанные по всем отчетам
+             COALESCE(SUM(r.words_amount), 0) as total_words_written,
+             -- Дата первого отчета
+             MIN(r.created_at) as first_report_date,
+             -- Количество дней с первого отчета по сегодняшний день
+             GREATEST(1, EXTRACT(DAY FROM CURRENT_DATE - MIN(r.created_at))) as days_active,
+             -- Среднее количество слов в день с первого отчета
+             COALESCE(SUM(r.words_amount), 0) / GREATEST(1, EXTRACT(DAY FROM CURRENT_DATE - MIN(r.created_at))) as average_words_per_day
+         FROM goals g
+                  LEFT JOIN reports r ON g.id = r.goal_id
+         WHERE g.id = $1
+         GROUP BY g.id, g.book_id, g.goal_words, g.start_date, g.end_date
+     )
+SELECT
+    g.id as goal_id,
+    g.book_id,
+    gp.total_words_written,
+    CASE
+        WHEN g.goal_words = 0 THEN 0
+        ELSE (gp.total_words_written / g.goal_words) * 100
+        END as percentage_complete,
+    GREATEST(g.goal_words - gp.total_words_written, 0) as remaining_words,
+    CASE
+        WHEN CURRENT_DATE > g.end_date THEN 0
+        WHEN g.is_expired THEN 0
+        WHEN g.is_finished THEN 0
+        WHEN g.goal_words <= gp.total_words_written THEN 0
+        ELSE (g.goal_words - gp.total_words_written) /
+             GREATEST(1, EXTRACT(EPOCH FROM (g.end_date - CURRENT_DATE)) / 86400)
+        END as daily_words_required,
+    CASE
+        WHEN CURRENT_DATE > g.end_date THEN 0
+        WHEN g.is_expired THEN 0
+        WHEN g.is_finished THEN 0
+        ELSE GREATEST(0, (CURRENT_DATE - g.start_date::DATE) + 1)::int
+        END as days_elapsed,
+    -- Количество отчетов
+    COUNT(DISTINCT r.id) as reports_count,
+    -- Среднее количество слов на отчет
+    CASE
+        WHEN COUNT(DISTINCT r.id) = 0 THEN 0
+        ELSE SUM(r.words_amount) / COUNT(DISTINCT r.id)
+        END as average_words_per_report,
+    GREATEST(0, EXTRACT(DAY FROM (g.end_date - CURRENT_DATE)) + 1)::int as days_remaining,
+    -- Среднее количество слов в день на основе активности пользователя с даты первого отчета
+    gp.average_words_per_day as average_words_per_day,
+    -- Примерная дата окончания цели, рассчитанная на основе реальной активности
+    CASE
+        WHEN gp.total_words_written >= g.goal_words THEN
+            g.end_date -- Если цель выполнена, то дата окончания остается прежней
+        ELSE
+                    CURRENT_DATE + INTERVAL '1 day' *
+                                   GREATEST(0, (g.goal_words - gp.total_words_written) / NULLIF(gp.average_words_per_day, 0))
+        END as estimated_end_date
+FROM goals g
+         LEFT JOIN goal_progress gp ON g.id = gp.goal_id
+         LEFT JOIN reports r ON g.id = r.goal_id
+         LEFT JOIN daily_reports dr ON DATE(r.created_at) = dr.report_date
+WHERE g.id = $1
+GROUP BY g.id, g.book_id, g.goal_words, g.start_date, g.end_date, g.words_per_day, gp.total_words_written, gp.average_words_per_day
 `
 	err := r.db.Get(statistic, query, goalId)
 
