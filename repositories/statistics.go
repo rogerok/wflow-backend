@@ -364,8 +364,14 @@ func (r *statisticsRepository) getReportsForGoal(goalId uuid.UUID) ([]models.Rep
 func (r *statisticsRepository) calculateCumulativeProgress(goalId uuid.UUID) ([]models.ProgressPoint, error) {
 	// Fetch all reports for the goal
 	reports, err := r.getReportsForGoal(goalId)
+
 	if err != nil {
+
 		return nil, err
+	}
+
+	if len(reports) == 0 {
+		return []models.ProgressPoint{}, nil
 	}
 
 	var cumulativeProgress []models.ProgressPoint
@@ -373,6 +379,7 @@ func (r *statisticsRepository) calculateCumulativeProgress(goalId uuid.UUID) ([]
 	totalGoalWords := reports[0].GoalWords
 
 	for _, report := range reports {
+
 		totalWordsWritten += report.WordsAmount
 		completionPercent := (totalWordsWritten / totalGoalWords) * 100
 
@@ -395,15 +402,19 @@ func (r *statisticsRepository) GetFullProfileChartData(userId uuid.UUID) (*model
 	goals, err := r.GetGoalsChart(userId)
 
 	if err != nil {
+
 		return nil, err
 	}
+
 	var cumulativeProgress []models.ProgressPoint
 
 	for _, goal := range goals {
+
 		cumulative, err := r.calculateCumulativeProgress(goal.GoalID)
 		if err != nil {
 			return nil, err
 		}
+
 		cumulativeProgress = append(cumulativeProgress, cumulative...)
 
 	}
@@ -412,4 +423,5 @@ func (r *statisticsRepository) GetFullProfileChartData(userId uuid.UUID) (*model
 		CumulativeProgress: cumulativeProgress,
 		GoalCompletion:     goals,
 	}, nil
+
 }
