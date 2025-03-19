@@ -7,7 +7,8 @@ import (
 )
 
 type BooksService interface {
-	CreateBook(book *forms.BookCreateForm) (id *string, err error)
+	CreateBook(book *forms.BookForm) (id *string, err error)
+	UpdateBook(book *forms.BookForm) (status bool, err error)
 	GetBookById(id string, userId string) (book *models.Book, err error)
 	GetBooksByUserId(params *models.BooksQueryParams) (book *[]models.Book, err error)
 }
@@ -22,25 +23,30 @@ func NewBooksService(r repositories.BooksRepository) BooksService {
 	}
 }
 
-func mapFormToBookModel(book *forms.BookCreateForm) *models.Book {
-	return &models.Book{
+func mapFormToBookModel(book *forms.BookForm) *forms.BookForm {
+	return &forms.BookForm{
 		Description: book.Description,
 		Name:        book.Name,
 		UserId:      book.UserId,
 	}
 }
 
-func (s *booksService) CreateBook(book *forms.BookCreateForm) (id *string, err error) {
+func (s *booksService) CreateBook(book *forms.BookForm) (id *string, err error) {
 
 	bookData := mapFormToBookModel(book)
 
 	id, err = s.r.Create(bookData)
 
-	if err != nil {
-		return nil, err
-	}
-
 	return id, nil
+}
+
+func (s *booksService) UpdateBook(book *forms.BookForm) (status bool, err error) {
+
+	bookData := mapFormToBookModel(book)
+
+	status, err = s.r.Update(bookData)
+
+	return status, err
 }
 
 func (s *booksService) GetBookById(id string, userId string) (book *models.Book, err error) {

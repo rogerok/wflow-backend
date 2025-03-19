@@ -10,3 +10,4 @@ wflow-backend
 *.dll
 *.so
 *.dylib
+.idea
