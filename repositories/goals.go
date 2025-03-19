@@ -3,12 +3,15 @@ package repositories
 import (
 	"fmt"
 	"github.com/jmoiron/sqlx"
+	"github.com/rogerok/wflow-backend/forms"
 	"github.com/rogerok/wflow-backend/models"
 	"github.com/rogerok/wflow-backend/utils"
 )
 
 type GoalsRepository interface {
 	Create(goal *models.Goals) (id *string, err error)
+	Update(goal *forms.GoalUpdateForm) (goalStats *models.GoalUpdateResponse, err error)
+	Delete(goalId string, userId string) (status bool, err error)
 	GetById(id string) (goal *models.Goals, err error)
 	GetList(params *models.GoalsQueryParams) (goals *[]models.Goals, err error)
 	RecalculateGoal(wordsAmount float64, goalId string) (goalStats *models.GoalStats, err error)
@@ -33,6 +36,56 @@ func (r *goalsRepository) Create(goal *models.Goals) (id *string, err error) {
 	}
 
 	return id, nil
+}
+
+func (r *goalsRepository) Update(goal *forms.GoalUpdateForm) (goalStats *models.GoalUpdateResponse, err error) {
+	goalStats = &models.GoalUpdateResponse{}
+
+	query := `
+	WITH calculated AS (
+					SELECT id,
+						   COALESCE(($1 - written_words) / NULLIF(EXTRACT(DAY FROM $2 - $3), 0), 0) AS calculated_words_per_day
+					FROM goals
+					WHERE id = $4
+				)
+				UPDATE goals
+				SET goal_words = $1,
+				    start_date = $2,
+				    end_date = $3,
+					description = $5,
+					title = $6,
+					words_per_day = calculated_words_per_day
+				FROM calculated
+				WHERE goals.id = calculated.id AND user_id = $7 RETURNING words_per_day, goal_words`
+
+	rows, err := r.db.Queryx(query, goal.GoalWords, goal.EndDate, goal.StartDate, goal.EndDate, goal.Description, goal.Title, goal.UserId)
+
+	if rows != nil {
+		for rows.Next() {
+			err = rows.Scan(&goalStats.WordsPerDay, &goalStats.GoalWords)
+			if err != nil {
+				return nil, err
+			}
+		}
+	}
+
+	return goalStats, err
+
+}
+
+func (r *goalsRepository) Delete(goalId string, userId string) (status bool, err error) {
+
+	query := `DELETE FROM goals WHERE id = $1 AND user_id = $2`
+
+	_, err = r.db.Exec(query, goalId, userId)
+
+	if err != nil {
+		fmt.Printf("Error deleting goal %v. %v", goalId, err.Error())
+		return false, err
+
+	}
+
+	return true, nil
 }
 
 func (r *goalsRepository) GetById(id string) (goal *models.Goals, err error) {

@@ -77,6 +77,8 @@ func SetupRouter(app *fiber.App) (*sqlx.DB, error) {
 	goalsRepo := repositories.NewGoalsRepository(db)
 	goalsService := services.NewGoalsService(goalsRepo)
 	goals.Post("/", handlers.CreateGoal(goalsService))
+	goals.Put("/edit/:id", handlers.UpdateGoal(goalsService))
+	goals.Delete("/delete/:id", handlers.DeleteGoal(goalsService))
 	goals.Get("/", handlers.GetList(goalsService))
 	goals.Get("/:id", handlers.GetGoalById(goalsService))
 

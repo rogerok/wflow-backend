@@ -24,16 +24,16 @@ func CreateGoal(s services.GoalsService) fiber.Handler {
 		userId, err := utils.GetSubjectFromHeaderToken(ctx)
 
 		if err != nil {
-			return err
+			return utils.GetInvalidTokenError(ctx)
 		}
 
-		if err := ctx.BodyParser(formData); err != nil {
+		if err = ctx.BodyParser(formData); err != nil {
 			return utils.GetBadRequestError(ctx, err.Error())
 		}
 
 		formData.UserId = userId
 
-		if err := formData.Validate(); err != nil {
+		if err = formData.Validate(); err != nil {
 			return utils.GetBadRequestError(ctx, err.Error())
 		}
 
@@ -44,6 +44,73 @@ func CreateGoal(s services.GoalsService) fiber.Handler {
 		}
 
 		return utils.GetResponseCreate(ctx, id)
+	}
+}
+
+// UpdateGoal UpdateGoal godoc
+// @Summary UpdateGoal Goals
+// @Description UpdateGoal goal Goals
+// @Tags Goals
+// @Param request body forms.GoalUpdateForm true "body"
+// Produce json
+// @Success 200 {object} models.GoalUpdateResponse
+// @Router /private/goals/edit/{id} [put]
+func UpdateGoal(s services.GoalsService) fiber.Handler {
+	return func(ctx *fiber.Ctx) error {
+		formData := new(forms.GoalUpdateForm)
+
+		userId, err := utils.GetSubjectFromHeaderToken(ctx)
+
+		if err != nil {
+			return utils.GetInvalidTokenError(ctx)
+		}
+
+		if err = ctx.BodyParser(formData); err != nil {
+			return utils.GetBadRequestError(ctx, err.Error())
+		}
+
+		formData.UserId = userId
+		formData.GoalId = ctx.Params("id")
+
+		if err = formData.Validate(); err != nil {
+			return utils.GetBadRequestError(ctx, err.Error())
+		}
+
+		data, err := s.Update(formData)
+
+		if err != nil {
+			return utils.GetBadRequestError(ctx, err.Error())
+		}
+
+		return ctx.Status(fiber.StatusOK).JSON(data)
+	}
+}
+
+// DeleteGoal godoc
+// @Summary DeleteGoal by id
+// @Description DeleteGoal Book
+// @Tags Goals
+// @Param id path string true "goal ID"
+// @Produce json
+// @Success 200 {object} responses.StatusResponse
+// @Router /private/goals/delete [delete]
+func DeleteGoal(s services.GoalsService) fiber.Handler {
+	return func(ctx *fiber.Ctx) error {
+
+		userId, err := utils.GetSubjectFromHeaderToken(ctx)
+
+		if err != nil {
+			return err
+		}
+
+		goalId := ctx.Params("id")
+		status, err := s.Delete(goalId, userId)
+
+		if err != nil {
+			return utils.GetBadRequestError(ctx, err.Error())
+		}
+
+		return utils.GetSuccessResponse(ctx, status)
 	}
 }
 
