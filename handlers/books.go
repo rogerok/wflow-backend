@@ -12,13 +12,13 @@ import (
 // @Summary CreateBook Book
 // @Description CreateBook Book
 // @Tags Books
-// @Param request body forms.BookCreateForm true "body"
+// @Param request body forms.BookForm true "body"
 // @Produce json
 // @Success 200 {object} responses.CreateResponse
 // @Router /private/books [post]
 func CreateBook(s services.BooksService) fiber.Handler {
 	return func(ctx *fiber.Ctx) error {
-		formData := new(forms.BookCreateForm)
+		formData := new(forms.BookForm)
 
 		userId, err := utils.GetSubjectFromHeaderToken(ctx)
 
@@ -43,6 +43,44 @@ func CreateBook(s services.BooksService) fiber.Handler {
 		}
 
 		return utils.GetResponseCreate(ctx, id)
+	}
+}
+
+// UpdateBook godoc
+// @Summary UpdateBook by id
+// @Description UpdateBook Book
+// @Tags Books
+// @Param request body forms.BookForm true "body"
+// @Produce json
+// @Success 200 {object} responses.CreateResponse
+// @Router /private/books/update [put]
+func UpdateBook(s services.BooksService) fiber.Handler {
+	return func(ctx *fiber.Ctx) error {
+		formData := new(forms.BookForm)
+
+		userId, err := utils.GetSubjectFromHeaderToken(ctx)
+
+		if err != nil {
+			return err
+		}
+
+		if err := ctx.BodyParser(formData); err != nil {
+			return utils.GetBadRequestError(ctx, err.Error())
+		}
+
+		formData.UserId = userId
+
+		if err := formData.Validate(); err != nil {
+			return utils.GetBadRequestError(ctx, err.Error())
+		}
+
+		status, err := s.UpdateBook(formData)
+
+		if err != nil {
+			return utils.GetBadRequestError(ctx, err.Error())
+		}
+
+		return utils.GetSuccessResponse(ctx, status)
 	}
 }
 
