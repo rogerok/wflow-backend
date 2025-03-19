@@ -498,7 +498,7 @@ paths:
       tags:
       - Books
   /private/books/delete:
-    put:
+    delete:
       description: DeleteBook Book
       parameters:
       - description: book ID

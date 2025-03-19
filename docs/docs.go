@@ -129,7 +129,7 @@ const docTemplate = `{
             }
         },
         "/private/books/delete": {
-            "put": {
+            "delete": {
                 "description": "DeleteBook Book",
                 "produces": [
                     "application/json"

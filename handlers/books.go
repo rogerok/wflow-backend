@@ -93,7 +93,7 @@ func UpdateBook(s services.BooksService) fiber.Handler {
 // @Param id path string true "book ID"
 // @Produce json
 // @Success 200 {object} responses.StatusResponse
-// @Router /private/books/delete [put]
+// @Router /private/books/delete [delete]
 func DeleteBook(s services.BooksService) fiber.Handler {
 	return func(ctx *fiber.Ctx) error {
 
