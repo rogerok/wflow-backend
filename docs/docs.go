@@ -98,38 +98,6 @@ const docTemplate = `{
             }
         },
         "/private/books": {
-            "get": {
-                "description": "Get book by id",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Books"
-                ],
-                "summary": "Get book by id",
-                "parameters": [
-                    {
-                        "description": "Query parameters for books list",
-                        "name": "RequestBody",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/models.BooksQueryParams"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Book"
-                            }
-                        }
-                    }
-                }
-            },
             "post": {
                 "description": "CreateBook Book",
                 "produces": [
@@ -146,7 +114,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/forms.BookCreateForm"
+                            "$ref": "#/definitions/forms.BookForm"
                         }
                     }
                 ],
@@ -160,20 +128,20 @@ const docTemplate = `{
                 }
             }
         },
-        "/private/books/{id}": {
-            "get": {
-                "description": "GetBooksList",
+        "/private/books/delete": {
+            "delete": {
+                "description": "DeleteBook Book",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "Books"
                 ],
-                "summary": "GetBooksList",
+                "summary": "DeleteBook by id",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Book ID",
+                        "description": "book ID",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -183,7 +151,70 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.Book"
+                            "$ref": "#/definitions/responses.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/private/books/update/{id}": {
+            "put": {
+                "description": "UpdateBook Book",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Books"
+                ],
+                "summary": "UpdateBook by id",
+                "parameters": [
+                    {
+                        "description": "body",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/forms.BookForm"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/responses.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/private/books/{id}": {
+            "get": {
+                "description": "Get book by id",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Books"
+                ],
+                "summary": "Get book by id",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "book ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Book"
+                            }
                         }
                     }
                 }
@@ -501,7 +532,7 @@ const docTemplate = `{
                 }
             }
         },
-        "forms.BookCreateForm": {
+        "forms.BookForm": {
             "type": "object",
             "required": [
                 "name"
@@ -681,21 +712,6 @@ const docTemplate = `{
                 }
             }
         },
-        "models.BooksQueryParams": {
-            "type": "object",
-            "properties": {
-                "orderBy": {
-                    "type": "string",
-                    "default": "createdAt desc"
-                },
-                "page": {
-                    "type": "integer"
-                },
-                "perPage": {
-                    "type": "integer"
-                }
-            }
-        },
         "models.FullProfileChartData": {
             "type": "object",
             "properties": {
@@ -721,6 +737,9 @@ const docTemplate = `{
                 "averageWordsPerDay": {
                     "type": "number"
                 },
+                "averageWordsPerReport": {
+                    "type": "number"
+                },
                 "bookId": {
                     "type": "string"
                 },
@@ -732,6 +751,9 @@ const docTemplate = `{
                 },
                 "daysRemaining": {
                     "type": "integer"
+                },
+                "estimatedEndDate": {
+                    "type": "string"
                 },
                 "goalId": {
                     "type": "string"
@@ -746,9 +768,6 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "totalWordsWritten": {
-                    "type": "number"
-                },
-                "trendComparedToTarget": {
                     "type": "number"
                 }
             }
@@ -968,6 +987,14 @@ const docTemplate = `{
         "models.UserStatistics": {
             "type": "object",
             "properties": {
+                "aboveAverageReportsRate": {
+                    "description": "AboveAverageReportsRate is the percentage of reports where the user wrote more words than the average report.",
+                    "type": "number"
+                },
+                "activityConsistencyRate": {
+                    "description": "ActivityConsistencyRate is the percentage of days with activity relative to the total number of days since the first report.",
+                    "type": "number"
+                },
                 "averageDaysToComplete": {
                     "type": "number"
                 },
@@ -981,9 +1008,19 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "currentStreak": {
+                    "description": "CurrentStreak is the current streak of consecutive days the user has written.",
                     "type": "integer"
                 },
+                "expiredGoalsCompletionRate": {
+                    "description": "ExpiredGoalsCompletionRate is the percentage of expired goals that have been completed.",
+                    "type": "number"
+                },
+                "goalCompletionRate": {
+                    "description": "GoalCompletionRate is the percentage of completed goals out of the total goals.",
+                    "type": "number"
+                },
                 "longestStreak": {
+                    "description": "LongestStreak is the longest streak of consecutive days the user has written.",
                     "type": "integer"
                 },
                 "maxWordsInDay": {
@@ -991,6 +1028,14 @@ const docTemplate = `{
                 },
                 "mostProductiveDay": {
                     "type": "string"
+                },
+                "overachievementRate": {
+                    "description": "OverachievementRate is the percentage of goals where the user has written more words than planned.",
+                    "type": "number"
+                },
+                "overallGoalProgressRate": {
+                    "description": "OverallGoalProgressRate is the percentage of goal progress based on written words and goal words.",
+                    "type": "number"
                 },
                 "totalBooks": {
                     "type": "integer"
@@ -1017,6 +1062,14 @@ const docTemplate = `{
             "properties": {
                 "id": {
                     "type": "string"
+                }
+            }
+        },
+        "responses.StatusResponse": {
+            "type": "object",
+            "properties": {
+                "status": {
+                    "type": "boolean"
                 }
             }
         },

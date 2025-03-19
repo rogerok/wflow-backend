@@ -52,8 +52,8 @@ func CreateBook(s services.BooksService) fiber.Handler {
 // @Tags Books
 // @Param request body forms.BookForm true "body"
 // @Produce json
-// @Success 200 {object} responses.CreateResponse
-// @Router /private/books/update [put]
+// @Success 200 {object} responses.StatusResponse
+// @Router /private/books/update/{id} [put]
 func UpdateBook(s services.BooksService) fiber.Handler {
 	return func(ctx *fiber.Ctx) error {
 		formData := new(forms.BookForm)
@@ -63,6 +63,8 @@ func UpdateBook(s services.BooksService) fiber.Handler {
 		if err != nil {
 			return err
 		}
+
+		bookId := ctx.Params("id")
 
 		if err := ctx.BodyParser(formData); err != nil {
 			return utils.GetBadRequestError(ctx, err.Error())
@@ -74,7 +76,35 @@ func UpdateBook(s services.BooksService) fiber.Handler {
 			return utils.GetBadRequestError(ctx, err.Error())
 		}
 
-		status, err := s.UpdateBook(formData)
+		status, err := s.UpdateBook(formData, bookId)
+
+		if err != nil {
+			return utils.GetBadRequestError(ctx, err.Error())
+		}
+
+		return utils.GetSuccessResponse(ctx, status)
+	}
+}
+
+// DeleteBook godoc
+// @Summary DeleteBook by id
+// @Description DeleteBook Book
+// @Tags Books
+// @Param id path string true "book ID"
+// @Produce json
+// @Success 200 {object} responses.StatusResponse
+// @Router /private/books/delete [delete]
+func DeleteBook(s services.BooksService) fiber.Handler {
+	return func(ctx *fiber.Ctx) error {
+
+		userId, err := utils.GetSubjectFromHeaderToken(ctx)
+
+		if err != nil {
+			return err
+		}
+
+		bookId := ctx.Params("id")
+		status, err := s.DeleteBook(bookId, userId)
 
 		if err != nil {
 			return utils.GetBadRequestError(ctx, err.Error())
@@ -125,9 +155,9 @@ func GetBooksList(s services.BooksService) fiber.Handler {
 // @Description Get book by id
 // @Tags Books
 // @Produce json
-// @Param RequestBody body models.BooksQueryParams true "Query parameters for books list"
+// @Param id path string true "book ID"
 // @Success 200 {object} []models.Book
-// @Router /private/books [get]
+// @Router /private/books/{id} [get]
 func GetBookById(s services.BooksService) fiber.Handler {
 	return func(ctx *fiber.Ctx) error {
 		userId, err := utils.GetSubjectUuidFromHeaderToken(ctx)
