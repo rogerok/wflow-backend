@@ -52,9 +52,7 @@ func (s *booksService) UpdateBook(book *forms.BookForm, bookId string) (status b
 
 func (s *booksService) DeleteBook(bookId string, userId string) (status bool, err error) {
 
-	status, err = s.r.Delete(bookId, userId)
-
-	return status, err
+	return s.r.Delete(bookId, userId)
 }
 
 func (s *booksService) GetBookById(id string, userId string) (book *models.Book, err error) {

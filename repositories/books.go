@@ -51,7 +51,7 @@ func (r *booksRepository) Update(book *forms.BookForm, bookId string) (status bo
 
 func (r *booksRepository) Delete(bookId string, userId string) (status bool, err error) {
 
-	query := `DELETE from books WHERE id = $1 AND user_id = $2`
+	query := `DELETE FROM books WHERE id = $1 AND user_id = $2`
 
 	_, err = r.db.Exec(query, bookId, userId)
 
