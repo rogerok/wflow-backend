@@ -46,15 +46,15 @@ func CreateBook(s services.BooksService) fiber.Handler {
 	}
 }
 
-// UpdateBook godoc
-// @Summary UpdateBook by id
-// @Description UpdateBook Book
+// EditBook godoc
+// @Summary EditBook by id
+// @Description EditBook Book
 // @Tags Books
 // @Param request body forms.BookForm true "body"
 // @Produce json
 // @Success 200 {object} responses.StatusResponse
-// @Router /private/books/update/{id} [put]
-func UpdateBook(s services.BooksService) fiber.Handler {
+// @Router /private/books/edit/{id} [put]
+func EditBook(s services.BooksService) fiber.Handler {
 	return func(ctx *fiber.Ctx) error {
 		formData := new(forms.BookForm)
 
@@ -76,7 +76,7 @@ func UpdateBook(s services.BooksService) fiber.Handler {
 			return utils.GetBadRequestError(ctx, err.Error())
 		}
 
-		status, err := s.UpdateBook(formData, bookId)
+		status, err := s.EditBook(formData, bookId)
 
 		if err != nil {
 			return utils.GetBadRequestError(ctx, err.Error())

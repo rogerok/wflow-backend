@@ -8,7 +8,7 @@ import (
 
 type BooksService interface {
 	CreateBook(book *forms.BookForm) (id *string, err error)
-	UpdateBook(book *forms.BookForm, bookId string) (status bool, err error)
+	EditBook(book *forms.BookForm, bookId string) (status bool, err error)
 	DeleteBook(bookId string, userId string) (status bool, err error)
 	GetBookById(id string, userId string) (book *models.Book, err error)
 	GetBooksByUserId(params *models.BooksQueryParams) (book *[]models.Book, err error)
@@ -41,11 +41,11 @@ func (s *booksService) CreateBook(book *forms.BookForm) (id *string, err error) 
 	return id, nil
 }
 
-func (s *booksService) UpdateBook(book *forms.BookForm, bookId string) (status bool, err error) {
+func (s *booksService) EditBook(book *forms.BookForm, bookId string) (status bool, err error) {
 
 	bookData := mapFormToBookModel(book)
 
-	status, err = s.r.Update(bookData, bookId)
+	status, err = s.r.Edit(bookData, bookId)
 
 	return status, err
 }

@@ -52,6 +52,29 @@ definitions:
     - startDate
     - title
     type: object
+  forms.GoalEditForm:
+    properties:
+      description:
+        maxLength: 255
+        minLength: 2
+        type: string
+      endDate:
+        type: string
+      goalWords:
+        minimum: 2
+        type: number
+      startDate:
+        type: string
+      title:
+        maxLength: 255
+        minLength: 2
+        type: string
+    required:
+    - endDate
+    - goalWords
+    - startDate
+    - title
+    type: object
   forms.Pseudonym:
     properties:
       firstName:
@@ -182,6 +205,13 @@ definitions:
       reportsCount:
         type: integer
       totalWordsWritten:
+        type: number
+    type: object
+  models.GoalUpdateResponse:
+    properties:
+      goalWords:
+        type: number
+      wordsPerDay:
         type: number
     type: object
   models.Goals:
@@ -516,9 +546,9 @@ paths:
       summary: DeleteBook by id
       tags:
       - Books
-  /private/books/update/{id}:
+  /private/books/edit/{id}:
     put:
-      description: UpdateBook Book
+      description: EditBook Book
       parameters:
       - description: body
         in: body
@@ -533,7 +563,7 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/responses.StatusResponse'
-      summary: UpdateBook by id
+      summary: EditBook by id
       tags:
       - Books
   /private/goals:
@@ -592,6 +622,43 @@ paths:
           schema:
             $ref: '#/definitions/models.Goals'
       summary: Get by id
+      tags:
+      - Goals
+  /private/goals/delete:
+    delete:
+      description: DeleteGoal Book
+      parameters:
+      - description: goal ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/responses.StatusResponse'
+      summary: DeleteGoal by id
+      tags:
+      - Goals
+  /private/goals/edit/{id}:
+    put:
+      description: EditGoal goal Goals
+      parameters:
+      - description: body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/forms.GoalEditForm'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.GoalUpdateResponse'
+      summary: EditGoal Goals
       tags:
       - Goals
   /private/quotes:

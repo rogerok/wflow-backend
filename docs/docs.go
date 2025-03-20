@@ -157,16 +157,16 @@ const docTemplate = `{
                 }
             }
         },
-        "/private/books/update/{id}": {
+        "/private/books/edit/{id}": {
             "put": {
-                "description": "UpdateBook Book",
+                "description": "EditBook Book",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "Books"
                 ],
-                "summary": "UpdateBook by id",
+                "summary": "EditBook by id",
                 "parameters": [
                     {
                         "description": "body",
@@ -275,6 +275,63 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/responses.CreateResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/private/goals/delete": {
+            "delete": {
+                "description": "DeleteGoal Book",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Goals"
+                ],
+                "summary": "DeleteGoal by id",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "goal ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/responses.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/private/goals/edit/{id}": {
+            "put": {
+                "description": "EditGoal goal Goals",
+                "tags": [
+                    "Goals"
+                ],
+                "summary": "EditGoal Goals",
+                "parameters": [
+                    {
+                        "description": "body",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/forms.GoalEditForm"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.GoalUpdateResponse"
                         }
                     }
                 }
@@ -585,6 +642,37 @@ const docTemplate = `{
                 }
             }
         },
+        "forms.GoalEditForm": {
+            "type": "object",
+            "required": [
+                "endDate",
+                "goalWords",
+                "startDate",
+                "title"
+            ],
+            "properties": {
+                "description": {
+                    "type": "string",
+                    "maxLength": 255,
+                    "minLength": 2
+                },
+                "endDate": {
+                    "type": "string"
+                },
+                "goalWords": {
+                    "type": "number",
+                    "minimum": 2
+                },
+                "startDate": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string",
+                    "maxLength": 255,
+                    "minLength": 2
+                }
+            }
+        },
         "forms.Pseudonym": {
             "type": "object",
             "properties": {
@@ -768,6 +856,17 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "totalWordsWritten": {
+                    "type": "number"
+                }
+            }
+        },
+        "models.GoalUpdateResponse": {
+            "type": "object",
+            "properties": {
+                "goalWords": {
+                    "type": "number"
+                },
+                "wordsPerDay": {
                     "type": "number"
                 }
             }

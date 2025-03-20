@@ -11,7 +11,7 @@ import (
 
 type BooksRepository interface {
 	Create(book *forms.BookForm) (id *string, err error)
-	Update(book *forms.BookForm, bookId string) (status bool, err error)
+	Edit(book *forms.BookForm, bookId string) (status bool, err error)
 	Delete(bookId string, userId string) (status bool, err error)
 	GetById(id string, userId string) (book *models.Book, err error)
 	GetListByUserId(params *models.BooksQueryParams) (book *[]models.Book, err error)
@@ -34,7 +34,7 @@ func (r *booksRepository) Create(book *forms.BookForm) (id *string, err error) {
 	return id, err
 }
 
-func (r *booksRepository) Update(book *forms.BookForm, bookId string) (status bool, err error) {
+func (r *booksRepository) Edit(book *forms.BookForm, bookId string) (status bool, err error) {
 
 	query := `UPDATE books SET book_name = $1, description = $2 WHERE id = $3 AND user_id=$4`
 

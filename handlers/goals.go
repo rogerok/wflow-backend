@@ -47,17 +47,17 @@ func CreateGoal(s services.GoalsService) fiber.Handler {
 	}
 }
 
-// UpdateGoal UpdateGoal godoc
-// @Summary UpdateGoal Goals
-// @Description UpdateGoal goal Goals
+// EditGoal  godoc
+// @Summary EditGoal Goals
+// @Description EditGoal goal Goals
 // @Tags Goals
-// @Param request body forms.GoalUpdateForm true "body"
+// @Param request body forms.GoalEditForm true "body"
 // Produce json
 // @Success 200 {object} models.GoalUpdateResponse
 // @Router /private/goals/edit/{id} [put]
-func UpdateGoal(s services.GoalsService) fiber.Handler {
+func EditGoal(s services.GoalsService) fiber.Handler {
 	return func(ctx *fiber.Ctx) error {
-		formData := new(forms.GoalUpdateForm)
+		formData := new(forms.GoalEditForm)
 
 		userId, err := utils.GetSubjectFromHeaderToken(ctx)
 
@@ -76,7 +76,7 @@ func UpdateGoal(s services.GoalsService) fiber.Handler {
 			return utils.GetBadRequestError(ctx, err.Error())
 		}
 
-		data, err := s.Update(formData)
+		data, err := s.Edit(formData)
 
 		if err != nil {
 			return utils.GetBadRequestError(ctx, err.Error())

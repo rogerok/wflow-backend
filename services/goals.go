@@ -10,7 +10,7 @@ import (
 
 type GoalsService interface {
 	Create(goal *forms.GoalCreateForm) (id *string, err error)
-	Update(goal *forms.GoalUpdateForm) (goalStats *models.GoalUpdateResponse, err error)
+	Edit(goal *forms.GoalEditForm) (goalStats *models.GoalUpdateResponse, err error)
 	Delete(goalId string, userId string) (status bool, err error)
 	GetList(params *models.GoalsQueryParams) (goals *[]models.Goals, err error)
 	GetById(id string) (goal *models.Goals, err error)
@@ -60,9 +60,9 @@ func (s *goalsService) Create(goal *forms.GoalCreateForm) (id *string, err error
 
 }
 
-func (s *goalsService) Update(goal *forms.GoalUpdateForm) (goalStats *models.GoalUpdateResponse, err error) {
+func (s *goalsService) Edit(goal *forms.GoalEditForm) (goalStats *models.GoalUpdateResponse, err error) {
 
-	return s.r.Update(goal)
+	return s.r.Edit(goal)
 
 }
 

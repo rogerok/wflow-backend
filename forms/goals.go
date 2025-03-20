@@ -17,7 +17,7 @@ type GoalCreateForm struct {
 	UserId      string    `json:"-"`
 }
 
-type GoalUpdateForm struct {
+type GoalEditForm struct {
 	Description *string   `json:"description" validate:"omitempty,min=2,max=255"`
 	EndDate     time.Time `json:"endDate" validate:"required,pastDateValidator"`
 	GoalId      string    `json:"-"`
@@ -76,6 +76,6 @@ func (gf *GoalCreateForm) Validate() error {
 	return validateForm(gf)
 }
 
-func (gf *GoalUpdateForm) Validate() error {
+func (gf *GoalEditForm) Validate() error {
 	return validateForm(gf)
 }

@@ -10,7 +10,7 @@ import (
 
 type GoalsRepository interface {
 	Create(goal *models.Goals) (id *string, err error)
-	Update(goal *forms.GoalUpdateForm) (goalStats *models.GoalUpdateResponse, err error)
+	Edit(goal *forms.GoalEditForm) (goalStats *models.GoalUpdateResponse, err error)
 	Delete(goalId string, userId string) (status bool, err error)
 	GetById(id string) (goal *models.Goals, err error)
 	GetList(params *models.GoalsQueryParams) (goals *[]models.Goals, err error)
@@ -38,7 +38,7 @@ func (r *goalsRepository) Create(goal *models.Goals) (id *string, err error) {
 	return id, nil
 }
 
-func (r *goalsRepository) Update(goal *forms.GoalUpdateForm) (goalStats *models.GoalUpdateResponse, err error) {
+func (r *goalsRepository) Edit(goal *forms.GoalEditForm) (goalStats *models.GoalUpdateResponse, err error) {
 	goalStats = &models.GoalUpdateResponse{}
 
 	query := `
