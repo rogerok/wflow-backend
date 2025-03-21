@@ -35,7 +35,7 @@ func mapFormToModel(goal *forms.GoalCreateForm) *models.Goals {
 
 	return &models.Goals{
 		BookId:       goal.BookId,
-		EndDate:      goal.EndDate,
+		EndDate:      utils.EndOfDay(goal.EndDate),
 		GoalWords:    goal.GoalWords,
 		IsFinished:   false,
 		StartDate:    goal.StartDate,

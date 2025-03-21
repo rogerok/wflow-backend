@@ -42,23 +42,26 @@ func (r *goalsRepository) Edit(goal *forms.GoalEditForm) (goalStats *models.Goal
 	goalStats = &models.GoalUpdateResponse{}
 
 	query := `
-	WITH calculated AS (
-					SELECT id,
-						   COALESCE(($1 - written_words) / NULLIF(EXTRACT(DAY FROM $2 - $3), 0), 0) AS calculated_words_per_day
-					FROM goals
-					WHERE id = $4
-				)
-				UPDATE goals
-				SET goal_words = $1,
-				    start_date = $2,
-				    end_date = $3,
-					description = $5,
-					title = $6,
-					words_per_day = calculated_words_per_day
-				FROM calculated
-				WHERE goals.id = calculated.id AND user_id = $7 RETURNING words_per_day, goal_words`
-
-	rows, err := r.db.Queryx(query, goal.GoalWords, goal.EndDate, goal.StartDate, goal.EndDate, goal.Description, goal.Title, goal.UserId)
+			WITH calculated AS (
+				SELECT id,
+					   COALESCE(($1::INTEGER - written_words) / NULLIF(ABS(EXTRACT(DAY FROM ($2::TIMESTAMP - $3::TIMESTAMP))) + 1, 0), 0)
+					   AS calculated_words_per_day
+				FROM goals
+				WHERE id = $4
+			)
+			UPDATE goals
+			SET goal_words = $1,
+				end_date = $2,
+				start_date = $3,
+				description = $5,
+				title = $6,
+				words_per_day = calculated_words_per_day
+			FROM calculated
+			WHERE goals.id = calculated.id 
+			AND user_id = $7 
+			RETURNING words_per_day, goal_words;
+`
+	rows, err := r.db.Queryx(query, goal.GoalWords, goal.EndDate, goal.StartDate, goal.GoalId, goal.Description, goal.Title, goal.UserId)
 
 	if rows != nil {
 		for rows.Next() {

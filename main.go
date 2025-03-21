@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/log"
 	"github.com/gofiber/fiber/v2/middleware/cors"
@@ -12,6 +13,7 @@ import (
 	"github.com/rogerok/wflow-backend/forms/validators"
 	"github.com/rogerok/wflow-backend/router"
 	"os"
+	"time"
 )
 
 // @title Word-Flow app API
@@ -20,8 +22,15 @@ import (
 // @host  http://127.0.0.1:5000
 // @BasePath /api
 func main() {
+	location, err := time.LoadLocation("Europe/Moscow")
+	if err != nil {
+		location = time.FixedZone("MSK", 3*60*60)
+		fmt.Printf("Не удалось загрузить локацию из базы данных IANA, используем фиксированный UTC+3: %v", err)
+	}
+	time.Local = location
+	fmt.Printf("Установлен часовой пояс: %s", time.Now())
 
-	err := godotenv.Load()
+	err = godotenv.Load()
 	if err != nil {
 		log.Fatalf("Could not load environment %s", err.Error())
 		return
