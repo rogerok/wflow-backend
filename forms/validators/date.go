@@ -7,6 +7,7 @@ import (
 
 var ForbidPastDateValidatorName = "pastDateValidator"
 var ForbidFutureDateValidatorName = "futureDateValidator"
+var NotBeforeTodayValidatorName = "notBeforeTodayValidator"
 
 func GoalEndDateValidator(fl validator.FieldLevel) (check bool) {
 	startDate := fl.Parent().FieldByName("StartDate").Interface().(time.Time)
@@ -28,9 +29,36 @@ func ForbidPastDateValidator(fl validator.FieldLevel) (check bool) {
 
 }
 
+func NotBeforeTodayValidator(fl validator.FieldLevel) bool {
+	fieldValue, ok := fl.Field().Interface().(time.Time)
+	if !ok {
+		return false
+	}
+
+	// Get year, month, day components only
+	fieldYear, fieldMonth, fieldDay := fieldValue.Date()
+	nowYear, nowMonth, nowDay := time.Now().Date()
+
+	// Create new dates with just the date components (no time)
+	fieldDate := time.Date(fieldYear, fieldMonth, fieldDay, 0, 0, 0, 0, time.UTC)
+	todayDate := time.Date(nowYear, nowMonth, nowDay, 0, 0, 0, 0, time.UTC)
+
+	// Valid if fieldDate is on or after todayDate
+	return !fieldDate.Before(todayDate)
+}
+
 func RegisterForbidPastDateValidator(v *validator.Validate) error {
 
 	if err := v.RegisterValidation(ForbidPastDateValidatorName, ForbidPastDateValidator); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func RegisterNotBeforeTodayValidator(v *validator.Validate) error {
+
+	if err := v.RegisterValidation(NotBeforeTodayValidatorName, NotBeforeTodayValidator); err != nil {
 		return err
 	}
 

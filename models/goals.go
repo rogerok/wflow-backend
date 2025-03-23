@@ -33,3 +33,8 @@ type GoalsQueryParams struct {
 	BookId  *string   `json:"bookId"`
 	UserId  uuid.UUID `json:"-"`
 }
+
+type GoalUpdateResponse struct {
+	GoalWords   float64 `json:"goalWords" db:"goal_words"`
+	WordsPerDay float64 `json:"wordsPerDay" db:"words_per_day"`
+}

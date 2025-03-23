@@ -46,6 +46,10 @@ func SetupRouter(app *fiber.App) (*sqlx.DB, error) {
 	authService := services.NewAuthService(usersRepo, authRepo)
 
 	// public
+	quotes := api.Group("/quotes")
+	quotesRepo := repositories.NewQuotesRepository(db)
+	quotesService := services.NewQuotesService(quotesRepo)
+	quotes.Get("/", handlers.GetRandomQuote(quotesService))
 	api.Post("/users", handlers.CreateUser(userService))
 
 	auth.Post("/", handlers.AuthUser(authService))
@@ -64,6 +68,8 @@ func SetupRouter(app *fiber.App) (*sqlx.DB, error) {
 	booksRepo := repositories.NewBooksRepository(db)
 	booksService := services.NewBooksService(booksRepo)
 	books.Post("/", handlers.CreateBook(booksService))
+	books.Put("/edit/:id", handlers.EditBook(booksService))
+	books.Delete("/delete/:id", handlers.DeleteBook(booksService))
 	books.Get("/", handlers.GetBooksList(booksService))
 	books.Get("/:id", handlers.GetBookById(booksService))
 
@@ -71,6 +77,8 @@ func SetupRouter(app *fiber.App) (*sqlx.DB, error) {
 	goalsRepo := repositories.NewGoalsRepository(db)
 	goalsService := services.NewGoalsService(goalsRepo)
 	goals.Post("/", handlers.CreateGoal(goalsService))
+	goals.Put("/edit/:id", handlers.EditGoal(goalsService))
+	goals.Delete("/delete/:id", handlers.DeleteGoal(goalsService))
 	goals.Get("/", handlers.GetList(goalsService))
 	goals.Get("/:id", handlers.GetGoalById(goalsService))
 
@@ -82,6 +90,13 @@ func SetupRouter(app *fiber.App) (*sqlx.DB, error) {
 	// inner commands
 	command := app.Group("/command")
 	command.Get("/goals", handlers.RecalculateGoals(goalsService))
+
+	statistics := apiPrivate.Group("/statistics")
+	statisticsRepo := repositories.NewStatisticsRepository(db)
+	statisticsService := services.NewStatisticService(statisticsRepo)
+	statistics.Get("/user", handlers.GetUserStatistics(statisticsService))
+	statistics.Get("/user/full", handlers.GetFullProfileChartData(statisticsService))
+	statistics.Get("/goal/:id", handlers.GetGoalStatistics(statisticsService))
 
 	return db, nil
 

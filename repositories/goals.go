@@ -3,12 +3,15 @@ package repositories
 import (
 	"fmt"
 	"github.com/jmoiron/sqlx"
+	"github.com/rogerok/wflow-backend/forms"
 	"github.com/rogerok/wflow-backend/models"
 	"github.com/rogerok/wflow-backend/utils"
 )
 
 type GoalsRepository interface {
 	Create(goal *models.Goals) (id *string, err error)
+	Edit(goal *forms.GoalEditForm) (goalStats *models.GoalUpdateResponse, err error)
+	Delete(goalId string, userId string) (status bool, err error)
 	GetById(id string) (goal *models.Goals, err error)
 	GetList(params *models.GoalsQueryParams) (goals *[]models.Goals, err error)
 	RecalculateGoal(wordsAmount float64, goalId string) (goalStats *models.GoalStats, err error)
@@ -33,6 +36,59 @@ func (r *goalsRepository) Create(goal *models.Goals) (id *string, err error) {
 	}
 
 	return id, nil
+}
+
+func (r *goalsRepository) Edit(goal *forms.GoalEditForm) (goalStats *models.GoalUpdateResponse, err error) {
+	goalStats = &models.GoalUpdateResponse{}
+
+	query := `
+			WITH calculated AS (
+				SELECT id,
+					   COALESCE(($1::INTEGER - written_words) / NULLIF(ABS(EXTRACT(DAY FROM ($2::TIMESTAMP - $3::TIMESTAMP))) + 1, 0), 0)
+					   AS calculated_words_per_day
+				FROM goals
+				WHERE id = $4
+			)
+			UPDATE goals
+			SET goal_words = $1,
+				end_date = $2,
+				start_date = $3,
+				description = $5,
+				title = $6,
+				words_per_day = calculated_words_per_day
+			FROM calculated
+			WHERE goals.id = calculated.id 
+			AND user_id = $7 
+			RETURNING words_per_day, goal_words;
+`
+	rows, err := r.db.Queryx(query, goal.GoalWords, goal.EndDate, goal.StartDate, goal.GoalId, goal.Description, goal.Title, goal.UserId)
+
+	if rows != nil {
+		for rows.Next() {
+			err = rows.Scan(&goalStats.WordsPerDay, &goalStats.GoalWords)
+			if err != nil {
+				return nil, err
+			}
+		}
+	}
+
+	return goalStats, err
+
+}
+
+func (r *goalsRepository) Delete(goalId string, userId string) (status bool, err error) {
+
+	query := `DELETE FROM goals WHERE id = $1 AND user_id = $2`
+
+	_, err = r.db.Exec(query, goalId, userId)
+
+	if err != nil {
+		fmt.Printf("Error deleting goal %v. %v", goalId, err.Error())
+		return false, err
+
+	}
+
+	return true, nil
 }
 
 func (r *goalsRepository) GetById(id string) (goal *models.Goals, err error) {
@@ -103,6 +159,7 @@ func (r *goalsRepository) RecalculateGoal(wordsAmount float64, goalId string) (g
 				)
 				UPDATE goals
 				SET written_words = updated_written_words,
+				    is_finished = written_words + $1 >= goal_words,
 					words_per_day = 
 						CASE
 							WHEN calculated_words_per_day < 1 THEN 0
@@ -143,7 +200,8 @@ func (r *goalsRepository) RecalculateGoals() {
 		SET
 			words_per_day =
 				CASE
-				    WHEN EXTRACT(DAY FROM (end_date - now() + INTERVAL '1 day')) < 0 AND calculated.written_goal_difference > 0 THEN 0
+				    WHEN EXTRACT(DAY FROM (end_date - now() + INTERVAL '1 day')) < 0 THEN 0
+				    WHEN calculated.written_goal_difference < 0 THEN 0
 					WHEN calculated.written_goal_difference < 1 THEN words_per_day
 					WHEN calculated.calculated_words_per_day IS NULL THEN words_per_day
 					ELSE calculated.calculated_words_per_day

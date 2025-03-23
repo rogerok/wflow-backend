@@ -13,10 +13,10 @@ definitions:
     - email
     - password
     type: object
-  forms.BookCreateForm:
+  forms.BookForm:
     properties:
       description:
-        maxLength: 255
+        maxLength: 1000
         minLength: 2
         type: string
       name:
@@ -38,7 +38,7 @@ definitions:
         type: string
       goalWords:
         minimum: 2
-        type: integer
+        type: number
       startDate:
         type: string
       title:
@@ -47,6 +47,29 @@ definitions:
         type: string
     required:
     - bookId
+    - endDate
+    - goalWords
+    - startDate
+    - title
+    type: object
+  forms.GoalEditForm:
+    properties:
+      description:
+        maxLength: 255
+        minLength: 2
+        type: string
+      endDate:
+        type: string
+      goalWords:
+        minimum: 2
+        type: number
+      startDate:
+        type: string
+      title:
+        maxLength: 255
+        minLength: 2
+        type: string
+    required:
     - endDate
     - goalWords
     - startDate
@@ -67,34 +90,29 @@ definitions:
     properties:
       bookId:
         type: string
-      description:
-        maxLength: 255
-        minLength: 2
-        type: string
       goalId:
-        type: string
-      title:
-        maxLength: 255
-        minLength: 2
         type: string
       wordsAmount:
         minimum: 2
-        type: integer
+        type: number
     required:
     - bookId
     - goalId
-    - title
     - wordsAmount
     type: object
   forms.Social:
     properties:
       instagram:
+        maxLength: 250
         type: string
       telegram:
+        maxLength: 250
         type: string
       tiktok:
+        maxLength: 250
         type: string
       vk:
+        maxLength: 250
         type: string
     type: object
   forms.UserCreateForm:
@@ -149,15 +167,52 @@ definitions:
       updatedAt:
         type: string
     type: object
-  models.BooksQueryParams:
+  models.FullProfileChartData:
     properties:
-      orderBy:
-        default: createdAt desc
+      cumulativeProgress:
+        description: DailyProgress      []DailyProgressPoint `json:"daily_progress"`
+        items:
+          $ref: '#/definitions/models.ProgressPoint'
+        type: array
+      goalCompletion:
+        description: MonthlyComparison  []MonthlyStats       `json:"monthly_comparison"`
+        items:
+          $ref: '#/definitions/models.GoalsChart'
+        type: array
+    type: object
+  models.GoalStatistics:
+    properties:
+      averageWordsPerDay:
+        type: number
+      averageWordsPerReport:
+        type: number
+      bookId:
         type: string
-      page:
+      dailyWordsRequired:
+        type: number
+      daysElapsed:
         type: integer
-      perPage:
+      daysRemaining:
         type: integer
+      estimatedEndDate:
+        type: string
+      goalId:
+        type: string
+      percentageComplete:
+        type: number
+      remainingWords:
+        type: number
+      reportsCount:
+        type: integer
+      totalWordsWritten:
+        type: number
+    type: object
+  models.GoalUpdateResponse:
+    properties:
+      goalWords:
+        type: number
+      wordsPerDay:
+        type: number
     type: object
   models.Goals:
     properties:
@@ -170,7 +225,7 @@ definitions:
       endDate:
         type: string
       goalWords:
-        type: integer
+        type: number
       id:
         type: string
       isExpired:
@@ -186,7 +241,42 @@ definitions:
       wordsPerDay:
         type: number
       writtenWords:
+        type: number
+    type: object
+  models.GoalsChart:
+    properties:
+      averageWordsPerDay:
+        type: number
+      bookId:
+        type: string
+      bookTitle:
+        type: string
+      createdAt:
+        type: string
+      dailyWordsRequired:
+        type: number
+      daysElapsed:
         type: integer
+      daysRemaining:
+        type: integer
+      goalId:
+        type: string
+      goalTitle:
+        type: string
+      isExpired:
+        type: boolean
+      isFinished:
+        type: boolean
+      percentageComplete:
+        type: number
+      remainingWords:
+        type: number
+      reportsCount:
+        type: integer
+      totalWordsWritten:
+        type: number
+      trendComparedToTarget:
+        type: number
     type: object
   models.GoalsQueryParams:
     properties:
@@ -200,11 +290,37 @@ definitions:
       perPage:
         type: integer
     type: object
+  models.ProgressPoint:
+    properties:
+      bookId:
+        type: string
+      bookName:
+        type: string
+      completionPercent:
+        type: number
+      date:
+        type: string
+      goalId:
+        type: string
+      goalTitle:
+        type: string
+      targetTotalWords:
+        type: number
+      totalWords:
+        type: number
+    type: object
   models.Pseudonym:
     properties:
       firstName:
         type: string
       lastName:
+        type: string
+    type: object
+  models.Quotes:
+    properties:
+      id:
+        type: string
+      text:
         type: string
     type: object
   models.Social:
@@ -237,10 +353,74 @@ definitions:
       updatedAt:
         type: string
     type: object
+  models.UserStatistics:
+    properties:
+      aboveAverageReportsRate:
+        description: AboveAverageReportsRate is the percentage of reports where the
+          user wrote more words than the average report.
+        type: number
+      activityConsistencyRate:
+        description: ActivityConsistencyRate is the percentage of days with activity
+          relative to the total number of days since the first report.
+        type: number
+      averageDaysToComplete:
+        type: number
+      averageWordsPerDay:
+        type: number
+      averageWordsPerReport:
+        type: number
+      completedGoals:
+        type: integer
+      currentStreak:
+        description: CurrentStreak is the current streak of consecutive days the user
+          has written.
+        type: integer
+      expiredGoalsCompletionRate:
+        description: ExpiredGoalsCompletionRate is the percentage of expired goals
+          that have been completed.
+        type: number
+      goalCompletionRate:
+        description: GoalCompletionRate is the percentage of completed goals out of
+          the total goals.
+        type: number
+      longestStreak:
+        description: LongestStreak is the longest streak of consecutive days the user
+          has written.
+        type: integer
+      maxWordsInDay:
+        type: number
+      mostProductiveDay:
+        type: string
+      overachievementRate:
+        description: OverachievementRate is the percentage of goals where the user
+          has written more words than planned.
+        type: number
+      overallGoalProgressRate:
+        description: OverallGoalProgressRate is the percentage of goal progress based
+          on written words and goal words.
+        type: number
+      totalBooks:
+        type: integer
+      totalDaysWithActivity:
+        type: integer
+      totalGoals:
+        type: integer
+      totalReports:
+        type: integer
+      totalWords:
+        type: number
+      userId:
+        type: string
+    type: object
   responses.CreateResponse:
     properties:
       id:
         type: string
+    type: object
+  responses.StatusResponse:
+    properties:
+      status:
+        type: boolean
     type: object
   responses.TokenResponse:
     properties:
@@ -307,27 +487,6 @@ paths:
       tags:
       - Auth
   /private/books:
-    get:
-      description: Get book by id
-      parameters:
-      - description: Query parameters for books list
-        in: body
-        name: RequestBody
-        required: true
-        schema:
-          $ref: '#/definitions/models.BooksQueryParams'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/models.Book'
-            type: array
-      summary: Get book by id
-      tags:
-      - Books
     post:
       description: CreateBook Book
       parameters:
@@ -336,7 +495,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/forms.BookCreateForm'
+          $ref: '#/definitions/forms.BookForm'
       produces:
       - application/json
       responses:
@@ -349,9 +508,9 @@ paths:
       - Books
   /private/books/{id}:
     get:
-      description: GetBooksList
+      description: Get book by id
       parameters:
-      - description: Book ID
+      - description: book ID
         in: path
         name: id
         required: true
@@ -362,8 +521,49 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.Book'
-      summary: GetBooksList
+            items:
+              $ref: '#/definitions/models.Book'
+            type: array
+      summary: Get book by id
+      tags:
+      - Books
+  /private/books/delete:
+    delete:
+      description: DeleteBook Book
+      parameters:
+      - description: book ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/responses.StatusResponse'
+      summary: DeleteBook by id
+      tags:
+      - Books
+  /private/books/edit/{id}:
+    put:
+      description: EditBook Book
+      parameters:
+      - description: body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/forms.BookForm'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/responses.StatusResponse'
+      summary: EditBook by id
       tags:
       - Books
   /private/goals:
@@ -424,6 +624,56 @@ paths:
       summary: Get by id
       tags:
       - Goals
+  /private/goals/delete:
+    delete:
+      description: DeleteGoal Book
+      parameters:
+      - description: goal ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/responses.StatusResponse'
+      summary: DeleteGoal by id
+      tags:
+      - Goals
+  /private/goals/edit/{id}:
+    put:
+      description: EditGoal goal Goals
+      parameters:
+      - description: body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/forms.GoalEditForm'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.GoalUpdateResponse'
+      summary: EditGoal Goals
+      tags:
+      - Goals
+  /private/quotes:
+    get:
+      description: Get random quote
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Quotes'
+      summary: Get random quote
+      tags:
+      - Quotes
   /private/reports:
     post:
       description: CreateReport Report
@@ -444,6 +694,51 @@ paths:
       summary: CreateReport Report
       tags:
       - Report
+  /private/statistics/goal/{id}:
+    get:
+      description: get goal's activity statistics
+      parameters:
+      - description: Goal ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.GoalStatistics'
+      summary: Get statistics by goal id
+      tags:
+      - Statistics
+  /private/statistics/user:
+    get:
+      description: get user's activity statistics
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.UserStatistics'
+      summary: Get statistics by user id
+      tags:
+      - Statistics
+  /private/statistics/user/full:
+    get:
+      description: Get profile full chart data user id
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.FullProfileChartData'
+      summary: Get profile full chart data user id
+      tags:
+      - Statistics
   /private/users:
     get:
       description: Get users list

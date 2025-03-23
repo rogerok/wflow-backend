@@ -92,38 +92,6 @@
             }
         },
         "/private/books": {
-            "get": {
-                "description": "Get book by id",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Books"
-                ],
-                "summary": "Get book by id",
-                "parameters": [
-                    {
-                        "description": "Query parameters for books list",
-                        "name": "RequestBody",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/models.BooksQueryParams"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Book"
-                            }
-                        }
-                    }
-                }
-            },
             "post": {
                 "description": "CreateBook Book",
                 "produces": [
@@ -140,7 +108,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/forms.BookCreateForm"
+                            "$ref": "#/definitions/forms.BookForm"
                         }
                     }
                 ],
@@ -154,20 +122,20 @@
                 }
             }
         },
-        "/private/books/{id}": {
-            "get": {
-                "description": "GetBooksList",
+        "/private/books/delete": {
+            "delete": {
+                "description": "DeleteBook Book",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "Books"
                 ],
-                "summary": "GetBooksList",
+                "summary": "DeleteBook by id",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Book ID",
+                        "description": "book ID",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -177,7 +145,70 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.Book"
+                            "$ref": "#/definitions/responses.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/private/books/edit/{id}": {
+            "put": {
+                "description": "EditBook Book",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Books"
+                ],
+                "summary": "EditBook by id",
+                "parameters": [
+                    {
+                        "description": "body",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/forms.BookForm"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/responses.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/private/books/{id}": {
+            "get": {
+                "description": "Get book by id",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Books"
+                ],
+                "summary": "Get book by id",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "book ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Book"
+                            }
                         }
                     }
                 }
@@ -243,6 +274,63 @@
                 }
             }
         },
+        "/private/goals/delete": {
+            "delete": {
+                "description": "DeleteGoal Book",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Goals"
+                ],
+                "summary": "DeleteGoal by id",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "goal ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/responses.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/private/goals/edit/{id}": {
+            "put": {
+                "description": "EditGoal goal Goals",
+                "tags": [
+                    "Goals"
+                ],
+                "summary": "EditGoal Goals",
+                "parameters": [
+                    {
+                        "description": "body",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/forms.GoalEditForm"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.GoalUpdateResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/private/goals/{id}": {
             "get": {
                 "description": "Get goal by id",
@@ -267,6 +355,26 @@
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/models.Goals"
+                        }
+                    }
+                }
+            }
+        },
+        "/private/quotes": {
+            "get": {
+                "description": "Get random quote",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Quotes"
+                ],
+                "summary": "Get random quote",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Quotes"
                         }
                     }
                 }
@@ -298,6 +406,75 @@
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/responses.CreateResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/private/statistics/goal/{id}": {
+            "get": {
+                "description": "get goal's activity statistics",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Statistics"
+                ],
+                "summary": "Get statistics by goal id",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Goal ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.GoalStatistics"
+                        }
+                    }
+                }
+            }
+        },
+        "/private/statistics/user": {
+            "get": {
+                "description": "get user's activity statistics",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Statistics"
+                ],
+                "summary": "Get statistics by user id",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.UserStatistics"
+                        }
+                    }
+                }
+            }
+        },
+        "/private/statistics/user/full": {
+            "get": {
+                "description": "Get profile full chart data user id",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Statistics"
+                ],
+                "summary": "Get profile full chart data user id",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.FullProfileChartData"
                         }
                     }
                 }
@@ -406,7 +583,7 @@
                 }
             }
         },
-        "forms.BookCreateForm": {
+        "forms.BookForm": {
             "type": "object",
             "required": [
                 "name"
@@ -414,7 +591,7 @@
             "properties": {
                 "description": {
                     "type": "string",
-                    "maxLength": 255,
+                    "maxLength": 1000,
                     "minLength": 2
                 },
                 "name": {
@@ -446,7 +623,38 @@
                     "type": "string"
                 },
                 "goalWords": {
-                    "type": "integer",
+                    "type": "number",
+                    "minimum": 2
+                },
+                "startDate": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string",
+                    "maxLength": 255,
+                    "minLength": 2
+                }
+            }
+        },
+        "forms.GoalEditForm": {
+            "type": "object",
+            "required": [
+                "endDate",
+                "goalWords",
+                "startDate",
+                "title"
+            ],
+            "properties": {
+                "description": {
+                    "type": "string",
+                    "maxLength": 255,
+                    "minLength": 2
+                },
+                "endDate": {
+                    "type": "string"
+                },
+                "goalWords": {
+                    "type": "number",
                     "minimum": 2
                 },
                 "startDate": {
@@ -479,28 +687,17 @@
             "required": [
                 "bookId",
                 "goalId",
-                "title",
                 "wordsAmount"
             ],
             "properties": {
                 "bookId": {
                     "type": "string"
                 },
-                "description": {
-                    "type": "string",
-                    "maxLength": 255,
-                    "minLength": 2
-                },
                 "goalId": {
                     "type": "string"
                 },
-                "title": {
-                    "type": "string",
-                    "maxLength": 255,
-                    "minLength": 2
-                },
                 "wordsAmount": {
-                    "type": "integer",
+                    "type": "number",
                     "minimum": 2
                 }
             }
@@ -509,16 +706,20 @@
             "type": "object",
             "properties": {
                 "instagram": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 250
                 },
                 "telegram": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 250
                 },
                 "tiktok": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 250
                 },
                 "vk": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 250
                 }
             }
         },
@@ -593,18 +794,74 @@
                 }
             }
         },
-        "models.BooksQueryParams": {
+        "models.FullProfileChartData": {
             "type": "object",
             "properties": {
-                "orderBy": {
-                    "type": "string",
-                    "default": "createdAt desc"
+                "cumulativeProgress": {
+                    "description": "DailyProgress      []DailyProgressPoint `json:\"daily_progress\"`",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.ProgressPoint"
+                    }
                 },
-                "page": {
+                "goalCompletion": {
+                    "description": "MonthlyComparison  []MonthlyStats       `json:\"monthly_comparison\"`",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.GoalsChart"
+                    }
+                }
+            }
+        },
+        "models.GoalStatistics": {
+            "type": "object",
+            "properties": {
+                "averageWordsPerDay": {
+                    "type": "number"
+                },
+                "averageWordsPerReport": {
+                    "type": "number"
+                },
+                "bookId": {
+                    "type": "string"
+                },
+                "dailyWordsRequired": {
+                    "type": "number"
+                },
+                "daysElapsed": {
                     "type": "integer"
                 },
-                "perPage": {
+                "daysRemaining": {
                     "type": "integer"
+                },
+                "estimatedEndDate": {
+                    "type": "string"
+                },
+                "goalId": {
+                    "type": "string"
+                },
+                "percentageComplete": {
+                    "type": "number"
+                },
+                "remainingWords": {
+                    "type": "number"
+                },
+                "reportsCount": {
+                    "type": "integer"
+                },
+                "totalWordsWritten": {
+                    "type": "number"
+                }
+            }
+        },
+        "models.GoalUpdateResponse": {
+            "type": "object",
+            "properties": {
+                "goalWords": {
+                    "type": "number"
+                },
+                "wordsPerDay": {
+                    "type": "number"
                 }
             }
         },
@@ -624,7 +881,7 @@
                     "type": "string"
                 },
                 "goalWords": {
-                    "type": "integer"
+                    "type": "number"
                 },
                 "id": {
                     "type": "string"
@@ -648,7 +905,60 @@
                     "type": "number"
                 },
                 "writtenWords": {
+                    "type": "number"
+                }
+            }
+        },
+        "models.GoalsChart": {
+            "type": "object",
+            "properties": {
+                "averageWordsPerDay": {
+                    "type": "number"
+                },
+                "bookId": {
+                    "type": "string"
+                },
+                "bookTitle": {
+                    "type": "string"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "dailyWordsRequired": {
+                    "type": "number"
+                },
+                "daysElapsed": {
                     "type": "integer"
+                },
+                "daysRemaining": {
+                    "type": "integer"
+                },
+                "goalId": {
+                    "type": "string"
+                },
+                "goalTitle": {
+                    "type": "string"
+                },
+                "isExpired": {
+                    "type": "boolean"
+                },
+                "isFinished": {
+                    "type": "boolean"
+                },
+                "percentageComplete": {
+                    "type": "number"
+                },
+                "remainingWords": {
+                    "type": "number"
+                },
+                "reportsCount": {
+                    "type": "integer"
+                },
+                "totalWordsWritten": {
+                    "type": "number"
+                },
+                "trendComparedToTarget": {
+                    "type": "number"
                 }
             }
         },
@@ -670,6 +980,35 @@
                 }
             }
         },
+        "models.ProgressPoint": {
+            "type": "object",
+            "properties": {
+                "bookId": {
+                    "type": "string"
+                },
+                "bookName": {
+                    "type": "string"
+                },
+                "completionPercent": {
+                    "type": "number"
+                },
+                "date": {
+                    "type": "string"
+                },
+                "goalId": {
+                    "type": "string"
+                },
+                "goalTitle": {
+                    "type": "string"
+                },
+                "targetTotalWords": {
+                    "type": "number"
+                },
+                "totalWords": {
+                    "type": "number"
+                }
+            }
+        },
         "models.Pseudonym": {
             "type": "object",
             "properties": {
@@ -677,6 +1016,17 @@
                     "type": "string"
                 },
                 "lastName": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.Quotes": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "text": {
                     "type": "string"
                 }
             }
@@ -727,11 +1077,92 @@
                 }
             }
         },
+        "models.UserStatistics": {
+            "type": "object",
+            "properties": {
+                "aboveAverageReportsRate": {
+                    "description": "AboveAverageReportsRate is the percentage of reports where the user wrote more words than the average report.",
+                    "type": "number"
+                },
+                "activityConsistencyRate": {
+                    "description": "ActivityConsistencyRate is the percentage of days with activity relative to the total number of days since the first report.",
+                    "type": "number"
+                },
+                "averageDaysToComplete": {
+                    "type": "number"
+                },
+                "averageWordsPerDay": {
+                    "type": "number"
+                },
+                "averageWordsPerReport": {
+                    "type": "number"
+                },
+                "completedGoals": {
+                    "type": "integer"
+                },
+                "currentStreak": {
+                    "description": "CurrentStreak is the current streak of consecutive days the user has written.",
+                    "type": "integer"
+                },
+                "expiredGoalsCompletionRate": {
+                    "description": "ExpiredGoalsCompletionRate is the percentage of expired goals that have been completed.",
+                    "type": "number"
+                },
+                "goalCompletionRate": {
+                    "description": "GoalCompletionRate is the percentage of completed goals out of the total goals.",
+                    "type": "number"
+                },
+                "longestStreak": {
+                    "description": "LongestStreak is the longest streak of consecutive days the user has written.",
+                    "type": "integer"
+                },
+                "maxWordsInDay": {
+                    "type": "number"
+                },
+                "mostProductiveDay": {
+                    "type": "string"
+                },
+                "overachievementRate": {
+                    "description": "OverachievementRate is the percentage of goals where the user has written more words than planned.",
+                    "type": "number"
+                },
+                "overallGoalProgressRate": {
+                    "description": "OverallGoalProgressRate is the percentage of goal progress based on written words and goal words.",
+                    "type": "number"
+                },
+                "totalBooks": {
+                    "type": "integer"
+                },
+                "totalDaysWithActivity": {
+                    "type": "integer"
+                },
+                "totalGoals": {
+                    "type": "integer"
+                },
+                "totalReports": {
+                    "type": "integer"
+                },
+                "totalWords": {
+                    "type": "number"
+                },
+                "userId": {
+                    "type": "string"
+                }
+            }
+        },
         "responses.CreateResponse": {
             "type": "object",
             "properties": {
                 "id": {
                     "type": "string"
+                }
+            }
+        },
+        "responses.StatusResponse": {
+            "type": "object",
+            "properties": {
+                "status": {
+                    "type": "boolean"
                 }
             }
         },

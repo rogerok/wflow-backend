@@ -8,13 +8,23 @@ import (
 )
 
 type GoalCreateForm struct {
-	EndDate     time.Time `json:"endDate" validate:"required,gt=StartDate,pastDateValidator"`
+	BookId      string    `json:"bookId" validate:"required,uuid4"`
+	Description *string   `json:"description" validate:"omitempty,min=2,max=255"`
+	EndDate     time.Time `json:"endDate" validate:"required,gt=StartDate,notBeforeTodayValidator"`
 	GoalWords   float64   `json:"goalWords" validate:"required,min=2"`
-	StartDate   time.Time `json:"startDate" validate:"required,pastDateValidator"`
+	StartDate   time.Time `json:"startDate" validate:"required,notBeforeTodayValidator"`
 	Title       string    `json:"title" validate:"required,min=2,max=255"`
 	UserId      string    `json:"-"`
+}
+
+type GoalEditForm struct {
 	Description *string   `json:"description" validate:"omitempty,min=2,max=255"`
-	BookId      string    `json:"bookId" validate:"required,uuid4"`
+	EndDate     time.Time `json:"endDate" validate:"required,notBeforeTodayValidator"`
+	GoalId      string    `json:"-"`
+	GoalWords   float64   `json:"goalWords" validate:"required,min=2"`
+	StartDate   time.Time `json:"startDate" validate:"required"`
+	Title       string    `json:"title" validate:"required,min=2,max=255"`
+	UserId      string    `json:"-"`
 }
 
 func RegisterEndDateValidator(v *validator.Validate) error {
@@ -25,19 +35,30 @@ func RegisterEndDateValidator(v *validator.Validate) error {
 	return nil
 }
 
-func (gf *GoalCreateForm) Validate() error {
+type Validatable interface {
+	Validate() error
+}
 
+func validateForm(form Validatable) error {
 	customValidators := []func(v *validator.Validate) error{
-		validators.RegisterForbidPastDateValidator,
+		validators.RegisterNotBeforeTodayValidator,
 		RegisterEndDateValidator,
 	}
 
-	if err := validators.ValidateWithCustomValidator(gf, customValidators); err != nil {
+	if err := validators.ValidateWithCustomValidator(form, customValidators); err != nil {
 		return err
 	}
 
 	validators.RegisterTranslator("endDateValidator", errors_utils.ErrInvalidGoalEndDate)
-	validators.RegisterTranslator(validators.ForbidPastDateValidatorName, errors_utils.ErrPastDate)
+	validators.RegisterTranslator(validators.NotBeforeTodayValidatorName, errors_utils.ErrPastDate)
 
 	return nil
+}
+
+func (gf *GoalCreateForm) Validate() error {
+	return validateForm(gf)
+}
+
+func (gf *GoalEditForm) Validate() error {
+	return validateForm(gf)
 }

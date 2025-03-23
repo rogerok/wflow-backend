@@ -12,13 +12,13 @@ import (
 // @Summary CreateBook Book
 // @Description CreateBook Book
 // @Tags Books
-// @Param request body forms.BookCreateForm true "body"
+// @Param request body forms.BookForm true "body"
 // @Produce json
 // @Success 200 {object} responses.CreateResponse
 // @Router /private/books [post]
 func CreateBook(s services.BooksService) fiber.Handler {
 	return func(ctx *fiber.Ctx) error {
-		formData := new(forms.BookCreateForm)
+		formData := new(forms.BookForm)
 
 		userId, err := utils.GetSubjectFromHeaderToken(ctx)
 
@@ -43,6 +43,74 @@ func CreateBook(s services.BooksService) fiber.Handler {
 		}
 
 		return utils.GetResponseCreate(ctx, id)
+	}
+}
+
+// EditBook godoc
+// @Summary EditBook by id
+// @Description EditBook Book
+// @Tags Books
+// @Param request body forms.BookForm true "body"
+// @Produce json
+// @Success 200 {object} responses.StatusResponse
+// @Router /private/books/edit/{id} [put]
+func EditBook(s services.BooksService) fiber.Handler {
+	return func(ctx *fiber.Ctx) error {
+		formData := new(forms.BookForm)
+
+		userId, err := utils.GetSubjectFromHeaderToken(ctx)
+
+		if err != nil {
+			return err
+		}
+
+		bookId := ctx.Params("id")
+
+		if err := ctx.BodyParser(formData); err != nil {
+			return utils.GetBadRequestError(ctx, err.Error())
+		}
+
+		formData.UserId = userId
+
+		if err := formData.Validate(); err != nil {
+			return utils.GetBadRequestError(ctx, err.Error())
+		}
+
+		status, err := s.EditBook(formData, bookId)
+
+		if err != nil {
+			return utils.GetBadRequestError(ctx, err.Error())
+		}
+
+		return utils.GetSuccessResponse(ctx, status)
+	}
+}
+
+// DeleteBook godoc
+// @Summary DeleteBook by id
+// @Description DeleteBook Book
+// @Tags Books
+// @Param id path string true "book ID"
+// @Produce json
+// @Success 200 {object} responses.StatusResponse
+// @Router /private/books/delete [delete]
+func DeleteBook(s services.BooksService) fiber.Handler {
+	return func(ctx *fiber.Ctx) error {
+
+		userId, err := utils.GetSubjectFromHeaderToken(ctx)
+
+		if err != nil {
+			return err
+		}
+
+		bookId := ctx.Params("id")
+		status, err := s.DeleteBook(bookId, userId)
+
+		if err != nil {
+			return utils.GetBadRequestError(ctx, err.Error())
+		}
+
+		return utils.GetSuccessResponse(ctx, status)
 	}
 }
 
@@ -87,9 +155,9 @@ func GetBooksList(s services.BooksService) fiber.Handler {
 // @Description Get book by id
 // @Tags Books
 // @Produce json
-// @Param RequestBody body models.BooksQueryParams true "Query parameters for books list"
+// @Param id path string true "book ID"
 // @Success 200 {object} []models.Book
-// @Router /private/books [get]
+// @Router /private/books/{id} [get]
 func GetBookById(s services.BooksService) fiber.Handler {
 	return func(ctx *fiber.Ctx) error {
 		userId, err := utils.GetSubjectUuidFromHeaderToken(ctx)
