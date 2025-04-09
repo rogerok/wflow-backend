@@ -37,18 +37,18 @@ type UserStatistics struct {
 }
 
 type GoalStatistics struct {
-	GoalID                uuid.UUID `json:"goalId" db:"goal_id"`
-	BookID                uuid.UUID `json:"bookId" db:"book_id"`
-	TotalWordsWritten     float64   `json:"totalWordsWritten" db:"total_words_written"`
-	PercentageComplete    float64   `json:"percentageComplete" db:"percentage_complete"`
-	RemainingWords        float64   `json:"remainingWords" db:"remaining_words"`
-	DailyWordsRequired    float64   `json:"dailyWordsRequired" db:"daily_words_required"`
-	DaysElapsed           int       `json:"daysElapsed" db:"days_elapsed"`
-	DaysRemaining         int       `json:"daysRemaining" db:"days_remaining"`
-	AverageWordsPerReport float64   `json:"averageWordsPerReport" db:"average_words_per_report"`
-	AverageWordsPerDay    float64   `json:"averageWordsPerDay" db:"average_words_per_day"`
-	EstimatedEndDate      time.Time `json:"estimatedEndDate" db:"estimated_end_date"`
-	ReportsCount          int       `json:"reportsCount" db:"reports_count"`
+	GoalID                uuid.UUID  `json:"goalId" db:"goal_id"`
+	BookID                uuid.UUID  `json:"bookId" db:"book_id"`
+	TotalWordsWritten     float64    `json:"totalWordsWritten" db:"total_words_written"`
+	PercentageComplete    float64    `json:"percentageComplete" db:"percentage_complete"`
+	RemainingWords        float64    `json:"remainingWords" db:"remaining_words"`
+	DailyWordsRequired    float64    `json:"dailyWordsRequired" db:"daily_words_required"`
+	DaysElapsed           int        `json:"daysElapsed" db:"days_elapsed"`
+	DaysRemaining         int        `json:"daysRemaining" db:"days_remaining"`
+	AverageWordsPerReport float64    `json:"averageWordsPerReport" db:"average_words_per_report"`
+	AverageWordsPerDay    float64    `json:"averageWordsPerDay" db:"average_words_per_day"`
+	EstimatedEndDate      *time.Time `json:"estimatedEndDate" db:"estimated_end_date"`
+	ReportsCount          int        `json:"reportsCount" db:"reports_count"`
 }
 
 type GoalsChart struct {
