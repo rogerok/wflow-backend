@@ -33,7 +33,7 @@ func GetAllowedOrderBy(order string) string {
 		return " ORDER BY created_at desc "
 	}
 
-	return " ODER BY " + constants.AllowedOrderBy[order]
+	return " ORDER BY " + constants.AllowedOrderBy[order]
 }
 
 func GetOffsetLimitQuery(perPage int, offset int) string {
