@@ -21,9 +21,9 @@ type UserStatistics struct {
 	// GoalCompletionRate is the percentage of completed goals out of the total goals.
 	GoalCompletionRate float64 `json:"goalCompletionRate" db:"goal_completion_rate"`
 	// LongestStreak is the longest streak of consecutive days the user has written.
-	LongestStreak     int       `json:"longestStreak" db:"longest_streak"`
-	MaxWordsInDay     float64   `json:"maxWordsInDay" db:"max_words_in_day"`
-	MostProductiveDay time.Time `json:"mostProductiveDay" db:"most_productive_day"`
+	LongestStreak     int        `json:"longestStreak" db:"longest_streak"`
+	MaxWordsInDay     float64    `json:"maxWordsInDay" db:"max_words_in_day"`
+	MostProductiveDay *time.Time `json:"mostProductiveDay" db:"most_productive_day"`
 	// OverachievementRate is the percentage of goals where the user has written more words than planned.
 	OverachievementRate float64 `json:"overachievementRate" db:"overachievement_rate"`
 	// OverallGoalProgressRate is the percentage of goal progress based on written words and goal words.
