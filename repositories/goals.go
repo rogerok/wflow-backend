@@ -55,7 +55,8 @@ func (r *goalsRepository) Edit(goal *forms.GoalEditForm) (goalStats *models.Goal
 				start_date = $3,
 				description = $5,
 				title = $6,
-				words_per_day = calculated_words_per_day
+				words_per_day = calculated_words_per_day,
+				is_expired = $2::date < CURRENT_DATE
 			FROM calculated
 			WHERE goals.id = calculated.id 
 			AND user_id = $7 
@@ -124,6 +125,7 @@ func (r *goalsRepository) GetList(params *models.GoalsQueryParams) (goals *[]mod
 	}
 
 	query += utils.GetAllowedOrderBy(params.OrderBy)
+	fmt.Println(query)
 
 	offset, selectAll := utils.HandlePagination(params.Page, params.PerPage)
 
