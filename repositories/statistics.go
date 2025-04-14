@@ -209,13 +209,12 @@ SELECT
     -- Среднее количество слов в день на основе активности пользователя с даты первого отчета
     gp.average_words_per_day as average_words_per_day,
     -- Примерная дата окончания цели, рассчитанная на основе реальной активности
-    CASE
-        WHEN gp.total_words_written >= g.goal_words THEN
-            g.end_date -- Если цель выполнена, то дата окончания остается прежней
-        ELSE
-                    CURRENT_DATE + INTERVAL '1 day' *
-                                   GREATEST(0, (g.goal_words - gp.total_words_written) / NULLIF(gp.average_words_per_day, 0))
-        END as estimated_end_date
+	CASE
+		WHEN gp.total_words_written >= g.goal_words THEN g.end_date
+		WHEN gp.average_words_per_day = 0 THEN NULL
+		ELSE CURRENT_DATE + INTERVAL '1 day' *
+			 (g.goal_words - gp.total_words_written) / gp.average_words_per_day
+	END as estimated_end_date
 FROM goals g
          LEFT JOIN goal_progress gp ON g.id = gp.goal_id
          LEFT JOIN reports r ON g.id = r.goal_id
