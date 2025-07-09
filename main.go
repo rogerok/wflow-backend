@@ -31,6 +31,17 @@ func main() {
 
 	app := fiber.New()
 
+	app.Use(func(c *fiber.Ctx) error {
+		c.Set(fiber.HeaderXContentTypeOptions, "nosniff")
+		c.Set(fiber.HeaderXFrameOptions, "DENY")
+		c.Set(fiber.HeaderXXSSProtection, "1; mode=block")
+		c.Set(fiber.HeaderReferrerPolicy, "strict-origin-when-cross-origin")
+		c.Set(fiber.HeaderCacheControl, "no-store")
+		c.Set(fiber.HeaderStrictTransportSecurity, "max-age=63072000; includeSubDomains;")
+		c.Set(fiber.HeaderContentSecurityPolicy, "default-src 'self'")
+		return c.Next()
+	})
+
 	app.Use(cors.New(cors.Config{
 		AllowMethods:     "GET,POST,PUT,DELETE,PATCH,OPTIONS",
 		AllowHeaders:     "Content-Type,Authorization,Accept,Origin,Access-Control-Request-Method,Access-Control-Request-Headers,Access-Control-Allow-Origin,Access-Control-Allow-Headers,Access-Control-Allow-Methods,Access-Control-Expose-Headers,Access-Control-Max-Age,Access-Control-Allow-Credentials",

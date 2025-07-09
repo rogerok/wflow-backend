@@ -45,6 +45,7 @@ func AuthUser(s services.AuthService) fiber.Handler {
 			Expires:  utils.CreateRefreshTokenExpTime(),
 			Secure:   true,
 			HTTPOnly: true,
+			SameSite: "Strict",
 		}
 
 		ctx.Cookie(&cookies)
