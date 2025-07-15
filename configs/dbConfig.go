@@ -44,9 +44,11 @@ func ConnectToDb() (db *sqlx.DB, err error) {
 }
 
 func CloseConnectionToDb(db *sqlx.DB) {
-	if db == nil {
-		fmt.Println("Database connection is nil, nothing to close")
-		return
-	}
+	if db != nil {
+		err := db.Close()
 
+		if err != nil {
+			fmt.Println("Database connection can not be closed")
+		}
+	}
 }

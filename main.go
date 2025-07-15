@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/log"
 	"github.com/gofiber/fiber/v2/middleware/cors"
@@ -39,8 +40,13 @@ func main() {
 			return origin == "http://193.46.217.8:4200" || origin == "http://localhost:4200"
 		},
 	}))
+	db, dbError := configs.ConnectToDb()
 
-	db, err := router.SetupRouter(app)
+	if dbError != nil {
+		fmt.Printf("Could connect to database %s=", dbError.Error())
+	}
+
+	router.SetupRouter(app, db)
 
 	app.Get("/swagger/*", swagger.HandlerDefault)
 
